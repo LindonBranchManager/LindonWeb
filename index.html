@@ -656,12 +656,6 @@
     const editBtn = document.getElementById('editBtn');
     const lastUpd = document.getElementById('last-updated');
 
-    // Load saved announcement
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const savedDate = localStorage.getItem(STORAGE_DATE);
-    if (saved) { display.textContent = saved; editor.value = saved; }
-    if (savedDate) { lastUpd.textContent = savedDate; }
-
     let editing = false;
 
     function toggleEdit() {
@@ -679,5 +673,32 @@
         editor.style.display = 'none';
         const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
         lastUpd.textContent = now;
-        localStorage.setItem(STORAGE_KEY, text);
-        localStora
+        // ── Save via cookie (works on file:// and https://) ──
+        setCookie('branch_announcement', text, 365);
+        setCookie('branch_announcement_date', now, 365);
+        editBtn.textContent = 'Edit';
+        editBtn.classList.add('saving');
+        setTimeout(() => editBtn.classList.remove('saving'), 1500);
+      }
+    }
+
+    // ── Cookie helpers ──
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/; SameSite=Lax';
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    // ── Load on page open ──
+    const savedText = getCookie('branch_announcement') || localStorage.getItem(STORAGE_KEY);
+    const savedDate = getCookie('branch_announcement_date') || localStorage.getItem(STORAGE_DATE);
+    if (savedText) { display.textContent = savedText; editor.value = savedText; }
+    if (savedDate) { lastUpd.textContent = savedDate; }
+
+  </script>
+
+</body>
+</html>
