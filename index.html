@@ -314,14 +314,24 @@
          5. Replace YOUR_CALENDAR_ID_HERE below with that ID
          Example: abc123xyz@group.calendar.google.com
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-     <iframe
-            src="https://calendar.google.com/calendar/embed?src=c_c2771e6f96fe10712fdeaa558ee931efe25155aff6e89a109354057c03dfdf34%40group.calendar.google.com&ctz=America%2FDenver&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH"
-            class="calendar-embed"
-            height="420"
-            frameborder="0"
-            scrolling="no"
-          ></iframe>
-        </div
+      border: none;
+      display: block;
+    }
+
+    .calendar-placeholder {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .calendar-placeholder .cal-icon { font-size: 32px; margin-bottom: 10px; }
+    .calendar-placeholder strong { display: block; color: var(--navy); font-size: 14px; margin-bottom: 6px; }
+    .calendar-placeholder code {
+      display: inline-block; margin-top: 8px;
+      background: #f0ede8; padding: 4px 10px; border-radius: 6px;
+      font-size: 11px; color: var(--navy-light); font-family: monospace;
+    }
 
     /* ── QUICK LINKS ── */
     .quick-links-card {
@@ -550,13 +560,13 @@
                ></iframe>
           ═══════════════════════════════════════════════════════ -->
 
-          <div class="calendar-placeholder">
-            <div class="cal-icon">🗓️</div>
-            <strong>Calendar Coming Soon</strong>
-            Paste your Google Calendar embed URL here to show live branch events.
-            <br/>
-            <code>Settings → Your Calendar → Integrate Calendar</code>
-          </div>
+          <iframe
+            src="https://calendar.google.com/calendar/embed?src=c_c2771e6f96fe10712fdeaa558ee931efe25155aff6e89a109354057c03dfdf34%40group.calendar.google.com&ctz=America%2FDenver&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH"
+            class="calendar-embed"
+            height="420"
+            frameborder="0"
+            scrolling="no"
+          ></iframe>
         </div>
 
         <!-- QUICK LINKS -->
