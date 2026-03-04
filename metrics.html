@@ -141,16 +141,17 @@
   <a href="metrics.html" class="active">Metrics</a>
 </nav>
 
-<!-- UPLOAD ZONE -->
-<div id="upload-zone">
-  <div class="drop-area" id="drop-area">
-    <div class="drop-icon">📊</div>
-    <div class="drop-title">Upload Weekly CRM Export</div>
-    <div class="drop-sub">Drop your Excel file here to instantly render<br>the lead and LO performance dashboards.</div>
-    <button class="drop-btn" onclick="document.getElementById('file-input').click()">Choose Excel File</button>
-    <input type="file" id="file-input" accept=".xlsx,.xls" onchange="handleFile(this.files[0])" />
-    <div class="file-note">Supports .xlsx and .xls · File stays local — nothing is uploaded</div>
-  </div>
+<!-- LOADING STATE -->
+<div id="upload-zone" style="display:none"></div>
+<div id="loading-zone" style="padding:80px 40px; text-align:center;">
+  <div style="font-size:42px; margin-bottom:16px;">⏳</div>
+  <div style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; color:#0d2340; margin-bottom:8px;">Loading Dashboard Data…</div>
+  <div style="font-size:14px; color:#5a6a7e;" id="loading-msg">Fetching latest CRM export from GitHub</div>
+</div>
+<div id="error-zone" style="display:none; padding:80px 40px; text-align:center;">
+  <div style="font-size:42px; margin-bottom:16px;">⚠️</div>
+  <div style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; color:#0d2340; margin-bottom:8px;">Could Not Load Data</div>
+  <div style="font-size:14px; color:#5a6a7e; margin-bottom:24px;" id="error-msg">Make sure call_details.xlsx is uploaded to the GitHub repo.</div>
 </div>
 
 <!-- DASHBOARD -->
@@ -161,7 +162,7 @@
       <strong id="file-name-display">—</strong>
       <span id="file-stats-display"></span>
     </div>
-    <button class="reload-btn" onclick="resetDashboard()">↩ Load New File</button>
+    <button class="reload-btn" onclick="resetDashboard()">↻ Refresh Data</button>
   </div>
 
   <div class="tab-bar">
@@ -300,43 +301,52 @@
 </div>
 
 <script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Update this URL whenever you rename or move the file in GitHub
+const DATA_URL = 'https://raw.githubusercontent.com/lindonbranchmanager/LindonWeb/main/call_details.xlsx';
+
 // ─── DATA STORE ───────────────────────────────────────────────────────────────
 let RAW_ROWS = [];
 let charts = {};
 
-// ─── FILE HANDLING ────────────────────────────────────────────────────────────
-const dropArea = document.getElementById('drop-area');
-dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
-dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
-dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+// ─── FETCH DATA FROM GITHUB ───────────────────────────────────────────────────
+async function loadData() {
+  try {
+    document.getElementById('loading-zone').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('error-zone').style.display = 'none';
 
-function handleFile(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+    // Cache-bust so it always pulls the latest file
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const buf = await res.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array', cellDates: true });
     const ws = wb.Sheets[wb.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(ws, { defval: null });
-    RAW_ROWS = json;
-    document.getElementById('upload-zone').style.display = 'none';
+    RAW_ROWS = XLSX.utils.sheet_to_json(ws, { defval: null });
+
+    document.getElementById('loading-zone').style.display = 'none';
+    document.getElementById('file-name-display').textContent = 'call_details.xlsx';
+    document.getElementById('file-stats-display').textContent = ' · ' + RAW_ROWS.length.toLocaleString() + ' rows';
     document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('file-name-display').textContent = file.name;
-    document.getElementById('file-stats-display').textContent = ` · ${RAW_ROWS.length.toLocaleString()} rows`;
     initFilters();
     renderTab1();
     renderTab2();
-  };
-  reader.readAsArrayBuffer(file);
+  } catch(err) {
+    document.getElementById('loading-zone').style.display = 'none';
+    document.getElementById('error-msg').textContent = 'Error: ' + err.message + ' — Make sure call_details.xlsx is in the LindonWeb GitHub repo.';
+    document.getElementById('error-zone').style.display = 'block';
+    console.error('Failed to load data:', err);
+  }
 }
 
 function resetDashboard() {
-  RAW_ROWS = [];
-  document.getElementById('upload-zone').style.display = 'flex';
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('file-input').value = '';
   Object.values(charts).forEach(c => c && c.destroy());
   charts = {};
+  loadData();
 }
+
+// ─── AUTO-LOAD ON PAGE OPEN ───────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', loadData);
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function parseDate(val) {
