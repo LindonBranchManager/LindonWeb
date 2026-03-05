@@ -501,16 +501,28 @@ body {
       </div>
       <div class="form-grid-4">
         <div class="field">
-          <label>Loan Officer Name</label>
-          <input type="text" id="loName" placeholder="LO Full Name" value="Test LO">
+          <label>Loan Officer</label>
+          <select id="loSelect" onchange="fillLoInfo()">
+            <option value="">— Select LO —</option>
+            <option value="KC Smalley">KC Smalley</option>
+            <option value="Benji Frandsen">Benji Frandsen</option>
+            <option value="Drake Knowles">Drake Knowles</option>
+            <option value="Cammon Cooper">Cammon Cooper</option>
+            <option value="Robert Eguhl">Robert Eguhl</option>
+            <option value="Ricky Nelson">Ricky Nelson</option>
+            <option value="Sean Morgan">Sean Morgan</option>
+            <option value="Amber Talbot">Amber Talbot</option>
+            <option value="Aaron Johnson">Aaron Johnson</option>
+            <option value="Dawna Johnson">Dawna Johnson</option>
+          </select>
         </div>
         <div class="field">
           <label>LO NMLS #</label>
-          <input type="text" id="loNmls" placeholder="NMLS Number" value="296801">
+          <input type="text" id="loNmls" placeholder="NMLS Number">
         </div>
         <div class="field">
           <label>LO Phone</label>
-          <input type="text" id="loPhone" placeholder="801-xxx-xxxx" value="801-341-7074">
+          <input type="text" id="loPhone" placeholder="801-xxx-xxxx">
         </div>
         <div class="field">
           <label>LO Email</label>
@@ -707,6 +719,35 @@ body {
 <div class="status-bar" id="statusBar">✓ Calculations updated</div>
 
 <script>
+// ============================================================
+// LO DIRECTORY
+// ============================================================
+const LO_DIRECTORY = {
+  "KC Smalley":      { nmls: "296801",  phone: "801-948-2548", email: "kcsmalley@villagecapital.com" },
+  "Benji Frandsen":  { nmls: "2584242", phone: "801-948-3643", email: "befrandsen@villagecapital.com" },
+  "Drake Knowles":   { nmls: "2361685", phone: "801-948-2610", email: "drknowles@villagecapital.com" },
+  "Cammon Cooper":   { nmls: "2627062", phone: "801-948-2771", email: "cacooper@villagecapital.com" },
+  "Robert Eguhl":    { nmls: "2768574", phone: "801-948-3542", email: "robeguhl@villagecapital.com" },
+  "Ricky Nelson":    { nmls: "964955",  phone: "801-948-0159", email: "rinelson@villagecapital.com" },
+  "Sean Morgan":     { nmls: "2061604", phone: "801-895-2965", email: "semorgan@villagecapital.com" },
+  "Kyler Moffett":   { nmls: "2768575", phone: "801-948-3532", email: "kymoffett@villagecapital.com" },
+  "Amber Talbot":    { nmls: "2769035", phone: "801-895-3844", email: "amtalbot@villagecapital.com" },
+  "Tanner Romney":   { nmls: "2790065", phone: "",             email: "taromney@villagecapital.com" },
+  "Aaron Johnson":   { nmls: "1507743", phone: "801-895-4511", email: "aajohnson@villagecapital.com" },
+  "Dawna Johnson":   { nmls: "308516",  phone: "801-895-3391", email: "dajohnson@villagecapital.com" },
+  "Lindsay Smalley": { nmls: "",        phone: "801-948-3898", email: "lismalley@villagecapital.com" },
+  "Jadyn Smalley":   { nmls: "",        phone: "801-948-3618", email: "jasmalley@villagecapital.com" },
+};
+
+function fillLoInfo() {
+  const name = document.getElementById('loSelect').value;
+  const lo = LO_DIRECTORY[name];
+  if (!lo) return;
+  document.getElementById('loNmls').value  = lo.nmls;
+  document.getElementById('loPhone').value = lo.phone;
+  document.getElementById('loEmail').value = lo.email;
+}
+
 // ============================================================
 // DATA MODEL
 // ============================================================
@@ -963,7 +1004,7 @@ function getDocData(n) {
     appId: getStr('appId'),
     address: getStr('propAddress') || ' ',
     date: fmtDate(getStr('datePrepared')),
-    loName: getStr('loName'),
+    loName: getStr('loSelect'),
     loNmls: getStr('loNmls'),
     loPhone: getStr('loPhone'),
     optName: getStr(`optName${n}`),
