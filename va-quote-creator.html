@@ -531,7 +531,6 @@ body {
   .options-header, .option-row, .print-actions-row { grid-template-columns: 120px repeat(3, 1fr); }
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -1850,96 +1849,56 @@ function closeModal() {
 }
 
 function doPrint() {
-  const d = currentDocData;
-  if (!d) return;
-  const safeFile = s => (s||'').replace(/[^a-z0-9]/gi,'_');
-  const date = new Date().toISOString().split('T')[0];
-  const borrower = [d.borrowerFirst||'', d.borrowerLast||''].filter(Boolean).join('_') || 'Borrower';
-  const filename = `${safeFile(borrower)}_${safeFile(d.optName)}_${d.previewType==='prequote'?'PreQuote':'Fees'}_${date}.pdf`;
-  generatePDF(currentPrintContent, filename);
+  openPrintWindow(currentPrintContent);
 }
 
-// ── Core PDF generator ───────────────────────────────────────
-async function generatePDF(htmlContent, filename, onDone) {
-  if (typeof html2pdf === 'undefined') {
-    alert('PDF library is still loading — please try again in a moment.');
-    return;
-  }
+// ── Core print-to-PDF function ─────────────────────────────
+// Opens a clean new window with just the doc, triggers print dialog.
+// Browser "Save as PDF" = perfect PDF every time, no canvas issues.
+function openPrintWindow(htmlContent) {
+  const fontUrl = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap';
 
-  // Build a full self-contained HTML page so all styles are included
-  const styleTag = Array.from(document.querySelectorAll('style'))
-    .map(s => s.outerHTML).join('\n');
-  const linkTags = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-    .map(l => l.outerHTML).join('\n');
+  // Extract all doc-related CSS from the current page
+  const allStyles = Array.from(document.styleSheets)
+    .flatMap(sheet => {
+      try { return Array.from(sheet.cssRules).map(r => r.cssText); }
+      catch(e) { return []; }
+    }).join('\n');
 
-  const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-    ${linkTags}
-    ${styleTag}
-    <style>
-      body { background: white !important; margin: 0; padding: 0; }
-      .no-print, .btn-row, header, nav, main > *:not(.print-source) { display: none !important; }
-      .doc-page { page-break-inside: avoid; }
-    </style>
-  </head><body>${htmlContent}</body></html>`;
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) { alert('Pop-up blocked — please allow pop-ups for this page and try again.'); return; }
 
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:0;left:0;width:850px;height:1100px;border:none;visibility:hidden;z-index:-1;';
-  document.body.appendChild(iframe);
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quote Lab — Village Capital &amp; Investment</title>
+  <link href="${fontUrl}" rel="stylesheet">
+  <style>
+    ${allStyles}
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    body { background: white !important; margin: 0; padding: 16px; font-family: 'Source Sans 3', sans-serif; }
+    @media print {
+      body { padding: 0; }
+      @page { margin: 0.45in; size: letter; }
+    }
+  </style>
+</head>
+<body>${htmlContent}</body>
+</html>`);
+  win.document.close();
 
-  await new Promise(resolve => {
-    iframe.onload = resolve;
-    iframe.srcdoc = fullHtml;
-  });
-
-  // Small delay for fonts/images to load
-  await new Promise(r => setTimeout(r, 600));
-
-  const opt = {
-    margin:      [0.4, 0.4, 0.4, 0.4],
-    filename:    filename,
-    image:       { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      width: 850,
-      windowWidth: 850,
-    },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  // Wait for fonts then print
+  win.onload = () => {
+    setTimeout(() => {
+      win.focus();
+      win.print();
+    }, 800);
   };
-
-  try {
-    const target = iframe.contentDocument.body;
-    await html2pdf().set(opt).from(target).save();
-    showToast(`✅ PDF saved: ${filename}`);
-    if (onDone) onDone(filename);
-  } catch(e) {
-    showToast('⚠ PDF generation failed — try again', true);
-    console.error('PDF error:', e);
-  } finally {
-    document.body.removeChild(iframe);
-  }
-}
-
-async function generatePDFBlob(htmlContent) {
-  if (typeof html2pdf === 'undefined') return null;
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'width:780px;position:absolute;left:-9999px;top:0;background:white;';
-  wrapper.innerHTML = htmlContent;
-  document.body.appendChild(wrapper);
-  const opt = {
-    margin: [0.45, 0.45, 0.45, 0.45],
-    image:  { type:'jpeg', quality:0.97 },
-    html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#ffffff' },
-    jsPDF:  { unit:'in', format:'letter', orientation:'portrait' }
-  };
-  try {
-    const blob = await html2pdf().set(opt).from(wrapper).outputPdf('blob');
-    return blob;
-  } finally {
-    document.body.removeChild(wrapper);
-  }
+  // Fallback if onload already fired
+  setTimeout(() => {
+    if (!win.closed) { win.focus(); win.print(); }
+  }, 1200);
 }
 
 // ── Toast notification ───────────────────────────────────────
@@ -1958,7 +1917,7 @@ function showToast(msg, isError=false) {
   t._timer = setTimeout(() => t.style.opacity = '0', 4500);
 }
 
-async function printSelected() {
+function printSelected() {
   calcAll();
   const selected = [1,2,3].filter(n => document.getElementById(`optInclude${n}`)?.checked);
   if (selected.length === 0) {
@@ -1966,54 +1925,35 @@ async function printSelected() {
     return;
   }
 
-  showToast('⏳ Building PDF…');
-  const borrower = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join('_') || 'Borrower';
-  const date = new Date().toISOString().split('T')[0];
-  const optLabel = selected.length === 1 ? `Option${selected[0]}` : `${selected.length}Options`;
-  const filename = `${borrower.replace(/[^a-z0-9]/gi,'_')}_${optLabel}_${date}.pdf`;
-
-  try {
-    let allHtml = '';
-    if (selected.length > 1) {
-      allHtml += buildComparisonPage(selected);
-      allHtml += '<div style="page-break-after:always;"></div>';
-    }
-    selected.forEach((n, idx) => {
-      const d = getDocData(n);
-      allHtml += buildPreQuote(d);
-      allHtml += '<div style="page-break-after:always;"></div>';
-      allHtml += buildFeesWorksheet(d);
-      if (idx < selected.length - 1) allHtml += '<div style="page-break-after:always;"></div>';
-    });
-    await generatePDF(allHtml, filename);
-  } catch(e) {
-    showToast('⚠ Error building PDF — check console', true);
-    console.error('printSelected error:', e);
-  }
-}
-
-async function printAll() {
-  calcAll();
-  showToast('⏳ Building PDF…');
-  const borrower = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join('_') || 'Borrower';
-  const date = new Date().toISOString().split('T')[0];
-  const filename = `${borrower.replace(/[^a-z0-9]/gi,'_')}_All3Options_${date}.pdf`;
-
-  try {
-    let allHtml = buildComparisonPage([1,2,3]);
+  let allHtml = '';
+  if (selected.length > 1) {
+    allHtml += buildComparisonPage(selected);
     allHtml += '<div style="page-break-after:always;"></div>';
-    [1,2,3].forEach((n, idx) => {
-      const d = getDocData(n);
-      allHtml += buildPreQuote(d) + '<div style="page-break-after:always;"></div>';
-      allHtml += buildFeesWorksheet(d);
-      if (idx < 2) allHtml += '<div style="page-break-after:always;"></div>';
-    });
-    await generatePDF(allHtml, filename);
-  } catch(e) {
-    showToast('⚠ Error building PDF — check console', true);
-    console.error('printAll error:', e);
   }
+  selected.forEach((n, idx) => {
+    const d = getDocData(n);
+    allHtml += buildPreQuote(d);
+    allHtml += '<div style="page-break-after:always;"></div>';
+    allHtml += buildFeesWorksheet(d);
+    if (idx < selected.length - 1) allHtml += '<div style="page-break-after:always;"></div>';
+  });
+  openPrintWindow(allHtml);
 }
+
+function printAll() {
+  calcAll();
+  let allHtml = buildComparisonPage([1,2,3]);
+  allHtml += '<div style="page-break-after:always;"></div>';
+  [1,2,3].forEach((n, idx) => {
+    const d = getDocData(n);
+    allHtml += buildPreQuote(d) + '<div style="page-break-after:always;"></div>';
+    allHtml += buildFeesWorksheet(d);
+    if (idx < 2) allHtml += '<div style="page-break-after:always;"></div>';
+  });
+  openPrintWindow(allHtml);
+}
+
+
 
 function buildComparisonPage(selectedNums) {
   const borrower  = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join(' ') || 'Borrower';
@@ -2126,7 +2066,7 @@ function buildComparisonPage(selectedNums) {
 // ============================================================
 // EMAIL TO BORROWER
 // ============================================================
-async function emailBorrower() {
+function emailBorrower() {
   const borrower      = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join(' ') || 'Borrower';
   const borrowerEmail = getStr('borrowerEmail');
   const loName        = getStr('loSelect') || 'Your Loan Officer';
@@ -2134,14 +2074,13 @@ async function emailBorrower() {
   const loEmail       = getStr('loEmail')  || '';
   const address       = getFullAddress();
   const dateStr       = new Date().toISOString().split('T')[0];
-  const safeFile      = s => s.replace(/[^a-z0-9]/gi, '_');
 
   if (!borrowerEmail) {
     alert("Please enter the borrower's email address first.");
     return;
   }
 
-  // Build combined PDF of all selected/active options
+  // Build combined PDF of checked options
   const selected = [1,2,3].filter(n => document.getElementById(`optInclude${n}`)?.checked);
   const activeNums = selected.length > 0 ? selected : [1,2,3];
 
@@ -2156,89 +2095,83 @@ async function emailBorrower() {
     if (idx < activeNums.length - 1) allHtml += '<div style="page-break-after:always;"></div>';
   });
 
-  const pdfName = `${safeFile(borrower)}_QuoteSummary_${dateStr}.pdf`;
-  showToast('⏳ Generating PDF…');
-  await generatePDF(allHtml, pdfName);
+  // Step 1: open print window (LO prints to PDF, saves file)
+  openPrintWindow(allHtml);
 
+  // Step 2: open Gmail with instructions
   const optionLines = activeNums.map(n => {
-    const r       = calcOption(n);
+    const r = calcOption(n);
     const optName = getStr(`optName${n}`) || `Option ${n}`;
     if (!r.baseLoan) return null;
     return [
       `  Option ${n}: ${optName}`,
-      `  ├ Rate:           ${(r.rate * 100).toFixed(3)}%`,
-      `  ├ Total Loan:     ${fmtMoney(r.totalLoan)}`,
-      `  ├ P&I Payment:    ${fmtMoney(r.pi)}`,
-      `  ├ Total Payment:  ${fmtMoney(r.totalPayment)}`,
-      `  └ Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
+      `  \u251C Rate:           ${(r.rate * 100).toFixed(3)}%`,
+      `  \u251C Total Loan:     ${fmtMoney(r.totalLoan)}`,
+      `  \u251C P&I Payment:    ${fmtMoney(r.pi)}`,
+      `  \u251C Total Payment:  ${fmtMoney(r.totalPayment)}`,
+      `  \u2514 Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
     ].join('\n');
   }).filter(Boolean);
 
-  const subject = `Your Loan Quote Summary — ${borrower} — Village Capital & Investment`;
+  const subject = `Your Loan Quote Summary \u2014 ${borrower} \u2014 Village Capital & Investment`;
   const body = [
     `Hi ${borrower.split(' ')[0]},`,
     '',
-    'Thank you for the opportunity to work with you! Below is a summary of the loan',
-    'scenario(s) we put together for you.',
+    'Thank you for the opportunity to work with you! Below is a summary of the loan scenario(s) we put together for you.',
     '',
     address ? `Property: ${address}` : '',
     '',
-    '══ LOAN SCENARIO SUMMARY ══════════════════════',
+    '== LOAN SCENARIO SUMMARY ==========================',
     ...optionLines,
-    '═══════════════════════════════════════════════',
+    '===================================================',
     '',
-    'These figures are estimates and not an official Loan Estimate (LE).',
-    'Your actual rate, payment, and costs could vary.',
+    'These figures are estimates and not an official Loan Estimate (LE). Your actual rate, payment, and costs could vary.',
     '',
-    `📎 Full quote details attached as PDF: "${pdfName}"`,
-    '   (Check Downloads and drag into this email to attach)',
-    '',
-    "Please don't hesitate to reach out with any questions!",
+    'A PDF of your full quote is attached. Please let me know if you have any questions!',
     '',
     loName,
-    loPhone ? `📞 ${loPhone}` : '',
-    loEmail ? `✉  ${loEmail}` : '',
+    loPhone ? `Phone: ${loPhone}` : '',
+    loEmail ? `Email: ${loEmail}` : '',
     'Village Capital & Investment | NMLS #3317',
     '384 S 400 W Suite 100, Lindon, UT 84042',
   ].filter(l => l !== null).join('\n');
 
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(borrowerEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  setTimeout(() => window.open(gmailUrl, '_blank'), 600);
-  showToast(`✅ PDF saved — drag from Downloads into Gmail to attach`);
+  setTimeout(() => {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(borrowerEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+  }, 500);
 }
 
 // ============================================================
 // EMAIL TO LO
 // ============================================================
-async function emailToLO(n) {
+function emailToLO(n) {
   const d = getDocData(n);
   const borrower   = d.borrower || 'Borrower';
   const loName     = d.loName   || 'LO';
   const loEmail    = getStr('loEmail');
   const dateStr    = new Date().toISOString().split('T')[0];
   const optName    = d.optName  || `Option ${n}`;
+  const r          = calcOption(n);
 
   if (!loEmail) {
     alert('Please select a Loan Officer first — their email is needed to address the message.');
     return;
   }
 
-  const safeFile = name => name.replace(/[^a-z0-9]/gi, '_');
-  const pdfName = `${safeFile(borrower)}_${safeFile(loName)}_${safeFile(optName)}_${dateStr}.pdf`;
+  // Step 1: open print window for this option
   const allHtml = buildPreQuote(d) + '<div style="page-break-after:always;"></div>' + buildFeesWorksheet(d);
+  openPrintWindow(allHtml);
 
-  showToast('⏳ Generating PDF…');
-  await generatePDF(allHtml, pdfName);
-
-  const subject = `Quote Lab — ${borrower} — ${optName} — ${dateStr}`;
-  const r = calcOption(n);
+  // Step 2: open Gmail compose
+  const subject = `Quote Lab \u2014 ${borrower} \u2014 ${optName} \u2014 ${dateStr}`;
   const body = [
     `Hi ${loName.split(' ')[0]},`,
     '',
-    `Here is the Quote Lab summary for ${borrower} — ${optName}.`,
+    `Here is the Quote Lab summary for ${borrower} \u2014 ${optName}.`,
     '',
-    '── LOAN SUMMARY ──────────────────────',
-    `Program:        ${d.prog} — ${d.loanType}`,
+    '-- LOAN SUMMARY --------------------------------------',
+    `Program:        ${d.prog} \u2014 ${d.loanType}`,
     `Option:         ${optName}`,
     `Base Loan:      ${fmtMoney(r.baseLoan)}`,
     `Total Loan:     ${fmtMoney(r.totalLoan)}`,
@@ -2246,30 +2179,30 @@ async function emailToLO(n) {
     `Term:           ${r.term} months`,
     `P&I Payment:    ${fmtMoney(r.pi)}`,
     `Total Payment:  ${fmtMoney(r.totalPayment)}`,
-    `LTV:            ${r.ltv > 0 ? r.ltv.toFixed(2) + '%' : '—'}`,
+    `LTV:            ${r.ltv > 0 ? r.ltv.toFixed(2) + '%' : '\u2014'}`,
     '',
-    '── CLOSING COSTS ─────────────────────',
+    '-- CLOSING COSTS -------------------------------------',
     `Total Closing:  ${fmtMoney(r.totalClosingCosts)}`,
     `Total Prepaids: ${fmtMoney(r.totalPrepaids)}`,
     `Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
     '',
-    '── SAVINGS ───────────────────────────',
+    '-- SAVINGS -------------------------------------------',
     `Monthly Savings: ${fmtMoney(r.paySavings)}`,
-    `Recoup Period:   ${r.recoup !== null ? Math.ceil(r.recoup) + ' months' : '—'}`,
+    `Recoup Period:   ${r.recoup !== null ? Math.ceil(r.recoup) + ' months' : '\u2014'}`,
     '',
-    `📎 PDF: "${pdfName}" — check your Downloads folder and drag it into this email.`,
+    'A print window opened with the full Pre-Quote and Fees Worksheet.',
+    'Use File > Print > Save as PDF to generate the PDF, then attach it here.',
     '',
-    '──────────────────────────────────────',
+    '------------------------------------------------------',
     'Generated by Quote Lab | Village Capital & Investment | NMLS #3317',
   ].join('\n');
 
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(loEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  setTimeout(() => window.open(gmailUrl, '_blank'), 600);
-  showToast(`✅ PDF saved — drag from Downloads into Gmail to attach`);
+  setTimeout(() => {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(loEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+  }, 500);
 }
 
-
-let statusTimer;
 function showStatus() {
 
   const bar = document.getElementById('statusBar');
