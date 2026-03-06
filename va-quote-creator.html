@@ -38,24 +38,56 @@ body {
 /* ===== HEADER ===== */
 .site-header {
   background: var(--navy);
-  padding: 0 40px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  height: 68px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.35);
+  border-bottom: 2px solid rgba(201,168,76,0.25);
 }
+.header-home-btn {
+  display: flex; align-items: center; gap: 7px;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 0.78rem; font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+  font-family: 'Source Sans 3', sans-serif;
+  white-space: nowrap;
+}
+.header-home-btn:hover { background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3); }
+.header-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.12); }
 .site-header .logo {
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   color: var(--gold);
   letter-spacing: 0.02em;
+  line-height: 1.2;
 }
-.site-header .logo span { color: #fff; font-weight: 400; font-size: 0.85rem; display: block; font-family: 'Source Sans 3', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
-.site-header .tagline { color: var(--steel-light); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.logo-amp { color: var(--gold-light); }
+.site-header .logo span { color: rgba(255,255,255,0.45); font-weight: 400; font-size: 0.72rem; display: block; font-family: 'Source Sans 3', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+.header-center { text-align: center; }
+.header-tool-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--navy);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 700;
+  padding: 4px 18px 4px 14px;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+}
+.header-tool-sub { color: rgba(255,255,255,0.45); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+.header-right { text-align: right; }
+.header-version { color: rgba(255,255,255,0.25); font-size: 0.68rem; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; }
 
 /* ===== LAYOUT ===== */
 .page-wrap { max-width: 1400px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -534,11 +566,27 @@ body {
 
 <!-- HEADER -->
 <header class="site-header no-print">
-  <div class="logo">
-    Village Capital & Investment
-    <span>NMLS # 3317</span>
+  <div style="display:flex;align-items:center;gap:18px;">
+    <a href="index.html" class="header-home-btn" title="Back to Home">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <div class="header-divider"></div>
+    <div class="logo">
+      Village Capital <span class="logo-amp">&amp;</span> Investment
+      <span>NMLS # 3317</span>
+    </div>
   </div>
-  <div class="tagline">Quote Lab &nbsp;·&nbsp; Loan Officer Tool</div>
+  <div class="header-center">
+    <div class="header-tool-badge">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Quote Lab
+    </div>
+    <div class="header-tool-sub">Loan Officer Scenario Tool</div>
+  </div>
+  <div class="header-right">
+    <div class="header-version">v2.0</div>
+  </div>
 </header>
 
 <!-- MAIN -->
@@ -1827,6 +1875,7 @@ function buildFeesWorksheet(d) {
 // ============================================================
 // PRINT / PREVIEW
 // ============================================================
+let statusTimer;
 let currentPrintContent = '';
 let currentDocData = null;
 
@@ -2175,7 +2224,6 @@ function emailToLO(n) {
   }, 500);
 }
 
-let statusTimer;
 function showStatus() {
 
   const bar = document.getElementById('statusBar');
