@@ -1858,12 +1858,8 @@ function doPrint() {
 function openPrintWindow(htmlContent) {
   const fontUrl = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap';
 
-  // Extract all doc-related CSS from the current page
-  const allStyles = Array.from(document.styleSheets)
-    .flatMap(sheet => {
-      try { return Array.from(sheet.cssRules).map(r => r.cssText); }
-      catch(e) { return []; }
-    }).join('\n');
+  // Grab the inline <style> tag directly — no CORS issues like styleSheets API
+  const inlineCSS = document.querySelector('style') ? document.querySelector('style').textContent : '';
 
   const win = window.open('', '_blank', 'width=900,height=700');
   if (!win) { alert('Pop-up blocked — please allow pop-ups for this page and try again.'); return; }
@@ -1875,11 +1871,13 @@ function openPrintWindow(htmlContent) {
   <title>Quote Lab — Village Capital &amp; Investment</title>
   <link href="${fontUrl}" rel="stylesheet">
   <style>
-    ${allStyles}
+    ${inlineCSS}
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
     body { background: white !important; margin: 0; padding: 16px; font-family: 'Source Sans 3', sans-serif; }
+    .no-print, .btn-row, header, .page-wrap { display: none !important; }
     @media print {
       body { padding: 0; }
+      .no-print, .btn-row, header, .page-wrap { display: none !important; }
       @page { margin: 0.45in; size: letter; }
     }
   </style>
@@ -1888,17 +1886,11 @@ function openPrintWindow(htmlContent) {
 </html>`);
   win.document.close();
 
-  // Wait for fonts then print
-  win.onload = () => {
-    setTimeout(() => {
-      win.focus();
-      win.print();
-    }, 800);
-  };
-  // Fallback if onload already fired
+  // Wait for fonts to load then trigger print dialog
   setTimeout(() => {
-    if (!win.closed) { win.focus(); win.print(); }
-  }, 1200);
+    win.focus();
+    win.print();
+  }, 1000);
 }
 
 // ── Toast notification ───────────────────────────────────────
