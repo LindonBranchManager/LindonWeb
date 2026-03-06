@@ -249,6 +249,8 @@ body {
   text-transform: uppercase;
 }
 .btn-print-opt:hover { border-color: var(--navy); background: var(--navy); color: white; }
+.btn-email { border-color: #1a7340 !important; color: #1a7340 !important; }
+.btn-email:hover { background: #1a7340 !important; color: white !important; border-color: #1a7340 !important; }
 
 .print-actions-row {
   display: grid;
@@ -306,6 +308,36 @@ body {
 }
 .arm-warning.show { display: block; }
 .arm-warning .warn-icon { font-size: 1rem; margin-right: 4px; }
+.btn-set-default {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent; border: 1.5px solid var(--gold);
+  color: var(--gold); font-size: 0.72rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 5px; cursor: pointer;
+  letter-spacing: 0.03em; transition: all 0.15s;
+}
+.btn-set-default:hover { background: var(--gold); color: white; }
+.btn-clear-default {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: transparent; border: 1px solid #ccc;
+  color: var(--text-muted); font-size: 0.68rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px; cursor: pointer;
+}
+.btn-clear-default:hover { border-color: #b33a3a; color: #b33a3a; }
+.default-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; background: #fffbf0;
+  border: 1px solid #f0d080; border-radius: 6px;
+  font-size: 0.75rem; color: #7a6000; margin-bottom: 10px;
+}
+.per-diem-badge {
+  font-size: 0.65rem; color: var(--steel); font-weight: 600;
+  margin-left: 5px; background: #eef2fa; border-radius: 3px;
+  padding: 1px 5px; white-space: nowrap;
+}
+.mirror-hint {
+  font-size: 0.62rem; color: var(--steel); font-style: italic;
+  display: block; margin-top: 1px;
+}
 
 /* ===== PRINT STYLES ===== */
 @media print {
@@ -788,7 +820,16 @@ body {
     </div>
 
     <!-- FEE INPUTS -->
-    <div class="option-section-label">Fees &amp; Costs</div>
+    <div class="option-section-label">Fees &amp; Costs
+      <span style="float:right;font-weight:400;">
+        <button class="btn-set-default" onclick="saveDefaults()">⭐ Save as Default</button>
+        &nbsp;
+        <button class="btn-clear-default" onclick="clearDefaults()">✕ Clear Defaults</button>
+      </span>
+    </div>
+    <div id="defaultBar" style="display:none;" class="default-bar">
+      ⭐ <strong>Defaults loaded</strong> — Credit Report, Closing Fee, Recording &amp; Days Interest pre-filled from your saved defaults.
+    </div>
     <div id="feeRows"></div>
 
     <!-- CALCULATED RESULTS -->
@@ -809,6 +850,20 @@ body {
       <div class="print-actions-cell opt-bg-3">
         <button class="btn-print-opt" onclick="showPreview(3,'prequote')">📄 Pre-Quote</button>
         <button class="btn-print-opt" onclick="showPreview(3,'fees')">📋 Fees Worksheet</button>
+      </div>
+    </div>
+
+    <!-- EMAIL TO LO ROW -->
+    <div class="print-actions-row">
+      <div class="print-actions-label">Email to LO</div>
+      <div class="print-actions-cell opt-bg-1">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(1)">📧 Save &amp; Email</button>
+      </div>
+      <div class="print-actions-cell opt-bg-2">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(2)">📧 Save &amp; Email</button>
+      </div>
+      <div class="print-actions-cell opt-bg-3">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(3)">📧 Save &amp; Email</button>
       </div>
     </div>
 
@@ -1047,14 +1102,14 @@ const optionRowDefs = [
 ];
 
 const feeRowDefs = [
-  { id:'origFee', label:'Origination Fee (%)', type:'number', default:['','',''], step:'0.001' },
-  { id:'discountPts', label:'Discount Points (%)', type:'number', default:['','',''], step:'0.001' },
-  { id:'creditReport', label:'Credit Report / Flood ($)', type:'number', default:['','',''] },
-  { id:'appraisal', label:'Appraisal ($)', type:'number', default:['','',''] },
-  { id:'closingFee', label:'Closing / Escrow Fee ($)', type:'number', default:['','',''] },
-  { id:'titleIns', label:"Lender's Title Insurance ($)", type:'number', default:['','',''], link:'https://www.firstam.com/title-fee-calculator/index.html' },
-  { id:'recording', label:'Govt / Recording ($)', type:'number', default:['','',''] },
-  { id:'daysInterest', label:'# Days Interest', type:'number', default:['','',''] },
+  { id:'origFee',      label:'Origination Fee (%)',         type:'number', default:['','',''], step:'0.001' },
+  { id:'discountPts',  label:'Discount Points (%)',          type:'number', default:['','',''], step:'0.001' },
+  { id:'creditReport', label:'Credit Report / Flood ($)',    type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'appraisal',    label:'Appraisal ($)',                type:'number', default:['','',''] },
+  { id:'closingFee',   label:'Closing / Escrow Fee ($)',     type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'titleIns',     label:"Lender's Title Insurance ($)", type:'number', default:['','',''], link:'https://www.firstam.com/title-fee-calculator/index.html' },
+  { id:'recording',    label:'Govt / Recording ($)',         type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'daysInterest', label:'# Days Interest',              type:'number', default:['','',''], mirror:true, saveable:true, perDiem:true },
 ];
 
 const resultRowDefs = [
@@ -1078,28 +1133,97 @@ function buildRows(defs, containerId, prefix) {
     const row = document.createElement('div');
     row.className = 'option-row';
     const linkHtml = def.link ? ` <a href="${def.link}" target="_blank" rel="noopener" style="font-size:0.65rem;font-weight:700;color:var(--gold);text-decoration:none;border:1px solid var(--gold);border-radius:3px;padding:1px 5px;margin-left:4px;">🔗 Quote</a>` : '';
-    let label = `<div class="option-row-label">${def.label}${linkHtml}</div>`;
+    const mirrorHint = def.mirror ? `<span class="mirror-hint">Types in opt 1 → fills all</span>` : '';
+    const perDiemHtml = def.perDiem ? ` <span class="per-diem-badge" id="perDiem_${def.id}_label"></span>` : '';
+    let label = `<div class="option-row-label">${def.label}${linkHtml}${perDiemHtml}${mirrorHint}</div>`;
     let cells = '';
     [1,2,3].forEach(n => {
       const bg = `opt-bg-${n}`;
       const id = `${prefix}_${def.id}_${n}`;
-      if(def.type === 'select') {
-        cells += `<div class="option-cell ${bg}"><select id="${id}" onchange="calcAll()">${def.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      const step = def.step || '1';
+      const mirrorAttr = (def.mirror && n === 1) ? `oninput="mirrorFee('${def.id}');calcAll();"` : `oninput="calcAll()"`;
+      if (def.type === 'select') {
+        cells += `<div class="option-cell ${bg}"><select id="${id}" onchange="calcAll()">${(def.options||[]).map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
       } else {
-        const step = def.step || '1';
-        const val = def.default[n-1] !== '' ? `value="${def.default[n-1]}"` : '';
-        cells += `<div class="option-cell ${bg}"><input type="number" id="${id}" ${val} placeholder="" step="${step}" oninput="calcAll()"></div>`;
+        cells += `<div class="option-cell ${bg}"><input type="number" id="${id}" placeholder="" step="${step}" ${mirrorAttr}></div>`;
       }
     });
     row.innerHTML = label + cells;
     container.appendChild(row);
-    if(def.type === 'select') {
+    if (def.type === 'select') {
       [1,2,3].forEach(n => {
         document.getElementById(`${prefix}_${def.id}_${n}`).value = def.default[n-1];
       });
     }
   });
 }
+
+function mirrorFee(feeId) {
+  const val = document.getElementById(`fee_${feeId}_1`)?.value || '';
+  [2,3].forEach(n => {
+    const el = document.getElementById(`fee_${feeId}_${n}`);
+    if (el) el.value = val;
+  });
+}
+
+// ── Per diem display ──────────────────────────────────────
+function updatePerDiems() {
+  [1,2,3].forEach(n => {
+    const loan = getVal(`opt_baseLoan_${n}`);
+    const rate = getVal(`opt_rate_${n}`) / 100;
+    if (loan > 0 && rate > 0) {
+      const daily = (loan * rate / 365);
+      const label = document.getElementById('perDiem_daysInterest_label');
+      if (label && n === 1) label.textContent = `Per diem: ${fmtMoney(daily)}/day (opt 1)`;
+    }
+  });
+}
+
+// ── Cookie defaults ───────────────────────────────────────
+const COOKIE_KEY = 'qlDefaults';
+const SAVEABLE_FEES = ['creditReport','closingFee','recording','daysInterest'];
+
+function saveDefaults() {
+  const vals = {};
+  SAVEABLE_FEES.forEach(id => {
+    vals[id] = document.getElementById(`fee_${id}_1`)?.value || '';
+  });
+  const expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 2);
+  document.cookie = `${COOKIE_KEY}=${encodeURIComponent(JSON.stringify(vals))}; expires=${expires.toUTCString()}; path=/`;
+  const bar = document.getElementById('defaultBar');
+  bar.style.display = 'flex';
+  bar.innerHTML = '⭐ <strong>Defaults saved!</strong> — These fees will auto-load next time you open Quote Lab.';
+  setTimeout(() => {
+    bar.innerHTML = '⭐ <strong>Defaults loaded</strong> — Credit Report, Closing Fee, Recording &amp; Days Interest pre-filled from your saved defaults.';
+  }, 2500);
+}
+
+function loadDefaults() {
+  const match = document.cookie.split('; ').find(r => r.startsWith(COOKIE_KEY + '='));
+  if (!match) return;
+  try {
+    const vals = JSON.parse(decodeURIComponent(match.split('=').slice(1).join('=')));
+    let anyLoaded = false;
+    SAVEABLE_FEES.forEach(id => {
+      if (vals[id] !== undefined && vals[id] !== '') {
+        [1,2,3].forEach(n => {
+          const el = document.getElementById(`fee_${id}_${n}`);
+          if (el) el.value = vals[id];
+        });
+        anyLoaded = true;
+      }
+    });
+    if (anyLoaded) document.getElementById('defaultBar').style.display = 'flex';
+  } catch(e) {}
+}
+
+function clearDefaults() {
+  document.cookie = `${COOKIE_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+  const bar = document.getElementById('defaultBar');
+  bar.style.display = 'none';
+}
+
 
 function buildResultRows(defs) {
   const container = document.getElementById('resultRows');
@@ -1323,6 +1447,7 @@ function calcAll() {
     setResult(`r_recoup_${n}`, r.recoup, 'months');
   });
   checkArmWarnings();
+  updatePerDiems();
   showStatus();
 }
 
@@ -1641,8 +1766,87 @@ function printAll() {
 // ============================================================
 // STATUS
 // ============================================================
-let statusTimer;
-function showStatus() {
+// ============================================================
+// EMAIL TO LO
+// ============================================================
+function emailToLO(n) {
+  const d = getDocData(n);
+  const borrower   = d.borrower || 'Borrower';
+  const loName     = d.loName   || 'LO';
+  const loEmail    = getStr('loEmail');
+  const dateStr    = new Date().toISOString().split('T')[0];
+  const optName    = d.optName  || `Option ${n}`;
+
+  if (!loEmail) {
+    alert('Please select a Loan Officer first — their email is needed to address the message.');
+    return;
+  }
+
+  // ── 1. Build & download the quote file ──────────────────
+  const safeFile = name => name.replace(/[^a-z0-9]/gi, '_');
+  const fileName = `${safeFile(borrower)}_${safeFile(loName)}_${safeFile(optName)}_${dateStr}.html`;
+
+  // Build a standalone HTML snapshot of both docs for this option
+  const docStyles = document.querySelector('style') ? document.querySelector('style').outerHTML : '';
+  const prequoteHtml  = buildPreQuote(d);
+  const feesHtml      = buildFeesWorksheet(d);
+  const snapshot = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${fileName}</title>${docStyles}</head><body style="background:#f5f5f5;padding:20px;">${prequoteHtml}${feesHtml}</body></html>`;
+
+  const blob = new Blob([snapshot], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // ── 2. Open Gmail compose pre-filled ────────────────────
+  const subject = `Quote Lab — ${borrower} — ${optName} — ${dateStr}`;
+
+  const body = [
+    `Hi ${loName.split(' ')[0]},`,
+    '',
+    `Here is the Quote Lab summary for ${borrower} — ${optName}.`,
+    '',
+    '── LOAN SUMMARY ──────────────────────',
+    `Program:        ${d.prog} — ${d.loanType}`,
+    `Option:         ${optName}`,
+    `Base Loan:      ${fmtMoney(d.baseLoan)}`,
+    `Total Loan:     ${fmtMoney(d.totalLoan)}`,
+    `Rate:           ${(d.rate * 100).toFixed(3)}%`,
+    `Term:           ${d.term} months`,
+    `P&I Payment:    ${fmtMoney(d.pi)}`,
+    `Total Payment:  ${fmtMoney(d.totalPayment)}`,
+    `LTV:            ${d.ltv > 0 ? d.ltv.toFixed(2) + '%' : '—'}`,
+    '',
+    '── CLOSING COSTS ─────────────────────',
+    `Total Closing:  ${fmtMoney(d.totalClosingCosts)}`,
+    `Total Prepaids: ${fmtMoney(d.totalPrepaids)}`,
+    `Funds to Close: ${fmtMoney(d.totalFundsToClose)}`,
+    '',
+    '── SAVINGS ───────────────────────────',
+    `Monthly Savings: ${fmtMoney(d.paySavings)}`,
+    `Recoup Period:   ${d.recoup !== null ? Math.ceil(d.recoup) + ' months' : '—'}`,
+    '',
+    `The full Pre-Quote and Fees Worksheet are attached as "${fileName}".`,
+    'Open the file in any browser to view and print.',
+    '',
+    '──────────────────────────────────────',
+    'Generated by Quote Lab | Village Capital & Investment | NMLS #3317',
+  ].join('\n');
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(loEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  setTimeout(() => window.open(gmailUrl, '_blank'), 400);
+
+  // ── 3. Show confirmation ─────────────────────────────────
+  const bar = document.getElementById('statusBar');
+  bar.textContent = `✓ File downloaded & Gmail opened for ${loName}`;
+  bar.classList.add('show');
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => bar.classList.remove('show'), 4000);
+}
+
+
   const bar = document.getElementById('statusBar');
   bar.classList.add('show');
   clearTimeout(statusTimer);
@@ -1660,6 +1864,7 @@ document.getElementById('previewModal').addEventListener('click', function(e) {
 buildRows(optionRowDefs, 'optionRows', 'opt');
 buildRows(feeRowDefs, 'feeRows', 'fee');
 buildResultRows(resultRowDefs);
+loadDefaults();
 
 // Set today's date
 const today = new Date().toISOString().split('T')[0];
