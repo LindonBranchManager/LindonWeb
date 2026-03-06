@@ -538,10 +538,10 @@ let inventory  = JSON.parse(localStorage.getItem('vm_inventory')||'null');
 if(!inventory){inventory=DEFAULT_INVENTORY;saveInventory();}
 let settings   = JSON.parse(localStorage.getItem('vm_settings')||'null') || {
   venmo:'', shop:'Village Market', pin:'1234',
-  ejsPubKey:'', ejsService:'', ejsTemplate:'',
+  ejsPubKey:'wGp9AovU8hSu3zyZt', ejsService:'service_1zj6nzi', ejsTemplate:'template_s7g3wk8',
   alertEmail:'lismalley@villagecapital.com', alertQty:5
 };
-let employees  = JSON.parse(localStorage.getItem('vm_employees')||'[]');
+let employees  = JSON.parse(localStorage.getItem('vm_employees')||'[{"num":"1007","name":"KC Smalley","credit":0},{"num":"9805939","name":"Candace Taylor","credit":0},{"num":"1063","name":"Kyler Moffett","credit":0},{"num":"1039","name":"Robert Beguhl","credit":0},{"num":"1035","name":"Drake Knowles","credit":0},{"num":"1073","name":"Cammon Cooper","credit":0},{"num":"1036","name":"Benji Frandsen","credit":0},{"num":"1140","name":"Amber Talbot","credit":0},{"num":"1265","name":"Tanner Romney","credit":0},{"num":"1275","name":"Ricky Nelson","credit":0},{"num":"1000","name":"Lindsay Smalley","credit":0},{"num":"1001","name":"Jadyn Smalley","credit":0},{"num":"1362","name":"Sean Morgan","credit":0},{"num":"1346","name":"Aaron Johnson","credit":0},{"num":"1370","name":"Dawna Johnson","credit":0},{"num":"1003","name":"Lucy","credit":0}]');
 let purchases  = JSON.parse(localStorage.getItem('vm_purchases')||'[]');
 let currentEmp = null; // { num, name, credit }
 let scanActive=false, assignScanActive=false, pinBuffer='', assignTargetId=null;
