@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VA Quote Creator | Village Capital & Investment</title>
+<title>Quote Lab | Village Capital & Investment</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -140,6 +140,37 @@ body {
 }
 .option-name-input::placeholder { color: rgba(255,255,255,0.4); }
 .option-name-input:focus { outline: none; border-color: var(--gold) !important; }
+.option-name-select {
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(255,255,255,0.2) !important;
+  background: rgba(255,255,255,0.12) !important;
+  color: var(--navy) !important;
+  border-radius: 6px;
+  padding: 6px 10px;
+  width: 100%;
+  margin-top: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  cursor: pointer;
+}
+.option-name-select:focus { outline: none; border-color: var(--gold) !important; }
+.opt-include-wrap {
+  display: flex; align-items: center; gap: 7px;
+  margin-top: 8px; font-size: 0.7rem; font-weight: 700;
+  color: var(--steel); user-select: none; cursor: pointer;
+}
+.opt-include-wrap input[type=checkbox] {
+  width: 15px; height: 15px; accent-color: var(--navy); cursor: pointer;
+}
+.btn-print-combined {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--navy); color: white;
+  border: 2px solid var(--navy);
+  font-size: 0.8rem; font-weight: 700;
+  padding: 8px 18px; border-radius: 7px; cursor: pointer;
+  letter-spacing: 0.02em; transition: all 0.15s;
+}
+.btn-print-combined:hover { background: #0d1f3c; border-color: #0d1f3c; }
 .opt-bg-1 { background: #f0f4fb; }
 .opt-bg-2 { background: #f3f7f0; }
 .opt-bg-3 { background: #fdf6ec; }
@@ -166,7 +197,9 @@ body {
   font-weight: 600;
   color: var(--text-muted);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   background: var(--navy);
   color: rgba(255,255,255,0.65);
   letter-spacing: 0.03em;
@@ -249,6 +282,8 @@ body {
   text-transform: uppercase;
 }
 .btn-print-opt:hover { border-color: var(--navy); background: var(--navy); color: white; }
+.btn-email { border-color: #1a7340 !important; color: #1a7340 !important; }
+.btn-email:hover { background: #1a7340 !important; color: white !important; border-color: #1a7340 !important; }
 
 .print-actions-row {
   display: grid;
@@ -291,20 +326,62 @@ body {
   gap: 8px;
   z-index: 200;
 }
-.status-bar.show { display: flex; }
-
-/* ===== PRINT STYLES ===== */
-@media print {
-  body * { visibility: hidden; }
-  .print-zone, .print-zone * { visibility: visible; }
-  .print-zone { position: fixed; top: 0; left: 0; width: 100%; background: white; }
-  .no-print { display: none !important; }
-  body { background: white; }
+.status-bar.warn { background: #b35c00; }
+.arm-warning {
+  display: none;
+  background: #fff3cd;
+  border: 1.5px solid #e6a817;
+  border-radius: 6px;
+  color: #7a4a00;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  margin: 6px 8px 2px;
+  line-height: 1.4;
+}
+.arm-warning.show { display: block; }
+.arm-warning .warn-icon { font-size: 1rem; margin-right: 4px; }
+.btn-set-default {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent; border: 1.5px solid var(--gold);
+  color: var(--gold); font-size: 0.72rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 5px; cursor: pointer;
+  letter-spacing: 0.03em; transition: all 0.15s;
+}
+.btn-set-default:hover { background: var(--gold); color: white; }
+.btn-clear-default {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: transparent; border: 1px solid #ccc;
+  color: var(--text-muted); font-size: 0.68rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px; cursor: pointer;
+}
+.btn-clear-default:hover { border-color: #b33a3a; color: #b33a3a; }
+.default-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; background: #fffbf0;
+  border: 1px solid #f0d080; border-radius: 6px;
+  font-size: 0.75rem; color: #7a6000; margin-bottom: 10px;
+}
+.per-diem-badge {
+  font-size: 0.65rem; color: var(--steel); font-weight: 600;
+  margin-left: 5px; background: #eef2fa; border-radius: 3px;
+  padding: 1px 5px; white-space: nowrap;
+}
+.mirror-hint {
+  font-size: 0.62rem; color: var(--steel); font-style: italic;
+  display: block; margin-top: 1px;
 }
 
-/* ===== PRINT DOCUMENT STYLES ===== */
+/* ===== PRINT STYLES ===== */
 .print-zone { display: none; }
 .print-zone.active { display: block; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body > *:not(#printZone) { display: none !important; }
+  #printZone { display: block !important; margin: 0; padding: 0; }
+  @page { margin: 0.45in; size: letter; }
+}
 
 .doc-page {
   width: 100%;
@@ -461,7 +538,7 @@ body {
     Village Capital & Investment
     <span>NMLS # 3317</span>
   </div>
-  <div class="tagline">VA Quote Creator &nbsp;·&nbsp; Loan Officer Tool</div>
+  <div class="tagline">Quote Lab &nbsp;·&nbsp; Loan Officer Tool</div>
 </header>
 
 <!-- MAIN -->
@@ -485,18 +562,47 @@ body {
           <input type="text" id="coBorrower" placeholder="Co-Borrower">
         </div>
         <div class="field">
-          <label>Application ID</label>
-          <input type="text" id="appId" placeholder="Optional">
+          <label>Borrower Email</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="email" id="borrowerEmail" placeholder="borrower@email.com" style="flex:1;">
+            <button onclick="emailBorrower()" title="Email Borrower" style="flex-shrink:0;padding:6px 10px;background:transparent;border:1.5px solid #1a7340;color:#1a7340;border-radius:5px;cursor:pointer;font-size:0.8rem;font-weight:700;white-space:nowrap;" onmouseover="this.style.background='#1a7340';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='#1a7340'">📧 Email</button>
+          </div>
         </div>
       </div>
-      <div class="form-grid-3" style="margin-bottom:16px;">
-        <div class="field col-span-2">
-          <label>Subject Property Address</label>
-          <input type="text" id="propAddress" placeholder="123 Main St, City, State ZIP">
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field" style="grid-column:span 2;">
+          <label>Street Address</label>
+          <input type="text" id="propStreet" placeholder="123 Main St" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="propCity" placeholder="City" oninput="scheduleGeocode()">
         </div>
         <div class="field">
           <label>Date Prepared</label>
           <input type="date" id="datePrepared">
+        </div>
+      </div>
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field">
+          <label>State</label>
+          <input type="text" id="propState" placeholder="UT" maxlength="2" style="text-transform:uppercase;" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>Zip Code</label>
+          <input type="text" id="propZip" placeholder="84042" maxlength="5" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>
+            County
+            <a id="countyLink" href="#" target="_blank" rel="noopener" style="font-size:0.68rem;font-weight:700;color:var(--gold);margin-left:6px;text-decoration:none;border:1px solid var(--gold);border-radius:3px;padding:1px 5px;">🔍 Assessor</a>
+            <span id="countySpinner" style="display:none;font-size:0.68rem;color:var(--steel);margin-left:4px;">looking up…</span>
+          </label>
+          <input type="text" id="propCounty" placeholder="Auto-fills from address">
+        </div>
+        <div class="field" style="align-self:end;">
+          <label style="opacity:0;">x</label>
+          <div style="font-size:0.72rem;color:var(--steel);line-height:1.5;padding-top:4px;">County auto-fills when Street + City + State are entered</div>
         </div>
       </div>
       <div class="form-grid-4">
@@ -536,53 +642,81 @@ body {
   <div class="section-block">
     <div class="section-title"><span class="dot"></span>Current Loan & Property Information</div>
     <div class="section-body">
+
+      <!-- Row 1: Original loan info for P&I auto-calc -->
       <div class="form-grid-4" style="margin-bottom:16px;">
         <div class="field">
-          <label>Current Loan Balance / Payoff ($)</label>
-          <input type="number" id="currentBalance" placeholder="0.00" value="0">
+          <label>Original Loan Amount ($)</label>
+          <input type="number" id="originalLoanAmt" placeholder="" oninput="calcCurrentPI()">
+        </div>
+        <div class="field">
+          <label>Original Term (months)</label>
+          <input type="number" id="originalTerm" placeholder="" value="360" oninput="calcCurrentPI()">
         </div>
         <div class="field">
           <label>Current Interest Rate (%)</label>
-          <input type="number" id="currentRate" placeholder="0.000" step="0.001" value="0">
+          <input type="number" id="currentRate" placeholder="" step="0.001" oninput="calcCurrentPI()">
         </div>
         <div class="field">
-          <label>Current P&amp;I Payment ($)</label>
-          <input type="number" id="currentPI" placeholder="0.00" value="0">
+          <label>Current P&amp;I <span style="color:var(--steel);font-size:0.7rem;">(auto-calc)</span></label>
+          <input type="number" id="currentPI" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);">
         </div>
+      </div>
+
+      <!-- Row 2: PITI + escrow breakdown -->
+      <div class="form-grid-4" style="margin-bottom:16px;">
         <div class="field">
           <label>Current Full PITI ($)</label>
-          <input type="number" id="currentPITI" placeholder="0.00" value="0" oninput="calcEscrowBreakdown()">
-          <span class="hint">P&amp;I + Escrow — escrow auto-calculates below</span>
+          <input type="number" id="currentPITI" placeholder="" oninput="calcEscrowBreakdown()">
+          <span class="hint">Escrow &amp; taxes auto-calculate below</span>
+        </div>
+        <div class="field">
+          <label>Current Escrow / Month <span style="color:var(--steel);font-size:0.7rem;">(auto)</span></label>
+          <input type="number" id="currentEscrow" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);">
+        </div>
+        <div class="field">
+          <label>
+            Monthly Taxes
+            <a id="countyLink" href="#" target="_blank" rel="noopener" style="font-size:0.68rem;font-weight:700;color:var(--gold);margin-left:6px;text-decoration:none;border:1px solid var(--gold);border-radius:3px;padding:1px 5px;">🔍 County</a>
+            <span style="color:var(--steel);font-size:0.7rem;">(auto)</span>
+          </label>
+          <input type="number" id="taxes" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);">
+        </div>
+        <div class="field">
+          <label>Hazard Insurance / Month <span style="color:var(--steel);font-size:0.7rem;">(auto)</span></label>
+          <input type="number" id="insurance" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);">
+          <span class="hint">≈ 35% of monthly taxes</span>
         </div>
       </div>
+
+      <!-- Row 3: Property value + payoff + cash out -->
       <div class="form-grid-4" style="margin-bottom:16px;">
         <div class="field">
-          <label>Appraised / Est. Value ($)</label>
-          <input type="number" id="appraised" placeholder="0.00" value="0">
+          <label>
+            Appraised / Est. Value ($)
+            <a id="zillowLink" href="#" target="_blank" rel="noopener" style="font-size:0.68rem;font-weight:700;color:#006aff;margin-left:4px;text-decoration:none;border:1px solid #006aff;border-radius:3px;padding:1px 5px;">Z</a>
+            <a id="redfinLink" href="#" target="_blank" rel="noopener" style="font-size:0.68rem;font-weight:700;color:#d73a15;margin-left:2px;text-decoration:none;border:1px solid #d73a15;border-radius:3px;padding:1px 5px;">R</a>
+          </label>
+          <input type="number" id="appraised" placeholder="" oninput="calcAll()">
+          <span class="hint">Click Z or R to search Zillow / Redfin</span>
         </div>
         <div class="field">
-          <label>Hazard Insurance / Month ($)</label>
-          <input type="number" id="insurance" placeholder="0.00" value="0" oninput="calcEscrowBreakdown()">
+          <label>Est. Payoff Amount ($)</label>
+          <input type="number" id="payoffAmt" placeholder="" oninput="autoPopulateBaseLoans()">
+          <span class="hint">Auto-populates base loan on each option</span>
         </div>
-        <div class="field">
-          <label>Monthly Taxes ($) <span style="color:var(--steel);font-size:0.7rem;font-weight:400;">(auto-calc)</span></label>
-          <input type="number" id="taxes" placeholder="Auto" value="0" readonly style="background:#f0f4fb;color:var(--text-muted);">
-        </div>
-        <div class="field">
-          <label>Current Escrow / Month ($) <span style="color:var(--steel);font-size:0.7rem;font-weight:400;">(auto-calc)</span></label>
-          <input type="number" id="currentEscrow" placeholder="Auto" value="0" readonly style="background:#f0f4fb;color:var(--text-muted);">
-        </div>
-      </div>
-      <div class="form-grid-4" style="margin-bottom:16px;">
         <div class="field">
           <label>Cash Out Amount ($)</label>
-          <input type="number" id="cashOut" placeholder="0.00" value="0" oninput="calcAll()">
-          <span class="hint">Added to base loan amount on each option</span>
+          <input type="number" id="cashOut" placeholder="" oninput="autoPopulateBaseLoans()">
         </div>
         <div class="field">
           <label>Est. Escrow Balance ($)</label>
-          <input type="number" id="escrowBalance" placeholder="0.00" value="0">
+          <input type="number" id="escrowBalance" placeholder="">
         </div>
+      </div>
+
+      <!-- Row 4: Dates + skipped payments + loan type -->
+      <div class="form-grid-4" style="margin-bottom:16px;">
         <div class="field">
           <label>Est. Closing Date</label>
           <input type="date" id="closingDate">
@@ -591,8 +725,6 @@ body {
           <label>Est. 1st Payment Date</label>
           <input type="date" id="firstPayDate">
         </div>
-      </div>
-      <div class="form-grid-4">
         <div class="field">
           <label>Payments Skipped</label>
           <select id="paymentsSkipped">
@@ -601,35 +733,32 @@ body {
           </select>
         </div>
         <div class="field">
-          <label>Loan Type</label>
+          <label>Loan Type / Purpose</label>
           <select id="loanType">
             <option value="IRRRL">VA IRRRL</option>
             <option value="PURCHASE">VA Purchase</option>
             <option value="CASHOUT">VA Cash-Out Refi</option>
+            <option value="FHA_PURCHASE">FHA Purchase</option>
+            <option value="FHA_REFI">FHA Refinance</option>
+            <option value="CONV_PURCHASE">Conv Purchase</option>
+            <option value="CONV_REFI">Conv Refinance</option>
           </select>
         </div>
       </div>
+
+      <!-- Row 5: Loan Program + upfront fee section -->
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-        <div class="form-grid-4">
+        <div class="form-grid-4" style="margin-bottom:12px;">
           <div class="field">
-            <label>VA Funding Fee Type</label>
-            <select id="fundingFeeType">
-              <option value="irrrl">IRRRL (0.5%)</option>
-              <option value="first_0">Purchase/CO – 1st Use, 0% down (2.3%)</option>
-              <option value="first_5">Purchase/CO – 1st Use, 5%+ down (1.65%)</option>
-              <option value="first_10">Purchase/CO – 1st Use, 10%+ down (1.4%)</option>
-              <option value="sub_0">Purchase/CO – Sub. Use, 0% down (3.6%)</option>
-              <option value="sub_5">Purchase/CO – Sub. Use, 5%+ down (1.65%)</option>
-              <option value="custom">Custom %</option>
-              <option value="exempt">Exempt (0%)</option>
+            <label>Loan Program</label>
+            <select id="loanProgram" onchange="updateLoanProgram()">
+              <option value="VA">VA</option>
+              <option value="FHA">FHA</option>
+              <option value="CONV">Conventional</option>
             </select>
           </div>
           <div class="field">
-            <label>Custom Funding Fee % <span style="color:var(--steel)">(if custom)</span></label>
-            <input type="number" id="customFundingFee" placeholder="e.g. 2.3" step="0.01" value="0.5">
-          </div>
-          <div class="field">
-            <label>Finance Funding Fee?</label>
+            <label>Finance Upfront Fee?</label>
             <select id="financeFee">
               <option value="yes" selected>Yes – Add to Loan</option>
               <option value="no">No – Pay at Closing</option>
@@ -643,13 +772,68 @@ body {
             </select>
           </div>
         </div>
+
+        <!-- VA Panel -->
+        <div id="vaFeeSection" class="form-grid-4" style="margin-top:12px;">
+          <div class="field">
+            <label>VA Funding Fee Type</label>
+            <select id="fundingFeeType" onchange="calcAll()">
+              <option value="irrrl">IRRRL (0.5%)</option>
+              <option value="first_0">Purchase/CO – 1st Use, 0% down (2.3%)</option>
+              <option value="first_5">Purchase/CO – 1st Use, 5%+ down (1.65%)</option>
+              <option value="first_10">Purchase/CO – 1st Use, 10%+ down (1.4%)</option>
+              <option value="sub_0">Purchase/CO – Sub. Use, 0% down (3.6%)</option>
+              <option value="sub_5">Purchase/CO – Sub. Use, 5%+ down (1.65%)</option>
+              <option value="custom">Custom %</option>
+              <option value="exempt">Exempt (0%)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Custom VA FF % <span style="color:var(--steel)">(if custom)</span></label>
+            <input type="number" id="customFundingFee" placeholder="e.g. 2.3" step="0.01">
+          </div>
+        </div>
+
+        <!-- FHA Panel -->
+        <div id="fhaFeeSection" class="form-grid-4" style="margin-top:12px;display:none;">
+          <div class="field">
+            <label>UFMIP Rate (%)</label>
+            <input type="number" id="fhaUfmip" placeholder="1.75" value="1.75" step="0.01" oninput="calcAll()">
+            <span class="hint">Standard = 1.75% of base loan</span>
+          </div>
+          <div class="field">
+            <label>Annual MMI Rate (%) <span style="color:var(--steel);font-size:0.7rem;">(auto)</span></label>
+            <input type="number" id="fhaMmi" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);" step="0.01">
+            <span class="hint">Based on LTV &amp; term</span>
+          </div>
+          <div class="field">
+            <label>Monthly MMI ($) <span style="color:var(--steel);font-size:0.7rem;">(auto)</span></label>
+            <input type="number" id="fhaMmiMonthly" placeholder="Auto" readonly style="background:#f0f4fb;color:var(--text-muted);">
+          </div>
+        </div>
+
+        <!-- Conv Panel -->
+        <div id="convFeeSection" class="form-grid-4" style="margin-top:12px;display:none;">
+          <div class="field">
+            <label>Monthly PMI ($)</label>
+            <input type="number" id="convPmi" placeholder="" oninput="calcAll()">
+            <span class="hint">Enter monthly PMI amount per option if applicable</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- LOAN OPTIONS -->
   <div class="section-block">
-    <div class="section-title"><span class="dot"></span>Loan Options (3 Scenarios)</div>
+    <div class="section-title">
+      <span class="dot"></span>
+      <span style="flex:1;">Loan Options (3 Scenarios)</span>
+      <span style="display:flex;gap:8px;align-items:center;margin-left:auto;">
+        <button class="btn-set-default" onclick="saveDefaults()">⭐ Save as Default</button>
+        <button class="btn-clear-default" onclick="clearDefaults()">✕ Clear Defaults</button>
+      </span>
+    </div>
 
     <!-- Option Column Headers -->
     <div class="options-header">
@@ -658,15 +842,42 @@ body {
       </div>
       <div class="option-col-header opt-bg-1">
         <div class="option-num" style="color:var(--steel);">01</div>
-        <input class="option-name-input" id="optName1" placeholder="e.g. 30 Year Fixed" value="30 Year Fixed" style="background:rgba(74,111,165,0.12)!important;color:var(--navy)!important;border-color:rgba(74,111,165,0.3)!important;">
+        <select class="option-name-select" id="optName1" style="background:rgba(74,111,165,0.12)!important;border-color:rgba(74,111,165,0.3)!important;">
+          <option>30 Year Fixed</option>
+          <option>25 Year Fixed</option>
+          <option>20 Year Fixed</option>
+          <option>15 Year Fixed</option>
+          <option>10 Year Fixed</option>
+          <option>5/1 Hybrid ARM</option>
+          <option>3/1 Hybrid ARM</option>
+        </select>
+        <label class="opt-include-wrap"><input type="checkbox" id="optInclude1" checked> Include in combined print</label>
       </div>
       <div class="option-col-header opt-bg-2">
         <div class="option-num" style="color:#4a9a6a;">02</div>
-        <input class="option-name-input" id="optName2" placeholder="e.g. 30 Year Fixed w/Cash" value="30 Year Fixed" style="background:rgba(74,154,106,0.12)!important;color:var(--navy)!important;border-color:rgba(74,154,106,0.3)!important;">
+        <select class="option-name-select" id="optName2" style="background:rgba(74,154,106,0.12)!important;border-color:rgba(74,154,106,0.3)!important;">
+          <option>30 Year Fixed</option>
+          <option>25 Year Fixed</option>
+          <option>20 Year Fixed</option>
+          <option>15 Year Fixed</option>
+          <option>10 Year Fixed</option>
+          <option>5/1 Hybrid ARM</option>
+          <option>3/1 Hybrid ARM</option>
+        </select>
+        <label class="opt-include-wrap"><input type="checkbox" id="optInclude2" checked> Include in combined print</label>
       </div>
       <div class="option-col-header opt-bg-3">
         <div class="option-num" style="color:#b87c2a;">03</div>
-        <input class="option-name-input" id="optName3" placeholder="e.g. 3-1 Hybrid ARM" value="3-1 Hybrid ARM" style="background:rgba(184,124,42,0.12)!important;color:var(--navy)!important;border-color:rgba(184,124,42,0.3)!important;">
+        <select class="option-name-select" id="optName3" style="background:rgba(184,124,42,0.12)!important;border-color:rgba(184,124,42,0.3)!important;">
+          <option>30 Year Fixed</option>
+          <option>25 Year Fixed</option>
+          <option>20 Year Fixed</option>
+          <option>15 Year Fixed</option>
+          <option>10 Year Fixed</option>
+          <option>5/1 Hybrid ARM</option>
+          <option value="3/1 Hybrid ARM" selected>3/1 Hybrid ARM</option>
+        </select>
+        <label class="opt-include-wrap"><input type="checkbox" id="optInclude3" checked> Include in combined print</label>
       </div>
     </div>
 
@@ -678,6 +889,9 @@ body {
 
     <!-- FEE INPUTS -->
     <div class="option-section-label">Fees &amp; Costs</div>
+    <div id="defaultBar" style="display:none;" class="default-bar">
+      ⭐ <strong>Defaults loaded</strong> — Fees pre-filled from your saved defaults.
+    </div>
     <div id="feeRows"></div>
 
     <!-- CALCULATED RESULTS -->
@@ -701,10 +915,37 @@ body {
       </div>
     </div>
 
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="calcAll()">⟳&nbsp; Calculate All Options</button>
-      <button class="btn btn-gold" onclick="printAll()">🖨&nbsp; Print All 3 Options</button>
-      <span style="font-size:0.78rem;color:var(--text-muted);margin-left:auto;">Results auto-calculate on input change. Use Print buttons for individual option documents.</span>
+    <!-- EMAIL TO LO ROW -->
+    <div class="print-actions-row">
+      <div class="print-actions-label">Email to LO</div>
+      <div class="print-actions-cell opt-bg-1">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(1)">📧 Save &amp; Email</button>
+      </div>
+      <div class="print-actions-cell opt-bg-2">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(2)">📧 Save &amp; Email</button>
+      </div>
+      <div class="print-actions-cell opt-bg-3">
+        <button class="btn-print-opt btn-email" onclick="emailToLO(3)">📧 Save &amp; Email</button>
+      </div>
+    </div>
+
+    <!-- ARM RATE WARNINGS -->
+    <div class="print-actions-row" id="armWarningRow" style="border-top:none;padding-top:0;">
+      <div class="print-actions-label"></div>
+      <div class="print-actions-cell opt-bg-1" style="padding:0;">
+        <div class="arm-warning" id="armWarn1"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate1"></span>). VA will not approve.</div>
+      </div>
+      <div class="print-actions-cell opt-bg-2" style="padding:0;">
+        <div class="arm-warning" id="armWarn2"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate2"></span>). VA will not approve.</div>
+      </div>
+      <div class="print-actions-cell opt-bg-3" style="padding:0;">
+        <div class="arm-warning" id="armWarn3"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate3"></span>). VA will not approve.</div>
+      </div>
+    </div>
+      <button class="btn btn-primary" onclick="calcAll()">⟳&nbsp; Recalculate</button>
+      <button class="btn-print-combined" onclick="printSelected()">🖨&nbsp; Print Selected Options</button>
+      <button class="btn btn-gold" onclick="printAll()">🖨&nbsp; Print All 3</button>
+      <span style="font-size:0.75rem;color:var(--text-muted);margin-left:auto;">Check the boxes in each column header to choose which options appear in combined print</span>
     </div>
   </div>
 
@@ -716,7 +957,7 @@ body {
     <div class="modal-header">
       <h3 id="previewTitle">Document Preview</h3>
       <div class="modal-header-btns">
-        <button class="modal-print-btn" onclick="doPrint()">🖨 Print This Document</button>
+        <button class="modal-print-btn" onclick="doPrint()">📥 Download PDF</button>
         <button class="modal-close" onclick="closeModal()">✕ Close</button>
       </div>
     </div>
@@ -730,7 +971,7 @@ body {
 <!-- STATUS -->
 <div class="status-bar" id="statusBar">✓ Calculations updated</div>
 
-<script data-cfasync="false">
+<script>
 // ============================================================
 // LO DIRECTORY
 // ============================================================
@@ -761,56 +1002,187 @@ function fillLoInfo() {
 }
 
 // ============================================================
-// ESCROW AUTO-CALC
+// AUTO-CALC HELPERS
 // ============================================================
+
+function calcCurrentPI() {
+  const loanAmt = getVal('originalLoanAmt');
+  const term    = getVal('originalTerm') || 360;
+  const rate    = getVal('currentRate') / 100;
+  const pi = calcPMT(loanAmt, rate, term);
+  document.getElementById('currentPI').value = pi > 0 ? pi.toFixed(2) : '';
+  calcEscrowBreakdown();
+}
+
 function calcEscrowBreakdown() {
-  const piti = getVal('currentPITI');
-  const currentPI = getVal('currentPI');
-  const hazard = getVal('insurance');
+  const piti    = getVal('currentPITI');
+  const pi      = getVal('currentPI');
+  const escrow  = Math.max(0, piti - pi);
+  document.getElementById('currentEscrow').value = escrow > 0 ? escrow.toFixed(2) : '';
 
-  // Escrow = PITI - P&I
-  const escrow = Math.max(0, piti - currentPI);
-  document.getElementById('currentEscrow').value = escrow.toFixed(2);
-
-  // Taxes = Escrow - Hazard Insurance
-  const taxes = Math.max(0, escrow - hazard);
-  document.getElementById('taxes').value = taxes.toFixed(2);
-
+  // Hazard ≈ 35% of escrow (remainder is taxes)
+  // Taxes entered first (easier to look up), hazard auto-calcs
+  // Actually flow: PITI - PI = escrow; hazard ≈ 35% of escrow; taxes = escrow - hazard
+  const hazard = Math.round(escrow * 0.35 * 100) / 100;
+  const taxes  = Math.max(0, Math.round((escrow - hazard) * 100) / 100);
+  document.getElementById('insurance').value = hazard > 0 ? hazard.toFixed(2) : '';
+  document.getElementById('taxes').value     = taxes  > 0 ? taxes.toFixed(2)  : '';
   calcAll();
 }
+
+function autoPopulateBaseLoans() {
+  updateSearchLinks();
+  calcAll();
+}
+
+function getFullAddress() {
+  const s = getStr('propStreet').trim();
+  const c = getStr('propCity').trim();
+  const st = getStr('propState').trim().toUpperCase();
+  const z = getStr('propZip').trim();
+  const parts = [s, c, st, z].filter(Boolean);
+  return parts.join(', ');
+}
+
+function updateSearchLinks() {
+  const street = getStr('propStreet').trim();
+  const city   = getStr('propCity').trim();
+  const state  = getStr('propState').trim().toUpperCase();
+  const zip    = getStr('propZip').trim();
+  const county = getStr('propCounty').trim();
+
+  const fullAddr = encodeURIComponent([street, city, state, zip].filter(Boolean).join(', '));
+  if (!fullAddr) return;
+
+  document.getElementById('zillowLink').href = `https://www.zillow.com/homes/${fullAddr}_rb/`;
+  document.getElementById('redfinLink').href  = `https://www.redfin.com/search?location=${fullAddr}`;
+
+  // County assessor link — use county + state if available, otherwise full address
+  const countyQuery = county && state
+    ? encodeURIComponent(`${county} County ${state} property tax assessor`)
+    : encodeURIComponent(`${[city, state].filter(Boolean).join(' ')} county property tax assessor`);
+  document.getElementById('countyLink').href = `https://www.google.com/search?q=${countyQuery}`;
+}
+
+let geocodeTimer = null;
+function scheduleGeocode() {
+  updateSearchLinks();
+  clearTimeout(geocodeTimer);
+  geocodeTimer = setTimeout(geocodeCounty, 800);
+}
+
+async function geocodeCounty() {
+  const street = getStr('propStreet').trim();
+  const city   = getStr('propCity').trim();
+  const state  = getStr('propState').trim();
+  if (!street || !city || !state) return;
+
+  const spinner = document.getElementById('countySpinner');
+  const countyEl = document.getElementById('propCounty');
+  if (spinner) spinner.style.display = 'inline';
+
+  try {
+    const q = encodeURIComponent(`${street}, ${city}, ${state}`);
+    const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&addressdetails=1&limit=1`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en-US' } });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const addr = data[0].address;
+      const county = addr.county || addr.state_district || '';
+      // Strip "County" suffix if present
+      const clean = county.replace(/\s*county\s*$/i, '').trim();
+      if (clean && !countyEl.value) {
+        countyEl.value = clean;
+        updateSearchLinks();
+      }
+    }
+  } catch(e) {
+    // silently fail — user can type manually
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+// ── VA Recoupment (38 CFR 36.4307) ─────────────────────────
+// Allowable costs = origination fee + discount points + credit report
+//                  + recording fees + VA funding fee (if not financed)
+// Does NOT include: prepaids, title, escrow/closing fee, appraisal
+// Monthly savings = old P&I − new P&I (NOT total payment)
+// Must recoup within 36 months for IRRRL
+function calcVARecoup(r) {
+  const prog = getStr('loanProgram');
+  const loanType = getStr('loanType');
+  if (prog !== 'VA' || loanType !== 'IRRRL') {
+    // Standard recoup for non-IRRRL: total closing costs / P&I savings
+    return r.piSavings > 0 ? r.totalClosingCosts / r.piSavings : null;
+  }
+  // VA IRRRL recoupment: only allowable fees (VA-defined subset)
+  const vaAllowable = r.origFeeAmt + r.discPtsAmt + r.creditReport + r.recording
+                    + (r.finFee ? 0 : r.upfrontFeeAmt);
+  const monthlySavings = getVal('currentPI') - r.pi;
+  if (monthlySavings <= 0) return null;
+  const months = vaAllowable / monthlySavings;
+  return months; // caller checks if > 36
+}
+
+
+function updateLoanProgram() {
+  const prog = getStr('loanProgram');
+  document.getElementById('vaFeeSection').style.display   = prog === 'VA'   ? '' : 'none';
+  document.getElementById('fhaFeeSection').style.display  = prog === 'FHA'  ? '' : 'none';
+  document.getElementById('convFeeSection').style.display = prog === 'CONV' ? '' : 'none';
+  calcAll();
+}
+
+function calcFhaMmi(totalLoan, ltv, termMonths) {
+  // 2024 FHA MIP rates (annual %)
+  if (termMonths <= 180) { // ≤ 15 yr
+    if (ltv <= 78)  return 0.15;
+    if (ltv <= 90)  return 0.40;
+    return 0.65;
+  } else { // > 15 yr
+    if (ltv <= 90)  return 0.50;
+    return 0.55;
+  }
+}
+
 
 // ============================================================
 // DATA MODEL
 // ============================================================
 const optionRowDefs = [
-  { id:'term', label:'Term (Months)', type:'number', default:[360,360,360] },
-  { id:'baseLoan', label:'Base Loan Amount ($)', type:'number', default:[0,0,0] },
-  { id:'rate', label:'Interest Rate (%)', type:'number', default:[0,0,4.25], step:'0.001' },
-  { id:'amortType', label:'Amortization Type', type:'select', options:['Fixed','ARM'], default:['Fixed','Fixed','ARM'] },
+  { id:'term',      label:'Term (Months)',       type:'number', default:['','',''] },
+  { id:'rate',      label:'Interest Rate (%)',    type:'number', default:['','',''], step:'0.001' },
+  { id:'amortType', label:'Amortization Type',    type:'select', options:['Fixed','ARM'], default:['Fixed','Fixed','ARM'] },
 ];
 
 const feeRowDefs = [
-  { id:'origFee', label:'Origination Fee (%)', type:'number', default:[1,1,1], step:'0.001' },
-  { id:'discountPts', label:'Discount Points (%)', type:'number', default:[0,0,0], step:'0.001' },
-  { id:'creditReport', label:'Credit Report / Flood ($)', type:'number', default:[109,109,20] },
-  { id:'appraisal', label:'Appraisal ($)', type:'number', default:[0,650,650] },
-  { id:'closingFee', label:'Closing / Escrow Fee ($)', type:'number', default:[150,150,150] },
-  { id:'titleIns', label:"Lender's Title Insurance ($)", type:'number', default:[0,0,0] },
-  { id:'recording', label:'Govt / Recording ($)', type:'number', default:[50,50,50] },
-  { id:'daysInterest', label:'# Days Interest', type:'number', default:[3,3,3] },
+  { id:'origFee',      label:'Origination Fee (%)',         type:'number', default:['','',''], step:'0.001' },
+  { id:'discountPts',  label:'Discount Points (%)',          type:'number', default:['','',''], step:'0.001' },
+  { id:'creditReport', label:'Credit Report / Flood ($)',    type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'appraisal',    label:'Appraisal ($)',                type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'closingFee',   label:'Closing / Escrow Fee ($)',     type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'titleIns',     label:"Lender's Title Insurance ($)", type:'number', default:['','',''], link:'https://www.firstam.com/title-fee-calculator/index.html', mirror:true, saveable:true },
+  { id:'recording',    label:'Govt / Recording ($)',         type:'number', default:['','',''], mirror:true, saveable:true },
+  { id:'daysInterest', label:'# Days Interest',              type:'number', default:['','',''], mirror:true, saveable:true, perDiem:true },
 ];
 
 const resultRowDefs = [
-  { id:'fundingFeeAmt', label:'VA Funding Fee ($)' },
-  { id:'totalLoan', label:'Total Loan Amount ($)' },
-  { id:'pi', label:'P&I Payment ($)' },
-  { id:'totalPayment', label:'Total Monthly Payment ($)' },
-  { id:'ltv', label:'LTV (%)' },
-  { id:'totalClosingCosts', label:'Total Closing Costs ($)' },
-  { id:'totalPrepaids', label:'Total Prepaids ($)' },
-  { id:'totalFundsToClose', label:'Total Funds to Close ($)' },
-  { id:'paySavings', label:'Monthly Payment Savings ($)' },
-  { id:'recoup', label:'Recoup Period (months)' },
+  { id:'loanBuild',       label:'── Loan Build-Up ──',       hint:'', divider:true },
+  { id:'baseLoan',        label:'Base Loan Amount ($)',       hint:'Payoff + Cash Out + All Fees' },
+  { id:'fundingFeeAmt',   label:'Upfront Fee ($)',            hint:'VA FF / FHA UFMIP / 0 for Conv' },
+  { id:'totalLoan',       label:'Total Loan Amount ($)',      hint:'Base Loan + Upfront Fee' },
+  { id:'loanPayment',     label:'── Payment ──',              hint:'', divider:true },
+  { id:'pi',              label:'P&I Payment ($)' },
+  { id:'totalPayment',    label:'Total Monthly Payment ($)',  hint:'P&I + Escrow + MI' },
+  { id:'ltv',             label:'LTV (%)' },
+  { id:'loanCosts',       label:'── Costs ──',                hint:'', divider:true },
+  { id:'totalClosingCosts', label:'Total Closing Costs ($)',  hint:'Itemized fees' },
+  { id:'totalPrepaids',   label:'Total Prepaids ($)',         hint:'3mo ins + 3mo tax + per diem' },
+  { id:'totalFundsToClose', label:'Total Funds to Close ($)', hint:'Prepaids + any out-of-pocket' },
+  { id:'loanSavings',     label:'── Savings ──',              hint:'', divider:true },
+  { id:'paySavings',      label:'Monthly Payment Savings ($)' },
+  { id:'recoup',          label:'Recoup Period (months)' },
 ];
 
 // Build option input rows
@@ -820,22 +1192,25 @@ function buildRows(defs, containerId, prefix) {
   defs.forEach(def => {
     const row = document.createElement('div');
     row.className = 'option-row';
-    let label = `<div class="option-row-label">${def.label}</div>`;
+    const linkHtml = def.link ? ` <a href="${def.link}" target="_blank" rel="noopener" style="font-size:0.65rem;font-weight:700;color:var(--gold);text-decoration:none;border:1px solid var(--gold);border-radius:3px;padding:1px 5px;margin-left:4px;">🔗 Quote</a>` : '';
+    const mirrorHint = def.mirror ? `<span class="mirror-hint">Types in opt 1 → fills all</span>` : '';
+    const perDiemHtml = def.perDiem ? ` <span class="per-diem-badge" id="perDiem_${def.id}_label"></span>` : '';
+    let label = `<div class="option-row-label">${def.label}${linkHtml}${perDiemHtml}${mirrorHint}</div>`;
     let cells = '';
     [1,2,3].forEach(n => {
       const bg = `opt-bg-${n}`;
       const id = `${prefix}_${def.id}_${n}`;
-      if(def.type === 'select') {
-        cells += `<div class="option-cell ${bg}"><select id="${id}" onchange="calcAll()">${def.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      const step = def.step || '1';
+      const mirrorAttr = (def.mirror && n === 1) ? `oninput="mirrorFee('${def.id}');calcAll();"` : `oninput="calcAll()"`;
+      if (def.type === 'select') {
+        cells += `<div class="option-cell ${bg}"><select id="${id}" onchange="calcAll()">${(def.options||[]).map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
       } else {
-        const step = def.step || '1';
-        cells += `<div class="option-cell ${bg}"><input type="number" id="${id}" value="${def.default[n-1]}" step="${step}" oninput="calcAll()"></div>`;
+        cells += `<div class="option-cell ${bg}"><input type="number" id="${id}" placeholder="" step="${step}" ${mirrorAttr}></div>`;
       }
     });
     row.innerHTML = label + cells;
     container.appendChild(row);
-    // Set select defaults
-    if(def.type === 'select') {
+    if (def.type === 'select') {
       [1,2,3].forEach(n => {
         document.getElementById(`${prefix}_${def.id}_${n}`).value = def.default[n-1];
       });
@@ -843,19 +1218,89 @@ function buildRows(defs, containerId, prefix) {
   });
 }
 
+function mirrorFee(feeId) {
+  const val = document.getElementById(`fee_${feeId}_1`)?.value || '';
+  [2,3].forEach(n => {
+    const el = document.getElementById(`fee_${feeId}_${n}`);
+    if (el) el.value = val;
+  });
+}
+
+// ── Per diem display ──────────────────────────────────────
+function updatePerDiems() {
+  // Use total loan from calcOption(1) for per diem — avoids stale field ref
+  const r = calcOption(1);
+  if (r.totalLoan > 0 && r.rate > 0) {
+    const label = document.getElementById('perDiem_daysInterest_label');
+    if (label) label.textContent = `Per diem: ${fmtMoney(r.dailyInt)}/day`;
+  }
+}
+
+// ── Cookie defaults ───────────────────────────────────────
+const COOKIE_KEY = 'qlDefaults';
+const SAVEABLE_FEES = ['creditReport','appraisal','closingFee','titleIns','recording','daysInterest'];
+
+function saveDefaults() {
+  const vals = {};
+  SAVEABLE_FEES.forEach(id => {
+    vals[id] = document.getElementById(`fee_${id}_1`)?.value || '';
+  });
+  const expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 2);
+  document.cookie = `${COOKIE_KEY}=${encodeURIComponent(JSON.stringify(vals))}; expires=${expires.toUTCString()}; path=/`;
+  const bar = document.getElementById('defaultBar');
+  bar.style.display = 'flex';
+  bar.innerHTML = '⭐ <strong>Defaults saved!</strong> — These fees will auto-load next time you open Quote Lab.';
+  setTimeout(() => {
+    bar.innerHTML = '⭐ <strong>Defaults loaded</strong> — Credit Report, Closing Fee, Recording &amp; Days Interest pre-filled from your saved defaults.';
+  }, 2500);
+}
+
+function loadDefaults() {
+  const match = document.cookie.split('; ').find(r => r.startsWith(COOKIE_KEY + '='));
+  if (!match) return;
+  try {
+    const vals = JSON.parse(decodeURIComponent(match.split('=').slice(1).join('=')));
+    let anyLoaded = false;
+    SAVEABLE_FEES.forEach(id => {
+      if (vals[id] !== undefined && vals[id] !== '') {
+        [1,2,3].forEach(n => {
+          const el = document.getElementById(`fee_${id}_${n}`);
+          if (el) el.value = vals[id];
+        });
+        anyLoaded = true;
+      }
+    });
+    if (anyLoaded) document.getElementById('defaultBar').style.display = 'flex';
+  } catch(e) {}
+}
+
+function clearDefaults() {
+  document.cookie = `${COOKIE_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+  const bar = document.getElementById('defaultBar');
+  bar.style.display = 'none';
+}
+
+
 function buildResultRows(defs) {
   const container = document.getElementById('resultRows');
   container.innerHTML = '';
   defs.forEach(def => {
     const row = document.createElement('div');
-    row.className = 'option-row';
-    let label = `<div class="option-row-label">${def.label}</div>`;
-    let cells = '';
-    [1,2,3].forEach(n => {
-      const bg = `opt-bg-${n}`;
-      cells += `<div class="option-cell ${bg}"><div class="calc-value" id="r_${def.id}_${n}">—</div></div>`;
-    });
-    row.innerHTML = label + cells;
+    if (def.divider) {
+      row.className = 'option-row result-divider-row';
+      row.innerHTML = `<div class="option-row-label" style="font-size:0.7rem;font-weight:800;color:var(--steel);letter-spacing:0.08em;text-transform:uppercase;padding:10px 12px 2px;">${def.label}</div><div class="option-cell opt-bg-1"></div><div class="option-cell opt-bg-2"></div><div class="option-cell opt-bg-3"></div>`;
+    } else {
+      row.className = 'option-row';
+      const hintHtml = def.hint ? `<span style="font-size:0.62rem;color:var(--steel);font-style:italic;display:block;">${def.hint}</span>` : '';
+      let label = `<div class="option-row-label">${def.label}${hintHtml}</div>`;
+      let cells = '';
+      [1,2,3].forEach(n => {
+        const bg = `opt-bg-${n}`;
+        cells += `<div class="option-cell ${bg}"><div class="calc-value" id="r_${def.id}_${n}">—</div></div>`;
+      });
+      row.innerHTML = label + cells;
+    }
     container.appendChild(row);
   });
 }
@@ -910,69 +1355,119 @@ function calcDailyInterest(loan, rate) {
 }
 
 function calcOption(n) {
-  const term = getVal(`opt_term_${n}`);
-  const baseLoan = getVal(`opt_baseLoan_${n}`) + getVal('cashOut');
-  const rate = getVal(`opt_rate_${n}`) / 100;
-  const ffRate = getFundingFeeRate();
+  const term   = getVal(`opt_term_${n}`) || 360;
+  const rate   = getVal(`opt_rate_${n}`) / 100;
+  const prog   = getStr('loanProgram');
   const finFee = getStr('financeFee') === 'yes';
 
-  const origFeePct = getVal(`fee_origFee_${n}`) / 100;
-  const discPtsPct = getVal(`fee_discountPts_${n}`) / 100;
-  const creditReport = getVal(`fee_creditReport_${n}`);
-  const appraisal = getVal(`fee_appraisal_${n}`);
-  const closingFee = getVal(`fee_closingFee_${n}`);
-  const titleIns = getVal(`fee_titleIns_${n}`);
-  const recording = getVal(`fee_recording_${n}`);
-  const daysInt = getVal(`fee_daysInterest_${n}`);
-
+  // Global inputs
+  const payoff    = getVal('payoffAmt');
+  const cashOut   = getVal('cashOut');
   const insurance = getVal('insurance');
-  const taxes = getVal('taxes');
+  const taxes     = getVal('taxes');
   const appraised = getVal('appraised');
 
-  // Funding fee
-  const fundingFeeAmt = baseLoan * ffRate;
-  const totalLoan = finFee ? baseLoan + fundingFeeAmt : baseLoan;
+  // Per-option fees
+  const origFeePct   = getVal(`fee_origFee_${n}`) / 100;
+  const discPtsPct   = getVal(`fee_discountPts_${n}`) / 100;
+  const creditReport = getVal(`fee_creditReport_${n}`);
+  const appraisal    = getVal(`fee_appraisal_${n}`);
+  const closingFee   = getVal(`fee_closingFee_${n}`);
+  const titleIns     = getVal(`fee_titleIns_${n}`);
+  const recording    = getVal(`fee_recording_${n}`);
+  const daysInt      = getVal(`fee_daysInterest_${n}`);
 
-  // P&I
-  const pi = calcPMT(totalLoan, rate, term);
+  // ── Step 1: Dollar fees (not percentage-based) ───────────────────────
+  const dollarFees = creditReport + appraisal + closingFee + titleIns + recording;
 
-  // Escrow
-  const escrow = insurance + taxes;
-  const totalPayment = pi + escrow;
+  // ── Step 2: Base Loan (algebraically correct — avoids circular dependency)
+  //    origFeeAmt + discPtsAmt = baseLoan × (origFeePct + discPtsPct)
+  //    baseLoan = payoff + cashOut + dollarFees + baseLoan × (origFeePct + discPtsPct)
+  //    baseLoan × (1 - origFeePct - discPtsPct) = payoff + cashOut + dollarFees
+  //    baseLoan = (payoff + cashOut + dollarFees) / (1 - origFeePct - discPtsPct)
+  const pctDivisor = 1 - origFeePct - discPtsPct;
+  const baseLoan   = pctDivisor > 0
+    ? (payoff + cashOut + dollarFees) / pctDivisor
+    : (payoff + cashOut + dollarFees);
 
-  // LTV
-  const ltv = appraised > 0 ? (totalLoan / appraised * 100) : 0;
-
-  // Fees
   const origFeeAmt = baseLoan * origFeePct;
   const discPtsAmt = baseLoan * discPtsPct;
-  const dailyInt = calcDailyInterest(totalLoan, rate);
+
+  // ── Step 3: Upfront fee (VA FF / FHA UFMIP) on Base Loan ────────────
+  let upfrontFeeRate = 0, upfrontFeeLabel = '';
+  if (prog === 'VA') {
+    upfrontFeeRate  = getFundingFeeRate();
+    upfrontFeeLabel = 'VA Funding Fee';
+  } else if (prog === 'FHA') {
+    upfrontFeeRate  = (getVal('fhaUfmip') || 1.75) / 100;
+    upfrontFeeLabel = 'FHA UFMIP';
+  } else {
+    upfrontFeeLabel = 'Upfront Fee';
+  }
+  const upfrontFeeAmt = baseLoan * upfrontFeeRate;
+
+  // ── Step 4: Total Loan ───────────────────────────────────────────────
+  //    If financed: Total Loan = Base Loan + Upfront Fee
+  //    If paid at closing: Total Loan = Base Loan
+  const totalLoan = finFee ? baseLoan + upfrontFeeAmt : baseLoan;
+
+  // ── P&I ─────────────────────────────────────────────────────────────
+  const pi  = calcPMT(totalLoan, rate, term);
+  const ltv = appraised > 0 ? (totalLoan / appraised * 100) : 0;
+
+  // ── Monthly MI ───────────────────────────────────────────────────────
+  let monthlyMI = 0;
+  if (prog === 'FHA') {
+    const mmiRate = calcFhaMmi(totalLoan, ltv, term);
+    monthlyMI = totalLoan * mmiRate / 12;
+    if (n === 1) {
+      document.getElementById('fhaMmi').value        = (mmiRate * 100).toFixed(2);
+      document.getElementById('fhaMmiMonthly').value = monthlyMI.toFixed(2);
+    }
+  } else if (prog === 'CONV') {
+    monthlyMI = getVal('convPmi');
+  }
+
+  // ── Payment ──────────────────────────────────────────────────────────
+  const escrow       = insurance + taxes;
+  const totalPayment = pi + escrow + monthlyMI;
+
+  // ── Costs / Prepaids ─────────────────────────────────────────────────
+  const dailyInt      = totalLoan > 0 && rate > 0 ? totalLoan * rate / 365 : 0;
   const dailyIntTotal = dailyInt * daysInt;
 
-  const totalClosingCosts = origFeeAmt + discPtsAmt + creditReport + appraisal + closingFee + titleIns + recording + (finFee ? 0 : fundingFeeAmt);
+  // Total closing costs = all fees + upfront fee if NOT financed
+  const upfrontClosing    = finFee ? 0 : upfrontFeeAmt;
+  const totalClosingCosts = origFeeAmt + discPtsAmt + dollarFees + upfrontClosing;
 
-  // Prepaids
-  const hazardReserve = insurance * 3;
-  const taxReserve = taxes * 3;
-  const totalPrepaids = hazardReserve + taxReserve + dailyIntTotal;
+  const hazardReserve     = insurance * 3;
+  const taxReserve        = taxes * 3;
+  const totalPrepaids     = hazardReserve + taxReserve + dailyIntTotal;
 
-  const totalFundsToClose = totalClosingCosts + totalPrepaids + (finFee ? 0 : fundingFeeAmt);
+  // For a refi: closing costs are in the loan so funds to close = prepaids (+ any out-of-pocket if not financed)
+  const totalFundsToClose = totalPrepaids + (finFee ? 0 : totalClosingCosts);
 
-  // Payment comparison
-  const currentTotalPayment = getVal('currentPI') + getVal('currentEscrow') + insurance + taxes;
+  // ── Savings ──────────────────────────────────────────────────────────
+  const currentTotalPayment = getVal('currentPI') + getVal('currentEscrow');
   const paySavings = currentTotalPayment - totalPayment;
-  const piSavings = getVal('currentPI') - pi;
-  const recoup = piSavings !== 0 ? Math.abs(totalClosingCosts / piSavings) : null;
+  const piSavings  = getVal('currentPI') - pi;
+
+  const partialR = { origFeeAmt, discPtsAmt, creditReport, recording,
+                     upfrontFeeAmt, finFee, piSavings, totalClosingCosts, prog };
+  const recoup = calcVARecoup({ ...partialR, pi });
 
   return {
-    n, term, baseLoan, rate, totalLoan, fundingFeeAmt,
-    origFeeAmt, discPtsAmt, creditReport, appraisal, closingFee, titleIns, recording,
+    n, term, baseLoan, rate, totalLoan, ltv,
+    payoff, cashOut,
+    upfrontFeeAmt, upfrontFeeRate, upfrontFeeLabel,
+    origFeeAmt, origFeePct: origFeePct * 100,
+    discPtsAmt, discPtsPct: discPtsPct * 100,
+    creditReport, appraisal, closingFee, titleIns, recording, dollarFees,
     daysInt, dailyInt, dailyIntTotal,
-    pi, escrow, totalPayment, ltv,
-    totalClosingCosts, totalPrepaids, totalFundsToClose,
+    pi, monthlyMI, escrow, totalPayment,
+    totalClosingCosts, totalPrepaids, hazardReserve, taxReserve, totalFundsToClose,
     paySavings, piSavings, recoup,
-    insurance, taxes, hazardReserve, taxReserve,
-    finFee, ffRate, fundingFeeAmt
+    insurance, taxes, finFee, prog,
   };
 }
 
@@ -982,7 +1477,14 @@ function setResult(id, val, fmt='money') {
   if(val === null || val === undefined || isNaN(val)) { el.textContent = '—'; el.className='calc-value'; return; }
   if(fmt === 'money') { el.textContent = fmtMoney(val); }
   else if(fmt === 'pct') { el.textContent = val.toFixed(3) + '%'; }
-  else if(fmt === 'months') { el.textContent = val !== null ? Math.ceil(val) + ' mo' : '—'; }
+  else if(fmt === 'months') {
+    const months = Math.ceil(val);
+    const isIRRRL = getStr('loanType') === 'IRRRL' && getStr('loanProgram') === 'VA';
+    const over36  = isIRRRL && months > 36;
+    el.textContent = months + ' mo' + (over36 ? ' ⚠ EXCEEDS 36 MO' : isIRRRL ? ' ✓' : '');
+    el.className   = over36 ? 'calc-value negative' : (isIRRRL && months <= 36) ? 'calc-value positive' : 'calc-value';
+    return;
+  }
   else { el.textContent = val; }
 
   if(fmt === 'money' && id.includes('paySavings')) {
@@ -992,20 +1494,51 @@ function setResult(id, val, fmt='money') {
   }
 }
 
+function checkArmWarnings() {
+  const prog      = getStr('loanProgram');
+  const loanType  = getStr('loanType');
+  const currentAmort = getStr('currentAmortType');
+  const currentRate  = getVal('currentRate');
+
+  [1,2,3].forEach(n => {
+    const warnEl    = document.getElementById(`armWarn${n}`);
+    const rateLabel = document.getElementById(`armWarnRate${n}`);
+    if (!warnEl) return;
+
+    const propAmort = getStr(`opt_amortType_${n}`);
+    const propRate  = getVal(`opt_rate_${n}`);
+
+    const isIRRRL       = prog === 'VA' && loanType === 'IRRRL';
+    const isFixedToArm  = currentAmort === 'FIXED' && propAmort === 'ARM';
+    const rateOk        = propRate > 0 && currentRate > 0 && (currentRate - propRate) >= 2;
+
+    if (isIRRRL && isFixedToArm && !rateOk && propRate > 0) {
+      const needed = (currentRate - 2).toFixed(3);
+      rateLabel.textContent = `current ${currentRate}% → need ≤ ${needed}%`;
+      warnEl.classList.add('show');
+    } else {
+      warnEl.classList.remove('show');
+    }
+  });
+}
+
 function calcAll() {
   [1,2,3].forEach(n => {
     const r = calcOption(n);
-    setResult(`r_fundingFeeAmt_${n}`, r.fundingFeeAmt);
-    setResult(`r_totalLoan_${n}`, r.totalLoan);
-    setResult(`r_pi_${n}`, r.pi);
-    setResult(`r_totalPayment_${n}`, r.totalPayment);
-    setResult(`r_ltv_${n}`, r.ltv, 'pct');
+    setResult(`r_baseLoan_${n}`,          r.baseLoan);
+    setResult(`r_fundingFeeAmt_${n}`,     r.upfrontFeeAmt);
+    setResult(`r_totalLoan_${n}`,         r.totalLoan);
+    setResult(`r_pi_${n}`,                r.pi);
+    setResult(`r_totalPayment_${n}`,      r.totalPayment);
+    setResult(`r_ltv_${n}`,              r.ltv, 'pct');
     setResult(`r_totalClosingCosts_${n}`, r.totalClosingCosts);
-    setResult(`r_totalPrepaids_${n}`, r.totalPrepaids);
+    setResult(`r_totalPrepaids_${n}`,     r.totalPrepaids);
     setResult(`r_totalFundsToClose_${n}`, r.totalFundsToClose);
-    setResult(`r_paySavings_${n}`, r.paySavings);
-    setResult(`r_recoup_${n}`, r.recoup, 'months');
+    setResult(`r_paySavings_${n}`,        r.paySavings);
+    setResult(`r_recoup_${n}`,            r.recoup, 'months');
   });
+  checkArmWarnings();
+  updatePerDiems();
   showStatus();
 }
 
@@ -1032,8 +1565,9 @@ function getDocData(n) {
     ...r,
     borrower: [getStr('borrowerFirst'),getStr('borrowerLast')].filter(Boolean).join(' ') || ' ',
     coBorrower: getStr('coBorrower'),
-    appId: getStr('appId'),
-    address: getStr('propAddress') || ' ',
+    borrowerEmail: getStr('borrowerEmail'),
+    address: getFullAddress() || ' ',
+    county: getStr('propCounty'),
     date: fmtDate(getStr('datePrepared')),
     loName: getStr('loSelect'),
     loNmls: getStr('loNmls'),
@@ -1041,9 +1575,10 @@ function getDocData(n) {
     optName: getStr(`optName${n}`),
     loanType: getStr('loanType'),
     paymentsSkipped: getVal('paymentsSkipped'),
-    currentBalance: getVal('currentBalance'),
     currentRate: getVal('currentRate'),
     cashOut: getVal('cashOut'),
+    payoffAmt: getVal('payoffAmt'),   // kept for legacy refs
+    payoff:    getVal('payoffAmt'),
     currentPI: getVal('currentPI'),
     currentEscrow: getVal('currentEscrow'),
     appraised: getVal('appraised'),
@@ -1052,8 +1587,8 @@ function getDocData(n) {
     closingDate: fmtDate(getStr('closingDate')),
     firstPayDate: fmtDate(getStr('firstPayDate')),
     missedPmts: getVal('currentPI') * getVal('paymentsSkipped') + getVal('currentEscrow') * getVal('paymentsSkipped'),
-    origFeePct: getVal(`fee_origFee_${n}`),
-    discPtsPct: getVal(`fee_discountPts_${n}`),
+    origFeePct: r.origFeePct,
+    discPtsPct: r.discPtsPct,
   };
 }
 
@@ -1072,7 +1607,7 @@ function buildPreQuote(d) {
     </div>
     <div class="doc-title-line">
       <h2>Mortgage Refinance Estimate</h2>
-      <p>VA ${d.loanType} &nbsp;·&nbsp; Option ${d.n}: ${d.optName}</p>
+      <p>${d.prog} — ${d.loanType} &nbsp;·&nbsp; Option ${d.n}: ${d.optName}</p>
     </div>
   </div>
 
@@ -1083,20 +1618,20 @@ function buildPreQuote(d) {
   <div class="doc-info-row">
     <div class="doc-info-box"><div class="label">Applicant(s)</div><div class="value">${d.borrower}${d.coBorrower?' / '+d.coBorrower:''}</div></div>
     <div class="doc-info-box"><div class="label">Subject Property</div><div class="value">${d.address}</div></div>
-    <div class="doc-info-box"><div class="label">Application ID</div><div class="value">${d.appId || 'Pending'}</div></div>
+    <div class="doc-info-box"><div class="label">Borrower Email</div><div class="value">${d.borrowerEmail || '—'}</div></div>
     <div class="doc-info-box"><div class="label">Date Prepared</div><div class="value">${d.date}</div></div>
-    <div class="doc-info-box"><div class="label">Loan Type</div><div class="value">VA ${d.loanType}</div></div>
+    <div class="doc-info-box"><div class="label">Loan Type</div><div class="value">${d.prog} — ${d.loanType}</div></div>
     <div class="doc-info-box"><div class="label">Closing / 1st Payment</div><div class="value">${d.closingDate} / ${d.firstPayDate}</div></div>
   </div>
 
-  <div class="doc-two-col">
+      <div class="doc-two-col">
     <div class="doc-box">
       <div class="doc-box-title">Existing Loan Information</div>
       <table>
-        <tr><td>Original Loan Amount</td><td>${fmtMoney(d.currentBalance)}</td></tr>
+        <tr><td>Original Loan Amount</td><td>${fmtMoney(getVal('originalLoanAmt'))}</td></tr>
         <tr><td>Interest Rate</td><td>${fmtPct(d.currentRate/100)}</td></tr>
         <tr><td>Amortization Type</td><td>FIXED</td></tr>
-        <tr><td>Term</td><td>${d.term} months</td></tr>
+        <tr><td>Term</td><td>${getVal('originalTerm')} months</td></tr>
         <tr><td>P&I Payment</td><td>${fmtMoney(d.currentPI)}</td></tr>
         <tr><td>Hazard Insurance</td><td>${fmtMoney(d.insurance)}</td></tr>
         <tr><td>Taxes</td><td>${fmtMoney(d.taxes)}</td></tr>
@@ -1107,8 +1642,14 @@ function buildPreQuote(d) {
     <div class="doc-box">
       <div class="doc-box-title" style="background:#0d1f3c;">Proposed Loan — ${d.optName}</div>
       <table>
-        <tr><td>New Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
-        ${d.cashOut > 0 ? `<tr><td style="font-size:0.78em;color:#666">  Base Loan + Cash Out (${fmtMoney(d.cashOut)})</td><td></td></tr>` : ''}
+        <tr><td>Payoff Amount</td><td>${fmtMoney(d.payoff)}</td></tr>
+        ${d.cashOut > 0 ? `<tr><td>+ Cash Out</td><td>${fmtMoney(d.cashOut)}</td></tr>` : ''}
+        <tr><td>+ Origination (${d.origFeePct.toFixed(3)}%)</td><td>${fmtMoney(d.origFeeAmt)}</td></tr>
+        ${d.discPtsAmt > 0 ? `<tr><td>+ Discount Points (${d.discPtsPct.toFixed(3)}%)</td><td>${fmtMoney(d.discPtsAmt)}</td></tr>` : ''}
+        ${d.dollarFees > 0 ? `<tr><td>+ Other Financed Fees</td><td>${fmtMoney(d.dollarFees)}</td></tr>` : ''}
+        <tr style="font-weight:700;"><td>= Base Loan Amount</td><td>${fmtMoney(d.baseLoan)}</td></tr>
+        <tr><td>+ ${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%)</td><td>${fmtMoney(d.upfrontFeeAmt)} ${d.finFee ? '[Financed]' : '[At Closing]'}</td></tr>
+        <tr class="total-row"><td>= Total Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
         <tr><td>Interest Rate</td><td>${fmtPct(d.rate)}</td></tr>
         <tr><td>Amortization Type</td><td>${amortLabel.toUpperCase()}</td></tr>
         <tr><td>Term</td><td>${d.term} months</td></tr>
@@ -1127,7 +1668,7 @@ function buildPreQuote(d) {
       <table>
         <tr><td>Origination Points (${d.origFeePct}%)</td><td>${fmtMoney(d.origFeeAmt)}</td></tr>
         <tr><td>Discount Points (${d.discPtsPct}%)</td><td>${fmtMoney(d.discPtsAmt)}</td></tr>
-        <tr><td>VA Funding Fee (${(d.ffRate*100).toFixed(2)}%)</td><td>${fmtMoney(d.fundingFeeAmt)}</td></tr>
+        <tr><td>${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%)</td><td>${fmtMoney(d.upfrontFeeAmt)}</td></tr>
         <tr><td>Appraisal Fee</td><td>${fmtMoney(d.appraisal)}</td></tr>
         <tr><td>Credit Report / Flood Cert</td><td>${fmtMoney(d.creditReport)}</td></tr>
         <tr><td>Closing / Escrow Fee</td><td>${fmtMoney(d.closingFee)}</td></tr>
@@ -1139,7 +1680,7 @@ function buildPreQuote(d) {
       <div class="doc-box-title" style="background:#0d1f3c;">Property &amp; Payoff Details</div>
       <table>
         <tr><td>Property Value</td><td>${fmtMoney(d.appraised)}</td></tr>
-        <tr><td>Payoff Amount</td><td>${fmtMoney(d.currentBalance)}</td></tr>
+        <tr><td>Est. Payoff Amount</td><td>${fmtMoney(d.payoffAmt)}</td></tr>
         <tr><td>LTV</td><td>${d.ltv > 0 ? d.ltv.toFixed(2)+'%' : '—'}</td></tr>
         <tr><td>Current Escrow Balance</td><td>${fmtMoney(d.escrowBalance)}</td></tr>
         <tr><td>Missed Mortgage Payments (${d.paymentsSkipped})</td><td>${fmtMoney(d.missedPmts)}</td></tr>
@@ -1162,7 +1703,10 @@ function buildPreQuote(d) {
         <td>Total Payment Difference (Monthly)</td>
         <td class="${totalSavingsMonthly>=0?'text-green':'text-red'}">${fmtMoney(totalSavingsMonthly)}</td>
         <td>Recoup Period</td>
-        <td class="text-gold">${d.recoup !== null ? Math.ceil(d.recoup)+' months' : '—'}</td>
+        <td class="${d.recoup !== null && d.loanType === 'IRRRL' && d.prog === 'VA' && Math.ceil(d.recoup) > 36 ? 'text-red' : 'text-gold'}">
+          ${d.recoup !== null ? Math.ceil(d.recoup)+' months' : '—'}
+          ${d.loanType === 'IRRRL' && d.prog === 'VA' ? (Math.ceil(d.recoup) <= 36 ? ' ✓ VA compliant' : ' ⚠ Exceeds 36-mo VA limit') : ''}
+        </td>
       </tr>
       <tr>
         <td>Escrow Refund (Est.)</td>
@@ -1207,9 +1751,9 @@ function buildFeesWorksheet(d) {
   <div class="doc-info-row">
     <div class="doc-info-box"><div class="label">Applicant(s)</div><div class="value">${d.borrower}${d.coBorrower?' / '+d.coBorrower:''}</div></div>
     <div class="doc-info-box"><div class="label">Prepared By</div><div class="value">Village Capital and Investment</div></div>
-    <div class="doc-info-box"><div class="label">Application No.</div><div class="value">${d.appId || 'Pending'}</div></div>
+    <div class="doc-info-box"><div class="label">Borrower Email</div><div class="value">${d.borrowerEmail || '—'}</div></div>
     <div class="doc-info-box"><div class="label">Date Prepared</div><div class="value">${d.date}</div></div>
-    <div class="doc-info-box"><div class="label">Loan Program</div><div class="value">VA ${d.loanType}</div></div>
+    <div class="doc-info-box"><div class="label">Loan Program</div><div class="value">${d.prog} — ${d.loanType}</div></div>
     <div class="doc-info-box"><div class="label">Total Loan Amount</div><div class="value">${fmtMoney(d.totalLoan)} at ${fmtPct(d.rate)} — ${d.term} mo</div></div>
   </div>
 
@@ -1224,7 +1768,7 @@ function buildFeesWorksheet(d) {
       <tr><td>Loan Discount Fee (${d.discPtsPct}%)</td><td>Village Capital</td><td>Borrower</td><td class="right money">${fmtMoney(d.discPtsAmt)}</td></tr>
       <tr><td>Credit Report / Flood Certification</td><td>Third Party</td><td>Borrower</td><td class="right money">${fmtMoney(d.creditReport)}</td></tr>
       <tr><td>Appraisal</td><td>Appraiser</td><td>Borrower</td><td class="right money">${fmtMoney(d.appraisal)}</td></tr>
-      <tr><td>VA Funding Fee (${(d.ffRate*100).toFixed(2)}%) ${d.finFee?'[Financed]':'[Paid at Closing]'}</td><td>VA</td><td>Borrower</td><td class="right money">${fmtMoney(d.fundingFeeAmt)}</td></tr>
+      <tr><td>${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%) ${d.finFee?'[Financed]':'[Paid at Closing]'}</td><td>${d.prog==='VA'?'VA':'Lender'}</td><td>Borrower</td><td class="right money">${fmtMoney(d.upfrontFeeAmt)}</td></tr>
       <tr><td>Closing / Escrow Fee</td><td>Title/Escrow Co.</td><td>Borrower</td><td class="right money">${fmtMoney(d.closingFee)}</td></tr>
       <tr><td>Lender's Title Insurance</td><td>Title Co.</td><td>Borrower</td><td class="right money">${fmtMoney(d.titleIns)}</td></tr>
       <tr><td>Mortgage / Recording Charges</td><td>Govt</td><td>Borrower</td><td class="right money">${fmtMoney(d.recording)}</td></tr>
@@ -1242,12 +1786,16 @@ function buildFeesWorksheet(d) {
     <div class="doc-box">
       <div class="doc-box-title">Transaction Summary</div>
       <table>
-        <tr><td>Refi / Payoff (+)</td><td>${fmtMoney(d.currentBalance)}</td></tr>
-        <tr><td>VA Funding Fee (+)</td><td>${fmtMoney(d.fundingFeeAmt)}</td></tr>
-        <tr><td>Est. Closing Costs (+)</td><td>${fmtMoney(d.totalClosingCosts)}</td></tr>
-        <tr><td>Est. Prepaids (+)</td><td>${fmtMoney(d.totalPrepaids)}</td></tr>
-        <tr><td>Loan Amount (-)</td><td>${fmtMoney(d.totalLoan)}</td></tr>
-        <tr class="total-row"><td>Total Cash to/from Borrower</td><td>${fmtMoney(d.currentBalance + d.totalClosingCosts + d.totalPrepaids - d.totalLoan)}</td></tr>
+        <tr><td>Payoff Amount (+)</td><td>${fmtMoney(d.payoff)}</td></tr>
+        ${d.cashOut > 0 ? `<tr><td>Cash Out (+)</td><td>${fmtMoney(d.cashOut)}</td></tr>` : ''}
+        <tr><td>Orig. Fee (${d.origFeePct.toFixed(3)}%) (+)</td><td>${fmtMoney(d.origFeeAmt)}</td></tr>
+        ${d.discPtsAmt > 0 ? `<tr><td>Discount Pts (${d.discPtsPct.toFixed(3)}%) (+)</td><td>${fmtMoney(d.discPtsAmt)}</td></tr>` : ''}
+        ${d.dollarFees > 0 ? `<tr><td>Other Financed Fees (+)</td><td>${fmtMoney(d.dollarFees)}</td></tr>` : ''}
+        <tr style="font-weight:700;"><td>= Base Loan Amount</td><td>${fmtMoney(d.baseLoan)}</td></tr>
+        <tr><td>${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%) (+)</td><td>${fmtMoney(d.upfrontFeeAmt)}</td></tr>
+        <tr style="font-weight:700;"><td>= Total Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
+        <tr><td>Est. Prepaids (cash)</td><td>${fmtMoney(d.totalPrepaids)}</td></tr>
+        <tr class="total-row"><td>Est. Cash to Close</td><td>${fmtMoney(d.totalFundsToClose)}</td></tr>
       </table>
     </div>
     <div class="doc-box">
@@ -1257,7 +1805,8 @@ function buildFeesWorksheet(d) {
         <tr><td>Hazard Insurance</td><td>${fmtMoney(d.insurance)}</td></tr>
         <tr><td>Real Estate Taxes</td><td>${fmtMoney(d.taxes)}</td></tr>
         <tr><td>Total Escrow</td><td>${fmtMoney(d.escrow)}</td></tr>
-        <tr class="total-row"><td>Total PITI</td><td>${fmtMoney(d.totalPayment)}</td></tr>
+        ${d.monthlyMI > 0 ? `<tr><td>${d.prog==='FHA'?'FHA MMI':'PMI'}</td><td>${fmtMoney(d.monthlyMI)}</td></tr>` : ''}
+        <tr class="total-row"><td>Total Monthly Payment</td><td>${fmtMoney(d.totalPayment)}</td></tr>
       </table>
     </div>
   </div>
@@ -1279,6 +1828,7 @@ function buildFeesWorksheet(d) {
 // PRINT / PREVIEW
 // ============================================================
 let currentPrintContent = '';
+let currentDocData = null;
 
 function showPreview(n, type) {
   calcAll();
@@ -1289,6 +1839,7 @@ function showPreview(n, type) {
   document.getElementById('previewContent').innerHTML = html;
   document.getElementById('previewModal').classList.add('open');
   currentPrintContent = html;
+  currentDocData = { ...d, previewType: type };
 }
 
 function closeModal() {
@@ -1296,31 +1847,331 @@ function closeModal() {
 }
 
 function doPrint() {
+  openPrintWindow(currentPrintContent);
+}
+
+// ── Core print-to-PDF function ─────────────────────────────
+// Opens a clean new window with just the doc, triggers print dialog.
+// Browser "Save as PDF" = perfect PDF every time, no canvas issues.
+function openPrintWindow(htmlContent) {
   const zone = document.getElementById('printZone');
-  zone.innerHTML = currentPrintContent;
+  zone.innerHTML = htmlContent;
   zone.classList.add('active');
-  setTimeout(()=>{ window.print(); zone.classList.remove('active'); }, 150);
+  // Small delay so browser renders the zone before print dialog opens
+  setTimeout(() => {
+    window.print();
+    // Clean up after print dialog closes
+    setTimeout(() => {
+      zone.classList.remove('active');
+      zone.innerHTML = '';
+    }, 500);
+  }, 200);
+}
+
+// ── Toast notification ───────────────────────────────────────
+function showToast(msg, isError=false) {
+  let t = document.getElementById('pdfToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'pdfToast';
+    t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#0d1f3c;color:white;padding:12px 22px;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:9999;box-shadow:0 4px 18px rgba(0,0,0,0.3);transition:opacity 0.3s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = isError ? '#8a2020' : '#0d1f3c';
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 4500);
+}
+
+function printSelected() {
+  calcAll();
+  const selected = [1,2,3].filter(n => document.getElementById(`optInclude${n}`)?.checked);
+  if (selected.length === 0) {
+    alert("Please check at least one option using the 'Include in combined print' checkboxes in the column headers.");
+    return;
+  }
+
+  let allHtml = '';
+  if (selected.length > 1) {
+    allHtml += buildComparisonPage(selected);
+    allHtml += '<div style="page-break-after:always;"></div>';
+  }
+  selected.forEach((n, idx) => {
+    const d = getDocData(n);
+    allHtml += buildPreQuote(d);
+    allHtml += '<div style="page-break-after:always;"></div>';
+    allHtml += buildFeesWorksheet(d);
+    if (idx < selected.length - 1) allHtml += '<div style="page-break-after:always;"></div>';
+  });
+  openPrintWindow(allHtml);
 }
 
 function printAll() {
   calcAll();
-  let allHtml = '';
-  [1,2,3].forEach(n => {
+  let allHtml = buildComparisonPage([1,2,3]);
+  allHtml += '<div style="page-break-after:always;"></div>';
+  [1,2,3].forEach((n, idx) => {
     const d = getDocData(n);
     allHtml += buildPreQuote(d) + '<div style="page-break-after:always;"></div>';
-    allHtml += buildFeesWorksheet(d) + '<div style="page-break-after:always;"></div>';
+    allHtml += buildFeesWorksheet(d);
+    if (idx < 2) allHtml += '<div style="page-break-after:always;"></div>';
   });
-  const zone = document.getElementById('printZone');
-  zone.innerHTML = allHtml;
-  zone.classList.add('active');
-  setTimeout(()=>{ window.print(); zone.classList.remove('active'); }, 150);
+  openPrintWindow(allHtml);
 }
+
+
+
+function buildComparisonPage(selectedNums) {
+  const borrower  = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join(' ') || 'Borrower';
+  const address   = getFullAddress();
+  const date      = new Date().toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'});
+  const loName    = getStr('loSelect');
+  const loNmls    = getStr('loNmls');
+  const loPhone   = getStr('loPhone');
+  const prog      = getStr('loanProgram');
+  const loanType  = getStr('loanType');
+
+  const cols = selectedNums.map(n => ({ n, d: getDocData(n), r: calcOption(n) }));
+  const colColors = { 1:'#3a5f9a', 2:'#2d6e4e', 3:'#8a6800' };
+  const colBg     = { 1:'#eef2fb', 2:'#edf5ea', 3:'#fef3e2' };
+
+  // Header row for each option
+  const headerCells = cols.map(({n, d}) =>
+    `<th style="background:${colColors[n]};color:white;padding:10px 14px;text-align:center;width:${Math.floor(60/cols.length)}%;">
+      <div style="font-size:1.1rem;font-weight:800;">Option ${n}</div>
+      <div style="font-size:0.82rem;font-weight:600;opacity:0.9;">${d.optName}</div>
+    </th>`
+  ).join('');
+
+  const rows = [
+    { label: 'Interest Rate',         fmt: r => `${(r.rate*100).toFixed(3)}%` },
+    { label: 'Term',                   fmt: r => `${r.term} months` },
+    { label: 'Base Loan Amount',       fmt: r => fmtMoney(r.baseLoan),   bold: true },
+    { label: 'Upfront Fee',            fmt: r => `${fmtMoney(r.upfrontFeeAmt)} (${(r.upfrontFeeRate*100).toFixed(2)}%)` },
+    { label: 'Total Loan Amount',      fmt: r => fmtMoney(r.totalLoan),  bold: true },
+    { label: '─',                      divider: true },
+    { label: 'P&I Payment',            fmt: r => fmtMoney(r.pi),         bold: true },
+    { label: 'Hazard Insurance',       fmt: r => fmtMoney(r.insurance) },
+    { label: 'Taxes',                  fmt: r => fmtMoney(r.taxes) },
+    { label: 'Total Monthly Payment',  fmt: r => fmtMoney(r.totalPayment), bold: true },
+    { label: '─',                      divider: true },
+    { label: 'Total Closing Costs',    fmt: r => fmtMoney(r.totalClosingCosts) },
+    { label: 'Total Prepaids',         fmt: r => fmtMoney(r.totalPrepaids) },
+    { label: 'Est. Cash to Close',     fmt: r => fmtMoney(r.totalFundsToClose), bold: true },
+    { label: '─',                      divider: true },
+    { label: 'LTV',                    fmt: r => r.ltv > 0 ? r.ltv.toFixed(2)+'%' : '—' },
+    { label: 'Monthly Savings vs Current', fmt: r => {
+        const s = r.paySavings;
+        return `<span style="color:${s>=0?'#2d6e4e':'#b33a3a'};font-weight:700;">${fmtMoney(s)}</span>`;
+      }
+    },
+    { label: 'Recoup Period',          fmt: r => r.recoup !== null ? Math.ceil(r.recoup)+' months' : '—' },
+  ];
+
+  const tableRows = rows.map(row => {
+    if (row.divider) {
+      return `<tr><td colspan="${cols.length + 1}" style="padding:4px 0;border:none;background:#f5f5f5;"></td></tr>`;
+    }
+    const cells = cols.map(({n, r}) =>
+      `<td style="background:${colBg[n]};text-align:center;padding:8px 12px;${row.bold?'font-weight:700;font-size:1.0rem;':''}">${row.fmt(r)}</td>`
+    ).join('');
+    return `<tr>
+      <td style="padding:7px 12px;font-size:0.8rem;color:#444;border-right:2px solid #ddd;white-space:nowrap;">${row.label}</td>
+      ${cells}
+    </tr>`;
+  }).join('');
+
+  return `
+<div class="doc-page" style="font-family:'Source Sans 3',sans-serif;">
+  <div class="doc-company-header">
+    <div>
+      <div class="doc-company-name">Village Capital &amp; Investment</div>
+      <div class="doc-company-sub">NMLS # 3317 &nbsp;·&nbsp; 384 S 400 W Suite 100 Lindon, UT 84042</div>
+    </div>
+    <div class="doc-title-line">
+      <h2>Loan Option Comparison</h2>
+      <p>${prog} — ${loanType} &nbsp;·&nbsp; ${selected.length} Options</p>
+    </div>
+  </div>
+  <div class="doc-disclaimer">
+    ⚠ <strong>This is NOT an official Loan Estimate (LE).</strong> Figures are estimates for comparison purposes only. Actual rate, payment, and costs could be higher.
+  </div>
+  <div class="doc-info-row" style="margin-bottom:14px;">
+    <div class="doc-info-box"><div class="label">Applicant</div><div class="value">${borrower}</div></div>
+    <div class="doc-info-box"><div class="label">Property</div><div class="value">${address || '—'}</div></div>
+    <div class="doc-info-box"><div class="label">Date</div><div class="value">${date}</div></div>
+    <div class="doc-info-box"><div class="label">Loan Officer</div><div class="value">${loName} &nbsp;|&nbsp; NMLS ${loNmls}</div></div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+    <thead>
+      <tr>
+        <th style="background:#0d1f3c;color:white;padding:10px 14px;text-align:left;width:40%;">Loan Details</th>
+        ${headerCells}
+      </tr>
+    </thead>
+    <tbody>
+      ${tableRows}
+    </tbody>
+  </table>
+  <div class="doc-footer" style="margin-top:20px;">
+    <div>
+      <div class="doc-footer-company">Village Capital &amp; Investment LLC — NMLS # 3317</div>
+      <div class="doc-footer-nmls">384 S 400 W Suite 100 Lindon, UT 84042</div>
+    </div>
+    <div class="doc-footer-lo">
+      <strong>${loName}</strong> &nbsp;|&nbsp; NMLS: ${loNmls}<br>${loPhone}
+    </div>
+  </div>
+</div>`;
+}
+
 
 // ============================================================
 // STATUS
 // ============================================================
-let statusTimer;
+// ============================================================
+// EMAIL TO BORROWER
+// ============================================================
+function emailBorrower() {
+  const borrower      = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join(' ') || 'Borrower';
+  const borrowerEmail = getStr('borrowerEmail');
+  const loName        = getStr('loSelect') || 'Your Loan Officer';
+  const loPhone       = getStr('loPhone')  || '';
+  const loEmail       = getStr('loEmail')  || '';
+  const address       = getFullAddress();
+  const dateStr       = new Date().toISOString().split('T')[0];
+
+  if (!borrowerEmail) {
+    alert("Please enter the borrower's email address first.");
+    return;
+  }
+
+  // Build combined PDF of checked options
+  const selected = [1,2,3].filter(n => document.getElementById(`optInclude${n}`)?.checked);
+  const activeNums = selected.length > 0 ? selected : [1,2,3];
+
+  let allHtml = '';
+  if (activeNums.length > 1) {
+    allHtml += buildComparisonPage(activeNums) + '<div style="page-break-after:always;"></div>';
+  }
+  activeNums.forEach((n, idx) => {
+    const d = getDocData(n);
+    allHtml += buildPreQuote(d) + '<div style="page-break-after:always;"></div>';
+    allHtml += buildFeesWorksheet(d);
+    if (idx < activeNums.length - 1) allHtml += '<div style="page-break-after:always;"></div>';
+  });
+
+  // Step 1: open print window (LO prints to PDF, saves file)
+  openPrintWindow(allHtml);
+
+  // Step 2: open Gmail with instructions
+  const optionLines = activeNums.map(n => {
+    const r = calcOption(n);
+    const optName = getStr(`optName${n}`) || `Option ${n}`;
+    if (!r.baseLoan) return null;
+    return [
+      `  Option ${n}: ${optName}`,
+      `  \u251C Rate:           ${(r.rate * 100).toFixed(3)}%`,
+      `  \u251C Total Loan:     ${fmtMoney(r.totalLoan)}`,
+      `  \u251C P&I Payment:    ${fmtMoney(r.pi)}`,
+      `  \u251C Total Payment:  ${fmtMoney(r.totalPayment)}`,
+      `  \u2514 Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
+    ].join('\n');
+  }).filter(Boolean);
+
+  const subject = `Your Loan Quote Summary \u2014 ${borrower} \u2014 Village Capital & Investment`;
+  const body = [
+    `Hi ${borrower.split(' ')[0]},`,
+    '',
+    'Thank you for the opportunity to work with you! Below is a summary of the loan scenario(s) we put together for you.',
+    '',
+    address ? `Property: ${address}` : '',
+    '',
+    '== LOAN SCENARIO SUMMARY ==========================',
+    ...optionLines,
+    '===================================================',
+    '',
+    'These figures are estimates and not an official Loan Estimate (LE). Your actual rate, payment, and costs could vary.',
+    '',
+    'A PDF of your full quote is attached. Please let me know if you have any questions!',
+    '',
+    loName,
+    loPhone ? `Phone: ${loPhone}` : '',
+    loEmail ? `Email: ${loEmail}` : '',
+    'Village Capital & Investment | NMLS #3317',
+    '384 S 400 W Suite 100, Lindon, UT 84042',
+  ].filter(l => l !== null).join('\n');
+
+  setTimeout(() => {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(borrowerEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+  }, 500);
+}
+
+// ============================================================
+// EMAIL TO LO
+// ============================================================
+function emailToLO(n) {
+  const d = getDocData(n);
+  const borrower   = d.borrower || 'Borrower';
+  const loName     = d.loName   || 'LO';
+  const loEmail    = getStr('loEmail');
+  const dateStr    = new Date().toISOString().split('T')[0];
+  const optName    = d.optName  || `Option ${n}`;
+  const r          = calcOption(n);
+
+  if (!loEmail) {
+    alert('Please select a Loan Officer first — their email is needed to address the message.');
+    return;
+  }
+
+  // Step 1: open print window for this option
+  const allHtml = buildPreQuote(d) + '<div style="page-break-after:always;"></div>' + buildFeesWorksheet(d);
+  openPrintWindow(allHtml);
+
+  // Step 2: open Gmail compose
+  const subject = `Quote Lab \u2014 ${borrower} \u2014 ${optName} \u2014 ${dateStr}`;
+  const body = [
+    `Hi ${loName.split(' ')[0]},`,
+    '',
+    `Here is the Quote Lab summary for ${borrower} \u2014 ${optName}.`,
+    '',
+    '-- LOAN SUMMARY --------------------------------------',
+    `Program:        ${d.prog} \u2014 ${d.loanType}`,
+    `Option:         ${optName}`,
+    `Base Loan:      ${fmtMoney(r.baseLoan)}`,
+    `Total Loan:     ${fmtMoney(r.totalLoan)}`,
+    `Rate:           ${(r.rate * 100).toFixed(3)}%`,
+    `Term:           ${r.term} months`,
+    `P&I Payment:    ${fmtMoney(r.pi)}`,
+    `Total Payment:  ${fmtMoney(r.totalPayment)}`,
+    `LTV:            ${r.ltv > 0 ? r.ltv.toFixed(2) + '%' : '\u2014'}`,
+    '',
+    '-- CLOSING COSTS -------------------------------------',
+    `Total Closing:  ${fmtMoney(r.totalClosingCosts)}`,
+    `Total Prepaids: ${fmtMoney(r.totalPrepaids)}`,
+    `Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
+    '',
+    '-- SAVINGS -------------------------------------------',
+    `Monthly Savings: ${fmtMoney(r.paySavings)}`,
+    `Recoup Period:   ${r.recoup !== null ? Math.ceil(r.recoup) + ' months' : '\u2014'}`,
+    '',
+    'A print window opened with the full Pre-Quote and Fees Worksheet.',
+    'Use File > Print > Save as PDF to generate the PDF, then attach it here.',
+    '',
+    '------------------------------------------------------',
+    'Generated by Quote Lab | Village Capital & Investment | NMLS #3317',
+  ].join('\n');
+
+  setTimeout(() => {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(loEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+  }, 500);
+}
+
 function showStatus() {
+
   const bar = document.getElementById('statusBar');
   bar.classList.add('show');
   clearTimeout(statusTimer);
@@ -1338,6 +2189,7 @@ document.getElementById('previewModal').addEventListener('click', function(e) {
 buildRows(optionRowDefs, 'optionRows', 'opt');
 buildRows(feeRowDefs, 'feeRows', 'fee');
 buildResultRows(resultRowDefs);
+loadDefaults();
 
 // Set today's date
 const today = new Date().toISOString().split('T')[0];
@@ -1347,12 +2199,28 @@ document.getElementById('datePrepared').value = today;
 calcAll();
 
 // Auto-recalc on any change to shared fields
-['currentBalance','currentRate','currentPI','currentPITI','appraised','insurance',
- 'escrowBalance','cashOut','paymentsSkipped','loanType','fundingFeeType','customFundingFee','financeFee',
- 'closingDate','firstPayDate'].forEach(id => {
+['originalLoanAmt','originalTerm','currentRate','currentPITI','appraised',
+ 'escrowBalance','payoffAmt','cashOut','paymentsSkipped','loanType','loanProgram',
+ 'fundingFeeType','customFundingFee','financeFee','fhaUfmip','convPmi',
+ 'closingDate','firstPayDate','currentAmortType'].forEach(id => {
   const el = document.getElementById(id);
-  if (el) el.addEventListener('change', id === 'currentPI' || id === 'currentPITI' || id === 'insurance' ? calcEscrowBreakdown : calcAll);
-  if (el) el.addEventListener('input', id === 'currentPI' || id === 'currentPITI' || id === 'insurance' ? calcEscrowBreakdown : calcAll);
+  if (!el) return;
+  const fn = ['originalLoanAmt','originalTerm','currentRate'].includes(id) ? calcCurrentPI
+           : ['currentPITI'].includes(id) ? calcEscrowBreakdown
+           : ['payoffAmt','cashOut'].includes(id) ? autoPopulateBaseLoans
+           : ['loanProgram'].includes(id) ? updateLoanProgram
+           : calcAll;
+  el.addEventListener('change', fn);
+  el.addEventListener('input',  fn);
+});
+
+// Address fields → geocode + update search links
+['propStreet','propCity','propState','propZip','propCounty'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input',  id === 'propCounty' ? updateSearchLinks : scheduleGeocode);
+    el.addEventListener('change', id === 'propCounty' ? updateSearchLinks : scheduleGeocode);
+  }
 });
 </script>
 </body>
