@@ -373,17 +373,15 @@ body {
 }
 
 /* ===== PRINT STYLES ===== */
-@media print {
-  body * { visibility: hidden; }
-  .print-zone, .print-zone * { visibility: visible; }
-  .print-zone { position: fixed; top: 0; left: 0; width: 100%; background: white; }
-  .no-print { display: none !important; }
-  body { background: white; }
-}
-
-/* ===== PRINT DOCUMENT STYLES ===== */
 .print-zone { display: none; }
 .print-zone.active { display: block; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body > *:not(#printZone) { display: none !important; }
+  #printZone { display: block !important; margin: 0; padding: 0; }
+  @page { margin: 0.45in; size: letter; }
+}
 
 .doc-page {
   width: 100%;
@@ -1856,41 +1854,18 @@ function doPrint() {
 // Opens a clean new window with just the doc, triggers print dialog.
 // Browser "Save as PDF" = perfect PDF every time, no canvas issues.
 function openPrintWindow(htmlContent) {
-  const fontUrl = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap';
-
-  // Grab the inline <style> tag directly — no CORS issues like styleSheets API
-  const inlineCSS = document.querySelector('style') ? document.querySelector('style').textContent : '';
-
-  const win = window.open('', '_blank', 'width=900,height=700');
-  if (!win) { alert('Pop-up blocked — please allow pop-ups for this page and try again.'); return; }
-
-  win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Quote Lab — Village Capital &amp; Investment</title>
-  <link href="${fontUrl}" rel="stylesheet">
-  <style>
-    ${inlineCSS}
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-    body { background: white !important; margin: 0; padding: 16px; font-family: 'Source Sans 3', sans-serif; }
-    .no-print, .btn-row, header, .page-wrap { display: none !important; }
-    @media print {
-      body { padding: 0; }
-      .no-print, .btn-row, header, .page-wrap { display: none !important; }
-      @page { margin: 0.45in; size: letter; }
-    }
-  </style>
-</head>
-<body>${htmlContent}</body>
-</html>`);
-  win.document.close();
-
-  // Wait for fonts to load then trigger print dialog
+  const zone = document.getElementById('printZone');
+  zone.innerHTML = htmlContent;
+  zone.classList.add('active');
+  // Small delay so browser renders the zone before print dialog opens
   setTimeout(() => {
-    win.focus();
-    win.print();
-  }, 1000);
+    window.print();
+    // Clean up after print dialog closes
+    setTimeout(() => {
+      zone.classList.remove('active');
+      zone.innerHTML = '';
+    }, 500);
+  }, 200);
 }
 
 // ── Toast notification ───────────────────────────────────────
