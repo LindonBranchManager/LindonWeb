@@ -529,6 +529,20 @@
             </div>
           </a>
 
+          <a class="page-card" href="va-quote-creator.html">
+            <div class="page-card-top">
+              <div class="page-card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5"/></svg>
+              </div>
+              <div class="page-card-title">Quote Lab</div>
+              <div class="page-card-subtitle">VA · FHA · Conventional</div>
+            </div>
+            <div class="page-card-body">
+              <div class="page-card-desc">Generate 3 side-by-side VA loan scenarios with printable Pre-Quote and Fees Worksheet for each option.</div>
+              <div class="page-card-cta">Open Tool <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </div>
+          </a>
+
           <a class="page-card" href="metrics.html">
             <div class="page-card-top">
               <div class="page-card-icon">
@@ -540,48 +554,6 @@
             <div class="page-card-body">
               <div class="page-card-desc">Upload your weekly CRM export to instantly view lead overview, LO performance stats, campaign breakdowns, and conversion rates.</div>
               <div class="page-card-cta">View Metrics <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="shoutouts.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <div class="page-card-title">Shout Outs</div>
-              <div class="page-card-subtitle">Recognition · Customer Reviews</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Celebrate team wins and share customer reviews. Submit a shout out or post a screenshot of a great review for the whole branch to see.</div>
-              <div class="page-card-cta">View Shout Outs <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="VillageMarket.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-              </div>
-              <div class="page-card-title">Village Market</div>
-              <div class="page-card-subtitle">Snacks · Drinks · Treats</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Browse the branch snack shop. Order drinks, snacks, and treats for the office.</div>
-              <div class="page-card-cta">Open Market <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="va-quote-creator.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              </div>
-              <div class="page-card-title">VA Quote Creator</div>
-              <div class="page-card-subtitle">Pre-Quote · Fees Worksheet</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Build and compare up to 3 VA loan options. Print a Pre-Quote and Fees Worksheet for any option.</div>
-              <div class="page-card-cta">Open Tool <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </div>
           </a>
 
@@ -663,16 +635,15 @@
       <!-- ANNOUNCEMENTS -->
       <div class="announcements">
         <div class="section-label">
-          <div><h2>Branch Announcements</h2><p>Updated via Google Sheets — visible to everyone</p></div>
+          <div><h2>Branch Announcements</h2><p>Click Edit to update — changes save in your browser</p></div>
         </div>
         <div class="announce-box">
           <div class="announce-header">
             <span>📢 Latest from KC</span>
-            <a class="edit-btn" id="editSheetLink" href="YOUR_ANNOUNCE_SHEET_URL_HERE" target="_blank" rel="noopener" style="text-decoration:none">✏️ Edit in Sheets</a>
+            <button class="edit-btn" id="editBtn" onclick="toggleEdit()">Edit</button>
           </div>
-          <div id="announce-display" style="min-height:60px">
-            <span style="color:#8a9ab0;font-style:italic">Loading announcement…</span>
-          </div>
+          <div id="announce-display">Welcome to the Lindon Branch Hub! Use this space to post weekly highlights, reminders, goals, or anything the team needs to know. Click Edit to update this message anytime.</div>
+          <textarea id="announce-edit" placeholder="Type your announcement here..."></textarea>
           <div class="announce-footer" id="announce-footer">Last updated: <span id="last-updated">—</span></div>
         </div>
       </div>
@@ -691,35 +662,55 @@
       dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     }
 
-    // ── ANNOUNCEMENTS — pulls from Google Sheets ──
-    // Paste your Announcements Sheet ID below (see setup guide)
-    const ANNOUNCE_SHEET_ID = 'YOUR_ANNOUNCE_SHEET_ID_HERE';
+    // ── ANNOUNCEMENTS ──
+    const STORAGE_KEY = 'branch_announcement';
+    const STORAGE_DATE = 'branch_announcement_date';
+    const display = document.getElementById('announce-display');
+    const editor  = document.getElementById('announce-edit');
+    const editBtn = document.getElementById('editBtn');
+    const lastUpd = document.getElementById('last-updated');
 
-    async function loadAnnouncement() {
-      const display = document.getElementById('announce-display');
-      const lastUpd = document.getElementById('last-updated');
-      if (ANNOUNCE_SHEET_ID === 'YOUR_ANNOUNCE_SHEET_ID_HERE') {
-        display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Setup needed — add your Sheet ID to index.html</span>';
-        return;
-      }
-      try {
-        const url = `https://docs.google.com/spreadsheets/d/${ANNOUNCE_SHEET_ID}/gviz/tq?tqx=out:json&t=${Date.now()}`;
-        const res = await fetch(url);
-        const text = await res.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const rows = json.table.rows;
-        // Row 1 = announcement text, Row 2 = last updated date
-        const msg  = rows[0]?.c[0]?.v || 'No announcement posted yet.';
-        const date = rows[1]?.c[0]?.v || '';
-        display.style.whiteSpace = 'pre-wrap';
-        display.textContent = msg;
-        if (date) lastUpd.textContent = date;
-      } catch(err) {
-        display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Could not load announcement. Check Sheet sharing settings.</span>';
+    let editing = false;
+
+    function toggleEdit() {
+      editing = !editing;
+      if (editing) {
+        display.style.display = 'none';
+        editor.style.display = 'block';
+        editor.focus();
+        editBtn.textContent = 'Save';
+        editBtn.classList.remove('saving');
+      } else {
+        const text = editor.value.trim() || display.textContent;
+        display.textContent = text;
+        display.style.display = 'block';
+        editor.style.display = 'none';
+        const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+        lastUpd.textContent = now;
+        // ── Save via cookie (works on file:// and https://) ──
+        setCookie('branch_announcement', text, 365);
+        setCookie('branch_announcement_date', now, 365);
+        editBtn.textContent = 'Edit';
+        editBtn.classList.add('saving');
+        setTimeout(() => editBtn.classList.remove('saving'), 1500);
       }
     }
 
-    loadAnnouncement();
+    // ── Cookie helpers ──
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/; SameSite=Lax';
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    // ── Load on page open ──
+    const savedText = getCookie('branch_announcement') || localStorage.getItem(STORAGE_KEY);
+    const savedDate = getCookie('branch_announcement_date') || localStorage.getItem(STORAGE_DATE);
+    if (savedText) { display.textContent = savedText; editor.value = savedText; }
+    if (savedDate) { lastUpd.textContent = savedDate; }
 
   </script>
 

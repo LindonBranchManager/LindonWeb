@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VA Quote Creator | Village Capital & Investment</title>
+<title>Quote Lab | Village Capital & Investment</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -291,7 +291,21 @@ body {
   gap: 8px;
   z-index: 200;
 }
-.status-bar.show { display: flex; }
+.status-bar.warn { background: #b35c00; }
+.arm-warning {
+  display: none;
+  background: #fff3cd;
+  border: 1.5px solid #e6a817;
+  border-radius: 6px;
+  color: #7a4a00;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  margin: 6px 8px 2px;
+  line-height: 1.4;
+}
+.arm-warning.show { display: block; }
+.arm-warning .warn-icon { font-size: 1rem; margin-right: 4px; }
 
 /* ===== PRINT STYLES ===== */
 @media print {
@@ -461,7 +475,7 @@ body {
     Village Capital & Investment
     <span>NMLS # 3317</span>
   </div>
-  <div class="tagline">VA Quote Creator &nbsp;·&nbsp; Loan Officer Tool</div>
+  <div class="tagline">Quote Lab &nbsp;·&nbsp; Loan Officer Tool</div>
 </header>
 
 <!-- MAIN -->
@@ -489,14 +503,40 @@ body {
           <input type="text" id="appId" placeholder="Optional">
         </div>
       </div>
-      <div class="form-grid-3" style="margin-bottom:16px;">
-        <div class="field col-span-2">
-          <label>Subject Property Address</label>
-          <input type="text" id="propAddress" placeholder="123 Main St, City, State ZIP">
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field" style="grid-column:span 2;">
+          <label>Street Address</label>
+          <input type="text" id="propStreet" placeholder="123 Main St" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="propCity" placeholder="City" oninput="scheduleGeocode()">
         </div>
         <div class="field">
           <label>Date Prepared</label>
           <input type="date" id="datePrepared">
+        </div>
+      </div>
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field">
+          <label>State</label>
+          <input type="text" id="propState" placeholder="UT" maxlength="2" style="text-transform:uppercase;" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>Zip Code</label>
+          <input type="text" id="propZip" placeholder="84042" maxlength="5" oninput="scheduleGeocode()">
+        </div>
+        <div class="field">
+          <label>
+            County
+            <a id="countyLink" href="#" target="_blank" rel="noopener" style="font-size:0.68rem;font-weight:700;color:var(--gold);margin-left:6px;text-decoration:none;border:1px solid var(--gold);border-radius:3px;padding:1px 5px;">🔍 Assessor</a>
+            <span id="countySpinner" style="display:none;font-size:0.68rem;color:var(--steel);margin-left:4px;">looking up…</span>
+          </label>
+          <input type="text" id="propCounty" placeholder="Auto-fills from address">
+        </div>
+        <div class="field" style="align-self:end;">
+          <label style="opacity:0;">x</label>
+          <div style="font-size:0.72rem;color:var(--steel);line-height:1.5;padding-top:4px;">County auto-fills when Street + City + State are entered</div>
         </div>
       </div>
       <div class="form-grid-4">
@@ -772,7 +812,19 @@ body {
       </div>
     </div>
 
-    <div class="btn-row">
+    <!-- ARM RATE WARNINGS -->
+    <div class="print-actions-row" id="armWarningRow" style="border-top:none;padding-top:0;">
+      <div class="print-actions-label"></div>
+      <div class="print-actions-cell opt-bg-1" style="padding:0;">
+        <div class="arm-warning" id="armWarn1"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate1"></span>). VA will not approve.</div>
+      </div>
+      <div class="print-actions-cell opt-bg-2" style="padding:0;">
+        <div class="arm-warning" id="armWarn2"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate2"></span>). VA will not approve.</div>
+      </div>
+      <div class="print-actions-cell opt-bg-3" style="padding:0;">
+        <div class="arm-warning" id="armWarn3"><span class="warn-icon">⚠️</span> IRRRL Fixed→ARM: proposed rate must be at least 2% below current rate (<span id="armWarnRate3"></span>). VA will not approve.</div>
+      </div>
+    </div>
       <button class="btn btn-primary" onclick="calcAll()">⟳&nbsp; Calculate All Options</button>
       <button class="btn btn-gold" onclick="printAll()">🖨&nbsp; Print All 3 Options</button>
       <span style="font-size:0.78rem;color:var(--text-muted);margin-left:auto;">Results auto-calculate on input change. Use Print buttons for individual option documents.</span>
@@ -872,13 +924,96 @@ function autoPopulateBaseLoans() {
   calcAll();
 }
 
-function updateSearchLinks() {
-  const addr = encodeURIComponent(getStr('propAddress'));
-  if (!addr) return;
-  document.getElementById('zillowLink').href = `https://www.zillow.com/homes/${addr}_rb/`;
-  document.getElementById('redfinLink').href  = `https://www.redfin.com/search?location=${addr}`;
-  document.getElementById('countyLink').href  = `https://www.google.com/search?q=${addr}+county+assessor+property+tax`;
+function getFullAddress() {
+  const s = getStr('propStreet').trim();
+  const c = getStr('propCity').trim();
+  const st = getStr('propState').trim().toUpperCase();
+  const z = getStr('propZip').trim();
+  const parts = [s, c, st, z].filter(Boolean);
+  return parts.join(', ');
 }
+
+function updateSearchLinks() {
+  const street = getStr('propStreet').trim();
+  const city   = getStr('propCity').trim();
+  const state  = getStr('propState').trim().toUpperCase();
+  const zip    = getStr('propZip').trim();
+  const county = getStr('propCounty').trim();
+
+  const fullAddr = encodeURIComponent([street, city, state, zip].filter(Boolean).join(', '));
+  if (!fullAddr) return;
+
+  document.getElementById('zillowLink').href = `https://www.zillow.com/homes/${fullAddr}_rb/`;
+  document.getElementById('redfinLink').href  = `https://www.redfin.com/search?location=${fullAddr}`;
+
+  // County assessor link — use county + state if available, otherwise full address
+  const countyQuery = county && state
+    ? encodeURIComponent(`${county} County ${state} property tax assessor`)
+    : encodeURIComponent(`${[city, state].filter(Boolean).join(' ')} county property tax assessor`);
+  document.getElementById('countyLink').href = `https://www.google.com/search?q=${countyQuery}`;
+}
+
+let geocodeTimer = null;
+function scheduleGeocode() {
+  updateSearchLinks();
+  clearTimeout(geocodeTimer);
+  geocodeTimer = setTimeout(geocodeCounty, 800);
+}
+
+async function geocodeCounty() {
+  const street = getStr('propStreet').trim();
+  const city   = getStr('propCity').trim();
+  const state  = getStr('propState').trim();
+  if (!street || !city || !state) return;
+
+  const spinner = document.getElementById('countySpinner');
+  const countyEl = document.getElementById('propCounty');
+  if (spinner) spinner.style.display = 'inline';
+
+  try {
+    const q = encodeURIComponent(`${street}, ${city}, ${state}`);
+    const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&addressdetails=1&limit=1`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en-US' } });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const addr = data[0].address;
+      const county = addr.county || addr.state_district || '';
+      // Strip "County" suffix if present
+      const clean = county.replace(/\s*county\s*$/i, '').trim();
+      if (clean && !countyEl.value) {
+        countyEl.value = clean;
+        updateSearchLinks();
+      }
+    }
+  } catch(e) {
+    // silently fail — user can type manually
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+// ── VA Recoupment (38 CFR 36.4307) ─────────────────────────
+// Allowable costs = origination fee + discount points + credit report
+//                  + recording fees + VA funding fee (if not financed)
+// Does NOT include: prepaids, title, escrow/closing fee, appraisal
+// Monthly savings = old P&I − new P&I (NOT total payment)
+// Must recoup within 36 months for IRRRL
+function calcVARecoup(r) {
+  const prog = getStr('loanProgram');
+  const loanType = getStr('loanType');
+  if (prog !== 'VA' || loanType !== 'IRRRL') {
+    // Standard recoup for non-IRRRL: total closing costs / P&I savings
+    return r.piSavings > 0 ? r.totalClosingCosts / r.piSavings : null;
+  }
+  // VA IRRRL recoupment: only allowable fees (VA-defined subset)
+  const vaAllowable = r.origFeeAmt + r.discPtsAmt + r.creditReport + r.recording
+                    + (r.finFee ? 0 : r.upfrontFeeAmt);
+  const monthlySavings = getVal('currentPI') - r.pi;
+  if (monthlySavings <= 0) return null;
+  const months = vaAllowable / monthlySavings;
+  return months; // caller checks if > 36
+}
+
 
 function updateLoanProgram() {
   const prog = getStr('loanProgram');
@@ -1103,7 +1238,12 @@ function calcOption(n) {
   const currentTotalPayment = getVal('currentPI') + getVal('currentEscrow');
   const paySavings = currentTotalPayment - totalPayment;
   const piSavings  = getVal('currentPI') - pi;
-  const recoup     = piSavings > 0 ? totalClosingCosts / piSavings : null;
+
+  // Build partial result for VA recoup calc
+  const partialR = { origFeeAmt, discPtsAmt, creditReport, recording,
+                     upfrontFeeAmt, finFee, piSavings, totalClosingCosts, prog };
+  const recoupMonths = calcVARecoup({ ...partialR, pi });
+  const recoup = recoupMonths; // may be null
 
   return {
     n, term, baseLoan, rate, totalLoan, ltv,
@@ -1123,7 +1263,14 @@ function setResult(id, val, fmt='money') {
   if(val === null || val === undefined || isNaN(val)) { el.textContent = '—'; el.className='calc-value'; return; }
   if(fmt === 'money') { el.textContent = fmtMoney(val); }
   else if(fmt === 'pct') { el.textContent = val.toFixed(3) + '%'; }
-  else if(fmt === 'months') { el.textContent = val !== null ? Math.ceil(val) + ' mo' : '—'; }
+  else if(fmt === 'months') {
+    const months = Math.ceil(val);
+    const isIRRRL = getStr('loanType') === 'IRRRL' && getStr('loanProgram') === 'VA';
+    const over36  = isIRRRL && months > 36;
+    el.textContent = months + ' mo' + (over36 ? ' ⚠ EXCEEDS 36 MO' : isIRRRL ? ' ✓' : '');
+    el.className   = over36 ? 'calc-value negative' : (isIRRRL && months <= 36) ? 'calc-value positive' : 'calc-value';
+    return;
+  }
   else { el.textContent = val; }
 
   if(fmt === 'money' && id.includes('paySavings')) {
@@ -1131,6 +1278,34 @@ function setResult(id, val, fmt='money') {
   } else {
     el.className = 'calc-value';
   }
+}
+
+function checkArmWarnings() {
+  const prog      = getStr('loanProgram');
+  const loanType  = getStr('loanType');
+  const currentAmort = getStr('currentAmortType');
+  const currentRate  = getVal('currentRate');
+
+  [1,2,3].forEach(n => {
+    const warnEl    = document.getElementById(`armWarn${n}`);
+    const rateLabel = document.getElementById(`armWarnRate${n}`);
+    if (!warnEl) return;
+
+    const propAmort = getStr(`opt_amortType_${n}`);
+    const propRate  = getVal(`opt_rate_${n}`);
+
+    const isIRRRL       = prog === 'VA' && loanType === 'IRRRL';
+    const isFixedToArm  = currentAmort === 'FIXED' && propAmort === 'ARM';
+    const rateOk        = propRate > 0 && currentRate > 0 && (currentRate - propRate) >= 2;
+
+    if (isIRRRL && isFixedToArm && !rateOk && propRate > 0) {
+      const needed = (currentRate - 2).toFixed(3);
+      rateLabel.textContent = `current ${currentRate}% → need ≤ ${needed}%`;
+      warnEl.classList.add('show');
+    } else {
+      warnEl.classList.remove('show');
+    }
+  });
 }
 
 function calcAll() {
@@ -1147,6 +1322,7 @@ function calcAll() {
     setResult(`r_paySavings_${n}`, r.paySavings);
     setResult(`r_recoup_${n}`, r.recoup, 'months');
   });
+  checkArmWarnings();
   showStatus();
 }
 
@@ -1174,7 +1350,8 @@ function getDocData(n) {
     borrower: [getStr('borrowerFirst'),getStr('borrowerLast')].filter(Boolean).join(' ') || ' ',
     coBorrower: getStr('coBorrower'),
     appId: getStr('appId'),
-    address: getStr('propAddress') || ' ',
+    address: getFullAddress() || ' ',
+    county: getStr('propCounty'),
     date: fmtDate(getStr('datePrepared')),
     loName: getStr('loSelect'),
     loNmls: getStr('loNmls'),
@@ -1303,7 +1480,10 @@ function buildPreQuote(d) {
         <td>Total Payment Difference (Monthly)</td>
         <td class="${totalSavingsMonthly>=0?'text-green':'text-red'}">${fmtMoney(totalSavingsMonthly)}</td>
         <td>Recoup Period</td>
-        <td class="text-gold">${d.recoup !== null ? Math.ceil(d.recoup)+' months' : '—'}</td>
+        <td class="${d.recoup !== null && d.loanType === 'IRRRL' && d.prog === 'VA' && Math.ceil(d.recoup) > 36 ? 'text-red' : 'text-gold'}">
+          ${d.recoup !== null ? Math.ceil(d.recoup)+' months' : '—'}
+          ${d.loanType === 'IRRRL' && d.prog === 'VA' ? (Math.ceil(d.recoup) <= 36 ? ' ✓ VA compliant' : ' ⚠ Exceeds 36-mo VA limit') : ''}
+        </td>
       </tr>
       <tr>
         <td>Escrow Refund (Est.)</td>
@@ -1489,10 +1669,10 @@ document.getElementById('datePrepared').value = today;
 calcAll();
 
 // Auto-recalc on any change to shared fields
-['originalLoanAmt','originalTerm','currentRate','currentPITI','appraised','insurance',
+['originalLoanAmt','originalTerm','currentRate','currentPITI','appraised',
  'escrowBalance','payoffAmt','cashOut','paymentsSkipped','loanType','loanProgram',
  'fundingFeeType','customFundingFee','financeFee','fhaUfmip','convPmi',
- 'closingDate','firstPayDate'].forEach(id => {
+ 'closingDate','firstPayDate','currentAmortType'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
   const fn = ['originalLoanAmt','originalTerm','currentRate'].includes(id) ? calcCurrentPI
@@ -1504,11 +1684,14 @@ calcAll();
   el.addEventListener('input',  fn);
 });
 
-const propAddrEl = document.getElementById('propAddress');
-if (propAddrEl) {
-  propAddrEl.addEventListener('input', updateSearchLinks);
-  propAddrEl.addEventListener('change', updateSearchLinks);
-}
+// Address fields → geocode + update search links
+['propStreet','propCity','propState','propZip','propCounty'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input',  id === 'propCounty' ? updateSearchLinks : scheduleGeocode);
+    el.addEventListener('change', id === 'propCounty' ? updateSearchLinks : scheduleGeocode);
+  }
+});
 </script>
 </body>
 </html>
