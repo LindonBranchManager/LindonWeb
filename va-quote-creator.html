@@ -531,8 +531,11 @@ body {
           <input type="text" id="coBorrower" placeholder="Co-Borrower">
         </div>
         <div class="field">
-          <label>Application ID</label>
-          <input type="text" id="appId" placeholder="Optional">
+          <label>Borrower Email</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="email" id="borrowerEmail" placeholder="borrower@email.com" style="flex:1;">
+            <button onclick="emailBorrower()" title="Email Borrower" style="flex-shrink:0;padding:6px 10px;background:transparent;border:1.5px solid #1a7340;color:#1a7340;border-radius:5px;cursor:pointer;font-size:0.8rem;font-weight:700;white-space:nowrap;" onmouseover="this.style.background='#1a7340';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='#1a7340'">📧 Email</button>
+          </div>
         </div>
       </div>
       <div class="form-grid-4" style="margin-bottom:16px;">
@@ -968,13 +971,6 @@ function calcEscrowBreakdown() {
 }
 
 function autoPopulateBaseLoans() {
-  const payoff  = getVal('payoffAmt');
-  const cashOut = getVal('cashOut');
-  const base = payoff + cashOut;
-  [1,2,3].forEach(n => {
-    const el = document.getElementById(`opt_baseLoan_${n}`);
-    if (el && base > 0) el.value = base.toFixed(2);
-  });
   updateSearchLinks();
   calcAll();
 }
@@ -1095,10 +1091,9 @@ function calcFhaMmi(totalLoan, ltv, termMonths) {
 // DATA MODEL
 // ============================================================
 const optionRowDefs = [
-  { id:'term', label:'Term (Months)', type:'number', default:['','',''] },
-  { id:'baseLoan', label:'Base Loan Amount ($)', type:'number', default:['','',''] },
-  { id:'rate', label:'Interest Rate (%)', type:'number', default:['','',''], step:'0.001' },
-  { id:'amortType', label:'Amortization Type', type:'select', options:['Fixed','ARM'], default:['Fixed','Fixed','ARM'] },
+  { id:'term',      label:'Term (Months)',       type:'number', default:['','',''] },
+  { id:'rate',      label:'Interest Rate (%)',    type:'number', default:['','',''], step:'0.001' },
+  { id:'amortType', label:'Amortization Type',    type:'select', options:['Fixed','ARM'], default:['Fixed','Fixed','ARM'] },
 ];
 
 const feeRowDefs = [
@@ -1113,16 +1108,21 @@ const feeRowDefs = [
 ];
 
 const resultRowDefs = [
-  { id:'fundingFeeAmt', label:'Upfront Fee ($)' },
-  { id:'totalLoan', label:'Total Loan Amount ($)' },
-  { id:'pi', label:'P&I Payment ($)' },
-  { id:'totalPayment', label:'Total Monthly Payment ($)' },
-  { id:'ltv', label:'LTV (%)' },
-  { id:'totalClosingCosts', label:'Total Closing Costs ($)' },
-  { id:'totalPrepaids', label:'Total Prepaids ($)' },
-  { id:'totalFundsToClose', label:'Total Funds to Close ($)' },
-  { id:'paySavings', label:'Monthly Payment Savings ($)' },
-  { id:'recoup', label:'Recoup Period (months)' },
+  { id:'loanBuild',       label:'── Loan Build-Up ──',       hint:'', divider:true },
+  { id:'baseLoan',        label:'Base Loan Amount ($)',       hint:'Payoff + Cash Out + All Fees' },
+  { id:'fundingFeeAmt',   label:'Upfront Fee ($)',            hint:'VA FF / FHA UFMIP / 0 for Conv' },
+  { id:'totalLoan',       label:'Total Loan Amount ($)',      hint:'Base Loan + Upfront Fee' },
+  { id:'loanPayment',     label:'── Payment ──',              hint:'', divider:true },
+  { id:'pi',              label:'P&I Payment ($)' },
+  { id:'totalPayment',    label:'Total Monthly Payment ($)',  hint:'P&I + Escrow + MI' },
+  { id:'ltv',             label:'LTV (%)' },
+  { id:'loanCosts',       label:'── Costs ──',                hint:'', divider:true },
+  { id:'totalClosingCosts', label:'Total Closing Costs ($)',  hint:'Itemized fees' },
+  { id:'totalPrepaids',   label:'Total Prepaids ($)',         hint:'3mo ins + 3mo tax + per diem' },
+  { id:'totalFundsToClose', label:'Total Funds to Close ($)', hint:'Prepaids + any out-of-pocket' },
+  { id:'loanSavings',     label:'── Savings ──',              hint:'', divider:true },
+  { id:'paySavings',      label:'Monthly Payment Savings ($)' },
+  { id:'recoup',          label:'Recoup Period (months)' },
 ];
 
 // Build option input rows
@@ -1168,15 +1168,12 @@ function mirrorFee(feeId) {
 
 // ── Per diem display ──────────────────────────────────────
 function updatePerDiems() {
-  [1,2,3].forEach(n => {
-    const loan = getVal(`opt_baseLoan_${n}`);
-    const rate = getVal(`opt_rate_${n}`) / 100;
-    if (loan > 0 && rate > 0) {
-      const daily = (loan * rate / 365);
-      const label = document.getElementById('perDiem_daysInterest_label');
-      if (label && n === 1) label.textContent = `Per diem: ${fmtMoney(daily)}/day (opt 1)`;
-    }
-  });
+  // Use total loan from calcOption(1) for per diem — avoids stale field ref
+  const r = calcOption(1);
+  if (r.totalLoan > 0 && r.rate > 0) {
+    const label = document.getElementById('perDiem_daysInterest_label');
+    if (label) label.textContent = `Per diem: ${fmtMoney(r.dailyInt)}/day`;
+  }
 }
 
 // ── Cookie defaults ───────────────────────────────────────
@@ -1230,14 +1227,20 @@ function buildResultRows(defs) {
   container.innerHTML = '';
   defs.forEach(def => {
     const row = document.createElement('div');
-    row.className = 'option-row';
-    let label = `<div class="option-row-label">${def.label}</div>`;
-    let cells = '';
-    [1,2,3].forEach(n => {
-      const bg = `opt-bg-${n}`;
-      cells += `<div class="option-cell ${bg}"><div class="calc-value" id="r_${def.id}_${n}">—</div></div>`;
-    });
-    row.innerHTML = label + cells;
+    if (def.divider) {
+      row.className = 'option-row result-divider-row';
+      row.innerHTML = `<div class="option-row-label" style="font-size:0.7rem;font-weight:800;color:var(--steel);letter-spacing:0.08em;text-transform:uppercase;padding:10px 12px 2px;">${def.label}</div><div class="option-cell opt-bg-1"></div><div class="option-cell opt-bg-2"></div><div class="option-cell opt-bg-3"></div>`;
+    } else {
+      row.className = 'option-row';
+      const hintHtml = def.hint ? `<span style="font-size:0.62rem;color:var(--steel);font-style:italic;display:block;">${def.hint}</span>` : '';
+      let label = `<div class="option-row-label">${def.label}${hintHtml}</div>`;
+      let cells = '';
+      [1,2,3].forEach(n => {
+        const bg = `opt-bg-${n}`;
+        cells += `<div class="option-cell ${bg}"><div class="calc-value" id="r_${def.id}_${n}">—</div></div>`;
+      });
+      row.innerHTML = label + cells;
+    }
     container.appendChild(row);
   });
 }
@@ -1292,12 +1295,19 @@ function calcDailyInterest(loan, rate) {
 }
 
 function calcOption(n) {
-  const term     = getVal(`opt_term_${n}`) || 360;
-  const baseLoan = getVal(`opt_baseLoan_${n}`);
-  const rate     = getVal(`opt_rate_${n}`) / 100;
-  const prog     = getStr('loanProgram');
-  const finFee   = getStr('financeFee') === 'yes';
+  const term   = getVal(`opt_term_${n}`) || 360;
+  const rate   = getVal(`opt_rate_${n}`) / 100;
+  const prog   = getStr('loanProgram');
+  const finFee = getStr('financeFee') === 'yes';
 
+  // Global inputs
+  const payoff    = getVal('payoffAmt');
+  const cashOut   = getVal('cashOut');
+  const insurance = getVal('insurance');
+  const taxes     = getVal('taxes');
+  const appraised = getVal('appraised');
+
+  // Per-option fees
   const origFeePct   = getVal(`fee_origFee_${n}`) / 100;
   const discPtsPct   = getVal(`fee_discountPts_${n}`) / 100;
   const creditReport = getVal(`fee_creditReport_${n}`);
@@ -1306,11 +1316,24 @@ function calcOption(n) {
   const titleIns     = getVal(`fee_titleIns_${n}`);
   const recording    = getVal(`fee_recording_${n}`);
   const daysInt      = getVal(`fee_daysInterest_${n}`);
-  const insurance    = getVal('insurance');
-  const taxes        = getVal('taxes');
-  const appraised    = getVal('appraised');
 
-  // ── Upfront fee by program ──────────────────────────────
+  // ── Step 1: Dollar fees (not percentage-based) ───────────────────────
+  const dollarFees = creditReport + appraisal + closingFee + titleIns + recording;
+
+  // ── Step 2: Base Loan (algebraically correct — avoids circular dependency)
+  //    origFeeAmt + discPtsAmt = baseLoan × (origFeePct + discPtsPct)
+  //    baseLoan = payoff + cashOut + dollarFees + baseLoan × (origFeePct + discPtsPct)
+  //    baseLoan × (1 - origFeePct - discPtsPct) = payoff + cashOut + dollarFees
+  //    baseLoan = (payoff + cashOut + dollarFees) / (1 - origFeePct - discPtsPct)
+  const pctDivisor = 1 - origFeePct - discPtsPct;
+  const baseLoan   = pctDivisor > 0
+    ? (payoff + cashOut + dollarFees) / pctDivisor
+    : (payoff + cashOut + dollarFees);
+
+  const origFeeAmt = baseLoan * origFeePct;
+  const discPtsAmt = baseLoan * discPtsPct;
+
+  // ── Step 3: Upfront fee (VA FF / FHA UFMIP) on Base Loan ────────────
   let upfrontFeeRate = 0, upfrontFeeLabel = '';
   if (prog === 'VA') {
     upfrontFeeRate  = getFundingFeeRate();
@@ -1321,15 +1344,18 @@ function calcOption(n) {
   } else {
     upfrontFeeLabel = 'Upfront Fee';
   }
-
   const upfrontFeeAmt = baseLoan * upfrontFeeRate;
-  const totalLoan     = finFee ? baseLoan + upfrontFeeAmt : baseLoan;
 
-  // ── P&I ────────────────────────────────────────────────
+  // ── Step 4: Total Loan ───────────────────────────────────────────────
+  //    If financed: Total Loan = Base Loan + Upfront Fee
+  //    If paid at closing: Total Loan = Base Loan
+  const totalLoan = finFee ? baseLoan + upfrontFeeAmt : baseLoan;
+
+  // ── P&I ─────────────────────────────────────────────────────────────
   const pi  = calcPMT(totalLoan, rate, term);
   const ltv = appraised > 0 ? (totalLoan / appraised * 100) : 0;
 
-  // ── Monthly MI ─────────────────────────────────────────
+  // ── Monthly MI ───────────────────────────────────────────────────────
   let monthlyMI = 0;
   if (prog === 'FHA') {
     const mmiRate = calcFhaMmi(totalLoan, ltv, term);
@@ -1342,37 +1368,41 @@ function calcOption(n) {
     monthlyMI = getVal('convPmi');
   }
 
-  // ── Payment ────────────────────────────────────────────
+  // ── Payment ──────────────────────────────────────────────────────────
   const escrow       = insurance + taxes;
   const totalPayment = pi + escrow + monthlyMI;
 
-  // ── Fees ───────────────────────────────────────────────
-  const origFeeAmt    = baseLoan * origFeePct;
-  const discPtsAmt    = baseLoan * discPtsPct;
+  // ── Costs / Prepaids ─────────────────────────────────────────────────
   const dailyInt      = totalLoan > 0 && rate > 0 ? totalLoan * rate / 365 : 0;
   const dailyIntTotal = dailyInt * daysInt;
-  const upfrontClosing = finFee ? 0 : upfrontFeeAmt;
-  const totalClosingCosts = origFeeAmt + discPtsAmt + creditReport + appraisal + closingFee + titleIns + recording + upfrontClosing;
-  const hazardReserve  = insurance * 3;
-  const taxReserve     = taxes * 3;
-  const totalPrepaids  = hazardReserve + taxReserve + dailyIntTotal;
-  const totalFundsToClose = totalClosingCosts + totalPrepaids;
 
-  // ── Savings ────────────────────────────────────────────
+  // Total closing costs = all fees + upfront fee if NOT financed
+  const upfrontClosing    = finFee ? 0 : upfrontFeeAmt;
+  const totalClosingCosts = origFeeAmt + discPtsAmt + dollarFees + upfrontClosing;
+
+  const hazardReserve     = insurance * 3;
+  const taxReserve        = taxes * 3;
+  const totalPrepaids     = hazardReserve + taxReserve + dailyIntTotal;
+
+  // For a refi: closing costs are in the loan so funds to close = prepaids (+ any out-of-pocket if not financed)
+  const totalFundsToClose = totalPrepaids + (finFee ? 0 : totalClosingCosts);
+
+  // ── Savings ──────────────────────────────────────────────────────────
   const currentTotalPayment = getVal('currentPI') + getVal('currentEscrow');
   const paySavings = currentTotalPayment - totalPayment;
   const piSavings  = getVal('currentPI') - pi;
 
-  // Build partial result for VA recoup calc
   const partialR = { origFeeAmt, discPtsAmt, creditReport, recording,
                      upfrontFeeAmt, finFee, piSavings, totalClosingCosts, prog };
-  const recoupMonths = calcVARecoup({ ...partialR, pi });
-  const recoup = recoupMonths; // may be null
+  const recoup = calcVARecoup({ ...partialR, pi });
 
   return {
     n, term, baseLoan, rate, totalLoan, ltv,
+    payoff, cashOut,
     upfrontFeeAmt, upfrontFeeRate, upfrontFeeLabel,
-    origFeeAmt, discPtsAmt, creditReport, appraisal, closingFee, titleIns, recording,
+    origFeeAmt, origFeePct: origFeePct * 100,
+    discPtsAmt, discPtsPct: discPtsPct * 100,
+    creditReport, appraisal, closingFee, titleIns, recording, dollarFees,
     daysInt, dailyInt, dailyIntTotal,
     pi, monthlyMI, escrow, totalPayment,
     totalClosingCosts, totalPrepaids, hazardReserve, taxReserve, totalFundsToClose,
@@ -1435,16 +1465,17 @@ function checkArmWarnings() {
 function calcAll() {
   [1,2,3].forEach(n => {
     const r = calcOption(n);
-    setResult(`r_fundingFeeAmt_${n}`, r.upfrontFeeAmt);
-    setResult(`r_totalLoan_${n}`, r.totalLoan);
-    setResult(`r_pi_${n}`, r.pi);
-    setResult(`r_totalPayment_${n}`, r.totalPayment);
-    setResult(`r_ltv_${n}`, r.ltv, 'pct');
+    setResult(`r_baseLoan_${n}`,          r.baseLoan);
+    setResult(`r_fundingFeeAmt_${n}`,     r.upfrontFeeAmt);
+    setResult(`r_totalLoan_${n}`,         r.totalLoan);
+    setResult(`r_pi_${n}`,                r.pi);
+    setResult(`r_totalPayment_${n}`,      r.totalPayment);
+    setResult(`r_ltv_${n}`,              r.ltv, 'pct');
     setResult(`r_totalClosingCosts_${n}`, r.totalClosingCosts);
-    setResult(`r_totalPrepaids_${n}`, r.totalPrepaids);
+    setResult(`r_totalPrepaids_${n}`,     r.totalPrepaids);
     setResult(`r_totalFundsToClose_${n}`, r.totalFundsToClose);
-    setResult(`r_paySavings_${n}`, r.paySavings);
-    setResult(`r_recoup_${n}`, r.recoup, 'months');
+    setResult(`r_paySavings_${n}`,        r.paySavings);
+    setResult(`r_recoup_${n}`,            r.recoup, 'months');
   });
   checkArmWarnings();
   updatePerDiems();
@@ -1474,7 +1505,7 @@ function getDocData(n) {
     ...r,
     borrower: [getStr('borrowerFirst'),getStr('borrowerLast')].filter(Boolean).join(' ') || ' ',
     coBorrower: getStr('coBorrower'),
-    appId: getStr('appId'),
+    borrowerEmail: getStr('borrowerEmail'),
     address: getFullAddress() || ' ',
     county: getStr('propCounty'),
     date: fmtDate(getStr('datePrepared')),
@@ -1486,7 +1517,8 @@ function getDocData(n) {
     paymentsSkipped: getVal('paymentsSkipped'),
     currentRate: getVal('currentRate'),
     cashOut: getVal('cashOut'),
-    payoffAmt: getVal('payoffAmt'),
+    payoffAmt: getVal('payoffAmt'),   // kept for legacy refs
+    payoff:    getVal('payoffAmt'),
     currentPI: getVal('currentPI'),
     currentEscrow: getVal('currentEscrow'),
     appraised: getVal('appraised'),
@@ -1495,8 +1527,8 @@ function getDocData(n) {
     closingDate: fmtDate(getStr('closingDate')),
     firstPayDate: fmtDate(getStr('firstPayDate')),
     missedPmts: getVal('currentPI') * getVal('paymentsSkipped') + getVal('currentEscrow') * getVal('paymentsSkipped'),
-    origFeePct: getVal(`fee_origFee_${n}`),
-    discPtsPct: getVal(`fee_discountPts_${n}`),
+    origFeePct: r.origFeePct,
+    discPtsPct: r.discPtsPct,
   };
 }
 
@@ -1526,7 +1558,7 @@ function buildPreQuote(d) {
   <div class="doc-info-row">
     <div class="doc-info-box"><div class="label">Applicant(s)</div><div class="value">${d.borrower}${d.coBorrower?' / '+d.coBorrower:''}</div></div>
     <div class="doc-info-box"><div class="label">Subject Property</div><div class="value">${d.address}</div></div>
-    <div class="doc-info-box"><div class="label">Application ID</div><div class="value">${d.appId || 'Pending'}</div></div>
+    <div class="doc-info-box"><div class="label">Borrower Email</div><div class="value">${d.borrowerEmail || '—'}</div></div>
     <div class="doc-info-box"><div class="label">Date Prepared</div><div class="value">${d.date}</div></div>
     <div class="doc-info-box"><div class="label">Loan Type</div><div class="value">${d.prog} — ${d.loanType}</div></div>
     <div class="doc-info-box"><div class="label">Closing / 1st Payment</div><div class="value">${d.closingDate} / ${d.firstPayDate}</div></div>
@@ -1550,8 +1582,14 @@ function buildPreQuote(d) {
     <div class="doc-box">
       <div class="doc-box-title" style="background:#0d1f3c;">Proposed Loan — ${d.optName}</div>
       <table>
-        <tr><td>New Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
-        ${d.cashOut > 0 ? `<tr><td style="font-size:0.78em;color:#666">  Base Loan + Cash Out (${fmtMoney(d.cashOut)})</td><td></td></tr>` : ''}
+        <tr><td>Payoff Amount</td><td>${fmtMoney(d.payoff)}</td></tr>
+        ${d.cashOut > 0 ? `<tr><td>+ Cash Out</td><td>${fmtMoney(d.cashOut)}</td></tr>` : ''}
+        <tr><td>+ Origination (${d.origFeePct.toFixed(3)}%)</td><td>${fmtMoney(d.origFeeAmt)}</td></tr>
+        ${d.discPtsAmt > 0 ? `<tr><td>+ Discount Points (${d.discPtsPct.toFixed(3)}%)</td><td>${fmtMoney(d.discPtsAmt)}</td></tr>` : ''}
+        ${d.dollarFees > 0 ? `<tr><td>+ Other Financed Fees</td><td>${fmtMoney(d.dollarFees)}</td></tr>` : ''}
+        <tr style="font-weight:700;"><td>= Base Loan Amount</td><td>${fmtMoney(d.baseLoan)}</td></tr>
+        <tr><td>+ ${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%)</td><td>${fmtMoney(d.upfrontFeeAmt)} ${d.finFee ? '[Financed]' : '[At Closing]'}</td></tr>
+        <tr class="total-row"><td>= Total Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
         <tr><td>Interest Rate</td><td>${fmtPct(d.rate)}</td></tr>
         <tr><td>Amortization Type</td><td>${amortLabel.toUpperCase()}</td></tr>
         <tr><td>Term</td><td>${d.term} months</td></tr>
@@ -1653,7 +1691,7 @@ function buildFeesWorksheet(d) {
   <div class="doc-info-row">
     <div class="doc-info-box"><div class="label">Applicant(s)</div><div class="value">${d.borrower}${d.coBorrower?' / '+d.coBorrower:''}</div></div>
     <div class="doc-info-box"><div class="label">Prepared By</div><div class="value">Village Capital and Investment</div></div>
-    <div class="doc-info-box"><div class="label">Application No.</div><div class="value">${d.appId || 'Pending'}</div></div>
+    <div class="doc-info-box"><div class="label">Borrower Email</div><div class="value">${d.borrowerEmail || '—'}</div></div>
     <div class="doc-info-box"><div class="label">Date Prepared</div><div class="value">${d.date}</div></div>
     <div class="doc-info-box"><div class="label">Loan Program</div><div class="value">${d.prog} — ${d.loanType}</div></div>
     <div class="doc-info-box"><div class="label">Total Loan Amount</div><div class="value">${fmtMoney(d.totalLoan)} at ${fmtPct(d.rate)} — ${d.term} mo</div></div>
@@ -1688,12 +1726,16 @@ function buildFeesWorksheet(d) {
     <div class="doc-box">
       <div class="doc-box-title">Transaction Summary</div>
       <table>
-        <tr><td>Refi / Payoff (+)</td><td>${fmtMoney(d.payoffAmt)}</td></tr>
-        <tr><td>${d.upfrontFeeLabel} (+)</td><td>${fmtMoney(d.upfrontFeeAmt)}</td></tr>
-        <tr><td>Est. Closing Costs (+)</td><td>${fmtMoney(d.totalClosingCosts)}</td></tr>
-        <tr><td>Est. Prepaids (+)</td><td>${fmtMoney(d.totalPrepaids)}</td></tr>
-        <tr><td>Loan Amount (-)</td><td>${fmtMoney(d.totalLoan)}</td></tr>
-        <tr class="total-row"><td>Total Cash to/from Borrower</td><td>${fmtMoney(d.payoffAmt + d.totalClosingCosts + d.totalPrepaids - d.totalLoan)}</td></tr>
+        <tr><td>Payoff Amount (+)</td><td>${fmtMoney(d.payoff)}</td></tr>
+        ${d.cashOut > 0 ? `<tr><td>Cash Out (+)</td><td>${fmtMoney(d.cashOut)}</td></tr>` : ''}
+        <tr><td>Orig. Fee (${d.origFeePct.toFixed(3)}%) (+)</td><td>${fmtMoney(d.origFeeAmt)}</td></tr>
+        ${d.discPtsAmt > 0 ? `<tr><td>Discount Pts (${d.discPtsPct.toFixed(3)}%) (+)</td><td>${fmtMoney(d.discPtsAmt)}</td></tr>` : ''}
+        ${d.dollarFees > 0 ? `<tr><td>Other Financed Fees (+)</td><td>${fmtMoney(d.dollarFees)}</td></tr>` : ''}
+        <tr style="font-weight:700;"><td>= Base Loan Amount</td><td>${fmtMoney(d.baseLoan)}</td></tr>
+        <tr><td>${d.upfrontFeeLabel} (${(d.upfrontFeeRate*100).toFixed(2)}%) (+)</td><td>${fmtMoney(d.upfrontFeeAmt)}</td></tr>
+        <tr style="font-weight:700;"><td>= Total Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
+        <tr><td>Est. Prepaids (cash)</td><td>${fmtMoney(d.totalPrepaids)}</td></tr>
+        <tr class="total-row"><td>Est. Cash to Close</td><td>${fmtMoney(d.totalFundsToClose)}</td></tr>
       </table>
     </div>
     <div class="doc-box">
@@ -1766,6 +1808,68 @@ function printAll() {
 // ============================================================
 // STATUS
 // ============================================================
+// ============================================================
+// EMAIL TO BORROWER
+// ============================================================
+function emailBorrower() {
+  const borrower      = [getStr('borrowerFirst'), getStr('borrowerLast')].filter(Boolean).join(' ') || 'Borrower';
+  const borrowerEmail = getStr('borrowerEmail');
+  const loName        = getStr('loSelect') || 'Your Loan Officer';
+  const loPhone       = getStr('loPhone')  || '';
+  const loEmail       = getStr('loEmail')  || '';
+  const address       = getFullAddress();
+
+  if (!borrowerEmail) {
+    alert('Please enter the borrower\'s email address first.');
+    return;
+  }
+
+  // Build a summary of all 3 options
+  const optionLines = [1,2,3].map(n => {
+    const r       = calcOption(n);
+    const optName = getStr(`optName${n}`) || `Option ${n}`;
+    if (!r.baseLoan) return null;
+    return [
+      `  Option ${n}: ${optName}`,
+      `  ├ Rate:          ${(r.rate * 100).toFixed(3)}%`,
+      `  ├ Total Loan:    ${fmtMoney(r.totalLoan)}`,
+      `  ├ P&I Payment:   ${fmtMoney(r.pi)}`,
+      `  ├ Total Payment: ${fmtMoney(r.totalPayment)}`,
+      `  └ Funds to Close: ${fmtMoney(r.totalFundsToClose)}`,
+    ].join('\n');
+  }).filter(Boolean);
+
+  const subject = `Your Loan Quote Summary — ${borrower} — Village Capital & Investment`;
+
+  const body = [
+    `Hi ${borrower.split(' ')[0]},`,
+    '',
+    'Thank you for the opportunity to work with you! Below is a summary of the loan',
+    'scenario(s) we put together for you.',
+    '',
+    address ? `Property: ${address}` : '',
+    '',
+    '══ LOAN SCENARIO SUMMARY ══════════════════════',
+    ...optionLines,
+    '═══════════════════════════════════════════════',
+    '',
+    'These figures are estimates and not an official Loan Estimate (LE).',
+    'Your actual rate, payment, and costs could vary.',
+    '',
+    'Please don\'t hesitate to reach out with any questions — I\'m happy to walk',
+    'you through any of these options in detail.',
+    '',
+    `${loName}`,
+    loPhone ? `📞 ${loPhone}` : '',
+    loEmail ? `✉  ${loEmail}` : '',
+    'Village Capital & Investment | NMLS #3317',
+    '384 S 400 W Suite 100, Lindon, UT 84042',
+  ].filter(l => l !== null).join('\n');
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(borrowerEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+}
+
 // ============================================================
 // EMAIL TO LO
 // ============================================================
