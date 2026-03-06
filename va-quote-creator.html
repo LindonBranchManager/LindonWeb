@@ -546,12 +546,13 @@ body {
           <input type="number" id="currentRate" placeholder="0.000" step="0.001" value="0">
         </div>
         <div class="field">
-          <label>Current P&I Payment ($)</label>
+          <label>Current P&amp;I Payment ($)</label>
           <input type="number" id="currentPI" placeholder="0.00" value="0">
         </div>
         <div class="field">
-          <label>Current Escrow Payment ($)</label>
-          <input type="number" id="currentEscrow" placeholder="0.00" value="0">
+          <label>Current Full PITI ($)</label>
+          <input type="number" id="currentPITI" placeholder="0.00" value="0" oninput="calcEscrowBreakdown()">
+          <span class="hint">P&amp;I + Escrow — escrow auto-calculates below</span>
         </div>
       </div>
       <div class="form-grid-4" style="margin-bottom:16px;">
@@ -560,19 +561,28 @@ body {
           <input type="number" id="appraised" placeholder="0.00" value="0">
         </div>
         <div class="field">
-          <label>Monthly Insurance ($)</label>
-          <input type="number" id="insurance" placeholder="0.00" value="0">
+          <label>Hazard Insurance / Month ($)</label>
+          <input type="number" id="insurance" placeholder="0.00" value="0" oninput="calcEscrowBreakdown()">
         </div>
         <div class="field">
-          <label>Monthly Taxes ($)</label>
-          <input type="number" id="taxes" placeholder="0.00" value="0">
+          <label>Monthly Taxes ($) <span style="color:var(--steel);font-size:0.7rem;font-weight:400;">(auto-calc)</span></label>
+          <input type="number" id="taxes" placeholder="Auto" value="0" readonly style="background:#f0f4fb;color:var(--text-muted);">
+        </div>
+        <div class="field">
+          <label>Current Escrow / Month ($) <span style="color:var(--steel);font-size:0.7rem;font-weight:400;">(auto-calc)</span></label>
+          <input type="number" id="currentEscrow" placeholder="Auto" value="0" readonly style="background:#f0f4fb;color:var(--text-muted);">
+        </div>
+      </div>
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field">
+          <label>Cash Out Amount ($)</label>
+          <input type="number" id="cashOut" placeholder="0.00" value="0" oninput="calcAll()">
+          <span class="hint">Added to base loan amount on each option</span>
         </div>
         <div class="field">
           <label>Est. Escrow Balance ($)</label>
           <input type="number" id="escrowBalance" placeholder="0.00" value="0">
         </div>
-      </div>
-      <div class="form-grid-4">
         <div class="field">
           <label>Est. Closing Date</label>
           <input type="date" id="closingDate">
@@ -581,6 +591,8 @@ body {
           <label>Est. 1st Payment Date</label>
           <input type="date" id="firstPayDate">
         </div>
+      </div>
+      <div class="form-grid-4">
         <div class="field">
           <label>Payments Skipped</label>
           <select id="paymentsSkipped">
@@ -749,6 +761,25 @@ function fillLoInfo() {
 }
 
 // ============================================================
+// ESCROW AUTO-CALC
+// ============================================================
+function calcEscrowBreakdown() {
+  const piti = getVal('currentPITI');
+  const currentPI = getVal('currentPI');
+  const hazard = getVal('insurance');
+
+  // Escrow = PITI - P&I
+  const escrow = Math.max(0, piti - currentPI);
+  document.getElementById('currentEscrow').value = escrow.toFixed(2);
+
+  // Taxes = Escrow - Hazard Insurance
+  const taxes = Math.max(0, escrow - hazard);
+  document.getElementById('taxes').value = taxes.toFixed(2);
+
+  calcAll();
+}
+
+// ============================================================
 // DATA MODEL
 // ============================================================
 const optionRowDefs = [
@@ -880,7 +911,7 @@ function calcDailyInterest(loan, rate) {
 
 function calcOption(n) {
   const term = getVal(`opt_term_${n}`);
-  const baseLoan = getVal(`opt_baseLoan_${n}`);
+  const baseLoan = getVal(`opt_baseLoan_${n}`) + getVal('cashOut');
   const rate = getVal(`opt_rate_${n}`) / 100;
   const ffRate = getFundingFeeRate();
   const finFee = getStr('financeFee') === 'yes';
@@ -1012,6 +1043,7 @@ function getDocData(n) {
     paymentsSkipped: getVal('paymentsSkipped'),
     currentBalance: getVal('currentBalance'),
     currentRate: getVal('currentRate'),
+    cashOut: getVal('cashOut'),
     currentPI: getVal('currentPI'),
     currentEscrow: getVal('currentEscrow'),
     appraised: getVal('appraised'),
@@ -1066,20 +1098,25 @@ function buildPreQuote(d) {
         <tr><td>Amortization Type</td><td>FIXED</td></tr>
         <tr><td>Term</td><td>${d.term} months</td></tr>
         <tr><td>P&I Payment</td><td>${fmtMoney(d.currentPI)}</td></tr>
-        <tr><td>Escrow Payment</td><td>${fmtMoney(d.currentEscrow)}</td></tr>
-        <tr class="total-row"><td>Total Payment</td><td>${fmtMoney(d.currentPI + d.currentEscrow)}</td></tr>
+        <tr><td>Hazard Insurance</td><td>${fmtMoney(d.insurance)}</td></tr>
+        <tr><td>Taxes</td><td>${fmtMoney(d.taxes)}</td></tr>
+        <tr><td>Total Escrow</td><td>${fmtMoney(d.currentEscrow)}</td></tr>
+        <tr class="total-row"><td>Total PITI</td><td>${fmtMoney(d.currentPI + d.currentEscrow)}</td></tr>
       </table>
     </div>
     <div class="doc-box">
       <div class="doc-box-title" style="background:#0d1f3c;">Proposed Loan — ${d.optName}</div>
       <table>
         <tr><td>New Loan Amount</td><td>${fmtMoney(d.totalLoan)}</td></tr>
+        ${d.cashOut > 0 ? `<tr><td style="font-size:0.78em;color:#666">  Base Loan + Cash Out (${fmtMoney(d.cashOut)})</td><td></td></tr>` : ''}
         <tr><td>Interest Rate</td><td>${fmtPct(d.rate)}</td></tr>
         <tr><td>Amortization Type</td><td>${amortLabel.toUpperCase()}</td></tr>
         <tr><td>Term</td><td>${d.term} months</td></tr>
         <tr><td>Proposed P&I</td><td>${fmtMoney(d.pi)}</td></tr>
-        <tr><td>Escrow Payment</td><td>${fmtMoney(d.escrow)}</td></tr>
-        <tr class="total-row"><td>Total Payment</td><td>${fmtMoney(d.totalPayment)}</td></tr>
+        <tr><td>Hazard Insurance</td><td>${fmtMoney(d.insurance)}</td></tr>
+        <tr><td>Taxes</td><td>${fmtMoney(d.taxes)}</td></tr>
+        <tr><td>Total Escrow</td><td>${fmtMoney(d.escrow)}</td></tr>
+        <tr class="total-row"><td>Total PITI</td><td>${fmtMoney(d.totalPayment)}</td></tr>
       </table>
     </div>
   </div>
@@ -1219,8 +1256,8 @@ function buildFeesWorksheet(d) {
         <tr><td>Principal &amp; Interest</td><td>${fmtMoney(d.pi)}</td></tr>
         <tr><td>Hazard Insurance</td><td>${fmtMoney(d.insurance)}</td></tr>
         <tr><td>Real Estate Taxes</td><td>${fmtMoney(d.taxes)}</td></tr>
-        <tr><td>Mortgage Insurance</td><td>$0.00</td></tr>
-        <tr class="total-row"><td>Total Monthly Payment</td><td>${fmtMoney(d.totalPayment)}</td></tr>
+        <tr><td>Total Escrow</td><td>${fmtMoney(d.escrow)}</td></tr>
+        <tr class="total-row"><td>Total PITI</td><td>${fmtMoney(d.totalPayment)}</td></tr>
       </table>
     </div>
   </div>
@@ -1310,12 +1347,12 @@ document.getElementById('datePrepared').value = today;
 calcAll();
 
 // Auto-recalc on any change to shared fields
-['currentBalance','currentRate','currentPI','currentEscrow','appraised','insurance','taxes',
- 'escrowBalance','paymentsSkipped','loanType','fundingFeeType','customFundingFee','financeFee',
+['currentBalance','currentRate','currentPI','currentPITI','appraised','insurance',
+ 'escrowBalance','cashOut','paymentsSkipped','loanType','fundingFeeType','customFundingFee','financeFee',
  'closingDate','firstPayDate'].forEach(id => {
   const el = document.getElementById(id);
-  if(el) el.addEventListener('change', calcAll);
-  if(el) el.addEventListener('input', calcAll);
+  if (el) el.addEventListener('change', id === 'currentPI' || id === 'currentPITI' || id === 'insurance' ? calcEscrowBreakdown : calcAll);
+  if (el) el.addEventListener('input', id === 'currentPI' || id === 'currentPITI' || id === 'insurance' ? calcEscrowBreakdown : calcAll);
 });
 </script>
 </body>
