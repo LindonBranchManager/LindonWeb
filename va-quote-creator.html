@@ -378,8 +378,8 @@ body {
 
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body > *:not(#printZone) { display: none !important; }
-  #printZone { display: block !important; margin: 0; padding: 0; }
+  body > * { display: none !important; }
+  body > #printZone { display: block !important; margin: 0; padding: 0; }
   @page { margin: 0.45in; size: letter; }
 }
 
@@ -1831,15 +1831,20 @@ let currentPrintContent = '';
 let currentDocData = null;
 
 function showPreview(n, type) {
-  calcAll();
-  const d = getDocData(n);
-  const html = type === 'prequote' ? buildPreQuote(d) : buildFeesWorksheet(d);
-  const title = type === 'prequote' ? `Pre-Quote — Option ${n}: ${d.optName}` : `Fees Worksheet — Option ${n}: ${d.optName}`;
-  document.getElementById('previewTitle').textContent = title;
-  document.getElementById('previewContent').innerHTML = html;
-  document.getElementById('previewModal').classList.add('open');
-  currentPrintContent = html;
-  currentDocData = { ...d, previewType: type };
+  try {
+    calcAll();
+    const d = getDocData(n);
+    const html = type === 'prequote' ? buildPreQuote(d) : buildFeesWorksheet(d);
+    const title = type === 'prequote' ? `Pre-Quote — Option ${n}: ${d.optName}` : `Fees Worksheet — Option ${n}: ${d.optName}`;
+    document.getElementById('previewTitle').textContent = title;
+    document.getElementById('previewContent').innerHTML = html;
+    document.getElementById('previewModal').classList.add('open');
+    currentPrintContent = html;
+    currentDocData = { ...d, previewType: type };
+  } catch(e) {
+    alert('Error opening preview: ' + e.message);
+    console.error('showPreview error:', e);
+  }
 }
 
 function closeModal() {
@@ -1857,15 +1862,15 @@ function openPrintWindow(htmlContent) {
   const zone = document.getElementById('printZone');
   zone.innerHTML = htmlContent;
   zone.classList.add('active');
-  // Small delay so browser renders the zone before print dialog opens
-  setTimeout(() => {
-    window.print();
-    // Clean up after print dialog closes
-    setTimeout(() => {
+  // requestAnimationFrame ensures the browser has painted the zone before
+  // we call print() — without this the dialog can open before render completes
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
       zone.classList.remove('active');
       zone.innerHTML = '';
-    }, 500);
-  }, 200);
+    });
+  });
 }
 
 // ── Toast notification ───────────────────────────────────────
