@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Launch Pad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #060e1a;
+      --surface:   #0f1e33;
+      --deep:      #0a1525;
+      --border:    #1e3a5f;
+      --accent:    #0ea5e9;
+      --accent2:   #2563eb;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --label:     #93c5fd;
+      --blue-lt:   #7dd3fc;
+      --green:     #22c55e;
+      --radius:    10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--surface), var(--deep));
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px #00000060;
+    }
+    .header-brand { display: flex; align-items: center; gap: 10px; }
+    .header-brand .icon { font-size: 22px; filter: drop-shadow(0 0 8px var(--accent)); }
+    .header-brand h1 { color: var(--blue-lt); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .header-brand p  { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .step-btns { display: flex; gap: 8px; }
+    .step-btn {
+      background: var(--border);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .step-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+
+    /* ── Main content ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 28px 24px 0; }
+
+    /* ── Loan type pills ── */
+    .loan-type-group { margin-bottom: 28px; }
+    .loan-type-label { color: var(--label); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 10px; }
+    .loan-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .loan-pill {
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .loan-pill.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      color: var(--blue-lt);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* ── Grid layouts ── */
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    @media (max-width: 600px) {
+      .grid-3, .grid-2, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 0; }
+    label.field-label {
+      color: var(--label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input[type="text"], input[type="date"] {
+      background: var(--deep);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 13px;
+      width: 100%;
+      font-family: 'DM Mono', monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, input[type="date"]:focus { border-color: var(--accent); }
+
+    /* ── Checkbox ── */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+    .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+    .checkbox-row span { color: var(--label); font-size: 13px; font-weight: 600; }
+
+    /* ── Submit button ── */
+    .launch-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 20px #0ea5e950;
+      transition: opacity 0.2s;
+    }
+    .launch-btn:disabled {
+      background: var(--border);
+      color: var(--muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* ── Step 2: Site cards ── */
+    .site-card {
+      background: var(--deep);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 12px #00000040;
+    }
+    .site-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .site-label { color: var(--blue-lt); font-weight: 700; font-size: 15px; font-family: 'DM Mono', monospace; }
+    .site-bucket {
+      margin-left: 10px;
+      background: var(--border);
+      color: var(--label);
+      font-size: 10px;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: monospace;
+    }
+    .open-site-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      box-shadow: 0 2px 8px #0ea5e940;
+      white-space: nowrap;
+    }
+    .site-desc { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+    .fields-table {
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 10px 14px;
+    }
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .field-row:last-child { border-bottom: none; }
+    .field-row-label { color: var(--muted); font-size: 12px; min-width: 180px; }
+    .field-row-value { color: var(--text); font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 500; }
+    .field-row-value.empty { color: var(--border); font-style: italic; }
+    .field-row-right { display: flex; align-items: center; gap: 8px; }
+
+    .copy-btn {
+      background: var(--surface);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: monospace;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn.copied { background: var(--green); }
+
+    /* ── Summary bar ── */
+    .summary-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .summary-name { color: var(--blue-lt); font-weight: 700; font-size: 14px; }
+    .summary-type {
+      margin-left: 12px;
+      background: #0ea5e920;
+      color: var(--blue-lt);
+      font-size: 11px;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .edit-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* ── Print reference ── */
+    .print-ref {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-top: 8px;
+    }
+    .print-ref-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .print-item { background: var(--deep); border-radius: 6px; padding: 8px 12px; font-size: 11px; }
+    .print-item strong { color: var(--blue-lt); }
+    .print-item span { color: var(--muted); }
+
+    .hint { color: var(--muted); font-size: 12px; margin-bottom: 18px; line-height: 1.7; }
+    .hint strong { color: var(--blue-lt); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <span class="icon">🚀</span>
+    <div>
+      <h1>Loan Launch Pad</h1>
+      <p>Enter once. Launch everywhere.</p>
+    </div>
+  </div>
+  <div class="step-btns">
+    <button class="step-btn active" id="btn-step1" onclick="goStep(1)">1 · Enter Data</button>
+    <button class="step-btn" id="btn-step2" onclick="goStep(2)">2 · Launch</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ════════════════════════════════════════
+       STEP 1
+  ════════════════════════════════════════ -->
+  <div id="step1">
+
+    <!-- Loan Type -->
+    <div class="loan-type-group">
+      <span class="loan-type-label">Loan Type</span>
+      <div class="loan-pills" id="loan-pills">
+        <button class="loan-pill active" onclick="setLoanType('Conventional')">Conventional</button>
+        <button class="loan-pill" onclick="setLoanType('FHA')">FHA</button>
+        <button class="loan-pill" onclick="setLoanType('VA')">VA</button>
+        <button class="loan-pill" onclick="setLoanType('USDA')">USDA</button>
+      </div>
+    </div>
+
+    <!-- Borrower -->
+    <div class="card">
+      <div class="card-title">Borrower</div>
+      <div class="grid-3" style="margin-bottom:12px">
+        <div class="field">
+          <label class="field-label">First Name</label>
+          <input type="text" id="borFirst" oninput="checkReady()" />
+        </div>
+        <div class="field">
+          <label class="field-label">Middle Name</label>
+          <input type="text" id="borMiddle" placeholder="Optional" />
+        </div>
+        <div class="field">
+          <label class="field-label">Last Name</label>
+          <input type="text" id="borLast" oninput="checkReady()" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="field-label">SSN (Full)</label>
+          <input type="text" id="borSSN" placeholder="XXX-XX-XXXX" />
+        </div>
+        <div class="field">
+          <label class="field-label">Date of Birth (MM/YYYY)</label>
+          <input type="text" id="borDOB" placeholder="MM/YYYY" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Co-borrower toggle -->
+    <label class="checkbox-row">
+      <input type="checkbox" id="hasCoBor" onchange="toggleCoBorrower()" />
+      <span>There is a Co-Borrower</span>
+    </label>
+
+    <!-- Co-borrower (hidden by default) -->
+    <div class="card" id="coBorCard" style="display:none">
+      <div class="card-title">Co-Borrower</div>
+      <div class="grid-3" style="margin-bottom:12px">
+        <div class="field">
+          <label class="field-label">First Name</label>
+          <input type="text" id="coFirst" />
+        </div>
+        <div class="field">
+          <label class="field-label">Middle Name</label>
+          <input type="text" id="coMiddle" placeholder="Optional" />
+        </div>
+        <div class="field">
+          <label class="field-label">Last Name</label>
+          <input type="text" id="coLast" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="field-label">SSN (Full)</label>
+          <input type="text" id="coSSN" placeholder="XXX-XX-XXXX" />
+        </div>
+        <div class="field">
+          <label class="field-label">Date of Birth (MM/YYYY)</label>
+          <input type="text" id="coDOB" placeholder="MM/YYYY" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Officer -->
+    <div class="card">
+      <div class="card-title">Loan Officer</div>
+      <div class="grid-3">
+        <div class="field">
+          <label class="field-label">First Name</label>
+          <input type="text" id="loFirst" />
+        </div>
+        <div class="field">
+          <label class="field-label">Middle Name</label>
+          <input type="text" id="loMiddle" placeholder="Optional" />
+        </div>
+        <div class="field">
+          <label class="field-label">Last Name</label>
+          <input type="text" id="loLast" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Property -->
+    <div class="card">
+      <div class="card-title">Property</div>
+      <div class="grid-2-1" style="margin-bottom:12px">
+        <div class="field">
+          <label class="field-label">Street Address</label>
+          <input type="text" id="propAddress" />
+        </div>
+        <div class="field">
+          <label class="field-label">City</label>
+          <input type="text" id="propCity" />
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <label class="field-label">State (2-letter)</label>
+          <input type="text" id="propState" placeholder="e.g. TX" maxlength="2" />
+        </div>
+        <div class="field">
+          <label class="field-label">Zip Code</label>
+          <input type="text" id="propZip" />
+        </div>
+        <div class="field">
+          <label class="field-label">NatGen Account # (optional)</label>
+          <input type="text" id="natgenAcct" />
+        </div>
+      </div>
+    </div>
+
+    <button class="launch-btn" id="launchBtn" onclick="goStep(2)" disabled>
+      Enter at least borrower first &amp; last name to continue
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 2
+  ════════════════════════════════════════ -->
+  <div id="step2" style="display:none">
+
+    <!-- Summary bar -->
+    <div class="summary-bar">
+      <div>
+        <span class="summary-name" id="summaryName"></span>
+        <span class="summary-type" id="summaryType"></span>
+      </div>
+      <button class="edit-btn" onclick="goStep(1)">← Edit Data</button>
+    </div>
+
+    <p class="hint" id="siteCountHint"></p>
+
+    <!-- Site cards injected here -->
+    <div id="siteCards"></div>
+
+    <!-- Print reference -->
+    <div class="print-ref">
+      <div class="print-ref-title">Print Settings Quick Reference</div>
+      <div class="print-grid">
+        <div class="print-item"><strong>LDP:</strong> <span>Landscape · Scale 80% · Selection Only · Headers+Footers</span></div>
+        <div class="print-item"><strong>GSA:</strong> <span>Portrait · Full page · Adobe PDF</span></div>
+        <div class="print-item"><strong>BK / OFAC / FEMA / CAIVRS:</strong> <span>Full page · Adobe PDF</span></div>
+        <div class="print-item"><strong>FHA Case / Refi / MIC:</strong> <span>Full page · Adobe PDF · Ctrl+P</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  // ── State ──────────────────────────────────────────────
+  let loanType = 'Conventional';
+
+  function setLoanType(t) {
+    loanType = t;
+    document.querySelectorAll('.loan-pill').forEach(b => {
+      b.classList.toggle('active', b.textContent === t);
+    });
+    checkReady();
+    // Update step 2 badge if visible
+    document.getElementById('summaryType').textContent = loanType;
+  }
+
+  function toggleCoBorrower() {
+    const show = document.getElementById('hasCoBor').checked;
+    document.getElementById('coBorCard').style.display = show ? 'block' : 'none';
+  }
+
+  function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+  function checkReady() {
+    const ok = val('borFirst') && val('borLast');
+    const btn = document.getElementById('launchBtn');
+    btn.disabled = !ok;
+    btn.textContent = ok ? 'Launch Pad →' : 'Enter at least borrower first & last name to continue';
+  }
+
+  function goStep(n) {
+    document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+    document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+    document.getElementById('btn-step1').classList.toggle('active', n === 1);
+    document.getElementById('btn-step2').classList.toggle('active', n === 2);
+    if (n === 2) buildStep2();
+  }
+
+  // ── Data helpers ───────────────────────────────────────
+  function fullName(first, middle, last) {
+    return [first, middle, last].filter(Boolean).join(' ');
+  }
+
+  function getData() {
+    const hasCo = document.getElementById('hasCoBor').checked;
+    return {
+      loanType,
+      borFirst:   val('borFirst'),
+      borMiddle:  val('borMiddle'),
+      borLast:    val('borLast'),
+      borSSN:     val('borSSN'),
+      borDOB:     val('borDOB'),
+      hasCo,
+      coFirst:    hasCo ? val('coFirst')  : '',
+      coMiddle:   hasCo ? val('coMiddle') : '',
+      coLast:     hasCo ? val('coLast')   : '',
+      coSSN:      hasCo ? val('coSSN')    : '',
+      coDOB:      hasCo ? val('coDOB')    : '',
+      loFirst:    val('loFirst'),
+      loMiddle:   val('loMiddle'),
+      loLast:     val('loLast'),
+      propAddress: val('propAddress'),
+      propCity:    val('propCity'),
+      propState:   val('propState').toUpperCase(),
+      propZip:     val('propZip'),
+      natgenAcct:  val('natgenAcct'),
+    };
+  }
+
+  // ── Site definitions ───────────────────────────────────
+  function getSites(d) {
+    const propFull = [d.propAddress, d.propCity, d.propState, d.propZip].filter(Boolean).join(', ');
+    const borFull  = fullName(d.borFirst, d.borMiddle, d.borLast);
+    const coFull   = fullName(d.coFirst, d.coMiddle, d.coLast);
+    const loFull   = fullName(d.loFirst, d.loMiddle, d.loLast);
+
+    const all = [
+      {
+        key: 'LDP',
+        label: 'LDP',
+        bucket: '213 – LDP',
+        url: 'https://www.hud.gov/program_offices/general_counsel/limited_denial_participation_hud_funding_disqualifications',
+        types: null,
+        desc: 'Limited Denial of Participation list — print full page daily',
+        fields: [{ label: 'No borrower data needed', value: 'Print full page · Landscape · 80% scale · Selection Only' }],
+      },
+      {
+        key: 'GSA',
+        label: 'GSA / SAM',
+        bucket: '214 – GSA',
+        url: 'https://sam.gov/search/?index=ex&sort=-relevance&page=1&pageSize=25&sfm%5BsimpleSearch%5D%5BkeywordRadio%5D=ALL&sfm%5Bstatus%5D%5Bis_active%5D=true&sfm%5Bstatus%5D%5Bis_inactive%5D=false',
+        types: null,
+        desc: 'Excluded Individuals — add all borrowers + LO then print portrait',
+        fields: [
+          borFull  ? { label: 'Borrower Full Name', value: borFull }   : null,
+          d.borSSN ? { label: 'Borrower SSN',       value: d.borSSN }  : null,
+          (d.hasCo && coFull)   ? { label: 'Co-Borrower Full Name', value: coFull }  : null,
+          (d.hasCo && d.coSSN)  ? { label: 'Co-Borrower SSN',       value: d.coSSN } : null,
+          loFull   ? { label: 'LO Full Name',        value: loFull }   : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'OFAC',
+        label: 'OFAC',
+        bucket: '220 – OFAC Search',
+        url: 'https://sanctionssearch.ofac.treas.gov/',
+        types: null,
+        desc: 'Sanctions list — search all borrowers by name + state',
+        fields: [
+          borFull      ? { label: 'Borrower Full Name', value: borFull }     : null,
+          d.propState  ? { label: 'State',              value: d.propState } : null,
+          (d.hasCo && coFull) ? { label: 'Co-Borrower Full Name', value: coFull } : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'BK',
+        label: 'BK Search (AACER)',
+        bucket: '225 – Bankruptcy Search',
+        url: 'https://www.aacer2.net/Home#/docketQueues',
+        types: null,
+        desc: 'Bankruptcy search — run for every borrower',
+        fields: [
+          d.borFirst ? { label: 'Borrower First Name',    value: d.borFirst }                  : null,
+          d.borLast  ? { label: 'Borrower Last Name',     value: d.borLast }                   : null,
+          d.borSSN   ? { label: 'Borrower Last 4 SSN',    value: d.borSSN.replace(/\D/g,'').slice(-4) } : null,
+          (d.hasCo && d.coFirst) ? { label: 'Co-Borrower First Name', value: d.coFirst }       : null,
+          (d.hasCo && d.coLast)  ? { label: 'Co-Borrower Last Name',  value: d.coLast }        : null,
+          (d.hasCo && d.coSSN)   ? { label: 'Co-Borrower Last 4 SSN', value: d.coSSN.replace(/\D/g,'').slice(-4) } : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'CAIVRS',
+        label: 'CAIVRS (FHA Connection)',
+        bucket: '215 – CAIVRS',
+        url: 'https://entp.hud.gov/clas/',
+        types: ['VA'],
+        desc: 'VA loans only — Lender ID: 5598980000 · Agency: Veterans\' Affairs',
+        fields: [
+          { label: 'Lender ID', value: '5598980000' },
+          { label: 'Agency',    value: "Veterans' Affairs" },
+          d.borSSN ? { label: 'Borrower SSN',     value: d.borSSN } : null,
+          (d.hasCo && d.coSSN) ? { label: 'Co-Borrower SSN', value: d.coSSN } : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'FHAQuery',
+        label: 'FHA Connection (Case / MIC / Refi)',
+        bucket: '123 / 124 / 125',
+        url: 'https://entp.hud.gov/clas/',
+        types: ['FHA'],
+        desc: 'FHA loans only — pull Case Query, MIC, and Refinance Credit Query',
+        fields: [
+          d.borSSN    ? { label: 'Borrower SSN',    value: d.borSSN }    : null,
+          (d.hasCo && d.coSSN) ? { label: 'Co-Borrower SSN', value: d.coSSN } : null,
+          d.propZip   ? { label: 'Property Zip',    value: d.propZip }   : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'WebLGY',
+        label: 'VA WebLGY — Order IRRRL',
+        bucket: '206 – Case Assignment',
+        url: 'https://lgy.va.gov/lgyhub/',
+        types: ['VA'],
+        desc: 'VA loans only — use SSN + birth month/year to search',
+        fields: [
+          d.borSSN ? { label: 'Borrower SSN', value: d.borSSN }    : null,
+          d.borDOB ? { label: 'Borrower DOB', value: d.borDOB }    : null,
+          (d.hasCo && d.coSSN) ? { label: 'Co-Borrower SSN', value: d.coSSN } : null,
+          (d.hasCo && d.coDOB) ? { label: 'Co-Borrower DOB', value: d.coDOB } : null,
+        ].filter(Boolean),
+      },
+      {
+        key: 'FEMA',
+        label: 'FEMA Flood',
+        bucket: '132 – Flood Search',
+        url: 'https://msc.fema.gov/portal/home',
+        types: null,
+        desc: 'Flood zone determination — search property address',
+        fields: [
+          propFull ? { label: 'Property Address', value: propFull } : { label: 'Tip', value: 'Enter property address in Step 1' },
+        ],
+      },
+      {
+        key: 'NatGen',
+        label: 'NatGen Insurance',
+        bucket: '266 – Hazard Insurance',
+        url: 'https://clientsource.natgen.com/',
+        types: null,
+        desc: 'Hazard insurance lookup — find account # in Loan Status or mortgage statement',
+        fields: [
+          d.natgenAcct
+            ? { label: 'NatGen Account #', value: d.natgenAcct }
+            : { label: 'Reminder', value: 'Account # found in Loan Status, 1003 URLA Part 3, or mortgage statement' },
+        ],
+      },
+    ];
+
+    return all.filter(s => !s.types || s.types.includes(d.loanType));
+  }
+
+  // ── Build step 2 ───────────────────────────────────────
+  function buildStep2() {
+    const d = getData();
+    const sites = getSites(d);
+
+    // Summary bar
+    const borName = fullName(d.borFirst, d.borMiddle, d.borLast);
+    const coName  = d.hasCo ? fullName(d.coFirst, '', d.coLast) : '';
+    document.getElementById('summaryName').textContent = borName + (coName ? ' & ' + coName : '');
+    document.getElementById('summaryType').textContent = d.loanType;
+    document.getElementById('btn-step2').textContent   = `2 · Launch (${sites.length})`;
+    document.getElementById('siteCountHint').innerHTML =
+      `Showing <strong>${sites.length}</strong> sites for a <strong>${d.loanType}</strong> loan. Click <strong>Open Site ↗</strong> to launch in a new tab, then use the <strong>Copy</strong> buttons to paste data directly.`;
+
+    // Render cards
+    const container = document.getElementById('siteCards');
+    container.innerHTML = '';
+    sites.forEach(site => {
+      container.appendChild(buildSiteCard(site));
+    });
+  }
+
+  function buildSiteCard(site) {
+    const card = document.createElement('div');
+    card.className = 'site-card';
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'site-card-header';
+
+    const left = document.createElement('div');
+    left.innerHTML = `<span class="site-label">${site.label}</span><span class="site-bucket">${site.bucket}</span>`;
+
+    const link = document.createElement('a');
+    link.className = 'open-site-btn';
+    link.href = site.url;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = 'Open Site ↗';
+
+    hdr.appendChild(left);
+    hdr.appendChild(link);
+    card.appendChild(hdr);
+
+    // Description
+    const desc = document.createElement('p');
+    desc.className = 'site-desc';
+    desc.textContent = site.desc;
+    card.appendChild(desc);
+
+    // Fields table
+    if (site.fields.length > 0) {
+      const table = document.createElement('div');
+      table.className = 'fields-table';
+      site.fields.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'field-row';
+
+        const lbl = document.createElement('span');
+        lbl.className = 'field-row-label';
+        lbl.textContent = f.label;
+
+        const right = document.createElement('div');
+        right.className = 'field-row-right';
+
+        const val = document.createElement('span');
+        val.className = 'field-row-value' + (f.value ? '' : ' empty');
+        val.textContent = f.value || 'not entered';
+
+        right.appendChild(val);
+
+        if (f.value) {
+          const btn = document.createElement('button');
+          btn.className = 'copy-btn';
+          btn.textContent = 'Copy';
+          btn.onclick = () => {
+            navigator.clipboard.writeText(f.value).then(() => {
+              btn.textContent = '✓ Copied';
+              btn.classList.add('copied');
+              setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+            });
+          };
+          right.appendChild(btn);
+        }
+
+        row.appendChild(lbl);
+        row.appendChild(right);
+        table.appendChild(row);
+      });
+      card.appendChild(table);
+    }
+
+    return card;
+  }
+</script>
+</body>
+</html>
