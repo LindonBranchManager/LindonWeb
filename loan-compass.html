@@ -226,6 +226,15 @@
     footer strong{color:rgba(255,255,255,.55)}
 
 
+
+    /* ── PRODUCT NOTES ── */
+    .prod-notes-wrap{background:linear-gradient(135deg,#f8f7f4,#f3f0eb);border-radius:10px;padding:13px 15px;margin-top:12px;border:1px solid rgba(201,168,76,.2)}
+    .prod-notes-hdr{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+    .prod-note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11.5px;color:var(--text-dark);line-height:1.55}
+    .prod-note-item:last-child{margin-bottom:0}
+    .pn-icon{flex-shrink:0;font-size:13px;margin-top:0}
+    .pn-text{color:var(--text-dark)}
+
     /* ── SALES PLAYBOOK ── */
     .playbook-wrap{margin-top:28px}
     .playbook-section{background:var(--white);border-radius:16px;border:1px solid rgba(13,35,64,.07);box-shadow:0 4px 20px rgba(13,35,64,.07);overflow:hidden;margin-bottom:20px}
@@ -476,11 +485,26 @@
             </div>
             <div class="fgroup">
               <label class="flabel">Refi Purpose <span class="tip" data-tip="Rate & Term = lower the rate and/or change the term — no cash out. Cash-Out = pull equity out. Streamline = fast-track refi for existing VA (IRRRL) or FHA — fewer docs, usually no appraisal.">?</span></label>
-              <select id="refi-purpose">
+              <select id="refi-purpose" onchange="toggleCashOutFields()">
                 <option value="rateterm">Rate &amp; Term</option>
                 <option value="cashout">Cash-Out</option>
                 <option value="streamline">Streamline (IRRRL / FHA)</option>
               </select>
+            </div>
+          </div>
+          <!-- Cash-Out fields — shown only when Cash-Out is selected -->
+          <div id="cashout-fields" style="display:none;">
+            <div class="frow" style="margin-top:8px;">
+              <div class="fgroup">
+                <label class="flabel">Cash-Out Amount <span class="tip" data-tip="How much cash the borrower wants to pull out. Added to the current balance to determine the new loan amount. Max is subject to LTV limits (80% for FHA/Conv, 100% for VA primary).">?</span></label>
+                <input type="number" id="cashout-amount" placeholder="50,000" min="0" oninput="calcNewLoanAmt()" />
+              </div>
+              <div class="fgroup">
+                <label class="flabel">New Loan Amount <span class="tip" data-tip="Current balance + cash-out amount + any financed fees. Auto-calculated from the fields above. This is what the borrower will owe on the new loan.">?</span></label>
+                <input type="number" id="new-loan-amt" placeholder="auto-calc" min="0" readonly
+                  style="background:rgba(13,35,64,.04);color:var(--navy);font-weight:600;" />
+                <span class="fhint">Auto-calculated (Balance + Cash-Out)</span>
+              </div>
             </div>
           </div>
         </div>
@@ -693,7 +717,7 @@
               <tr><td><strong>Min Down Payment</strong></td><td><span class="badge-yes">$0</span> with full entitlement</td><td><span class="badge-cond">3.5%</span> (620+ score) or <span class="badge-cond">10%</span> (500–579)</td><td><span class="badge-cond">3%</span> primary / 10% 2nd / 15% investment</td></tr>
               <tr><td><strong>Min Credit Score</strong></td><td>580 (620 preferred)</td><td>500 (580 for 3.5% down)</td><td>620</td></tr>
               <tr><td><strong>Monthly MI</strong></td><td><span class="badge-yes">$0 — None Ever</span></td><td>~0.55%/yr — Life of loan if LTV&gt;90%</td><td>PMI only if LTV&gt;80% — cancels at 80%</td></tr>
-              <tr><td><strong>Upfront Fee</strong></td><td>Funding fee 2.6% FTU / 3.3% SU (financed in) — $0 if exempt</td><td>UFMIP 1.75% (financed in)</td><td>None</td></tr>
+              <tr><td><strong>Upfront Fee</strong></td><td>Funding fee: FTU 2.15% / SU 3.30% / 5%+ dn 1.50% / 10%+ dn 1.25% (financed) — $0 if exempt</td><td>UFMIP 1.75% (financed in)</td><td>None</td></tr>
               <tr><td><strong>DTI Guideline</strong></td><td>≤41% (higher OK w/ residual income)</td><td>Up to ~57% with AUS</td><td>Up to ~50% with AUS</td></tr>
               <tr><td><strong>Investment / 2nd Home</strong></td><td><span class="badge-no">No — Primary Only</span></td><td><span class="badge-no">No — Primary Only</span></td><td><span class="badge-yes">Yes</span></td></tr>
               <tr><td><strong>Cash Out Max LTV</strong></td><td>100% (primary only)</td><td>80% per VCI</td><td>80% per VCI</td></tr>
@@ -845,8 +869,10 @@
               <div class="tip-title">VA Funding Fees (VCI Rates)</div>
               <div class="tip-body">
                 <strong>Purchase / Cash Out:</strong><br>
-                First Time Use (FTU): 2.6%<br>
-                Subsequent Use: 3.3%<br>
+                First Time Use (FTU): 2.15%<br>
+                Subsequent Use: 3.30%<br>
+                5%+ down (1st or sub): 1.50%<br>
+                10%+ down (1st or sub): 1.25%<br>
                 Exempt (10%+ disability): $0<br><br>
                 <strong>IRRRL (Streamline Refi):</strong><br>
                 Flat 0.5% regardless of use history<br><br>
@@ -937,13 +963,17 @@
 // ═══════════════════════════════════════
 const CONF_LIMIT = 806500;
 const FHA_UFMIP  = 0.0175;
-// VCI Cheat Sheet: FTU=2.6%, SU=3.3% | IRRRL flat 0.5%
+// VA Lender's Handbook (va.gov) — Effective April 7, 2023, updated Jan 15 2026
+// Purchase & Construction: FTU <5%=2.15% | 5%+=1.50% | 10%+=1.25%
+// After first use:         <5%=3.30% | 5%+=1.50% | 10%+=1.25%
+// Cash-out refi rates same as purchase (no down payment tiers for refi)
+// IRRRL: 0.50% flat regardless of use history
 const VA_FF_TABLE = {
-  first:      {d0:0.0260, d5:0.0165, d10:0.0140},
-  subsequent: {d0:0.0330, d5:0.0165, d10:0.0140},
+  first:      {d0:0.0215, d5:0.0150, d10:0.0125},
+  subsequent: {d0:0.0330, d5:0.0150, d10:0.0125},
   exempt:     {d0:0,      d5:0,      d10:0}
 };
-const VA_FF_IRRRL = 0.005; // IRRRL always 0.5% per VCI
+const VA_FF_IRRRL = 0.005; // IRRRL 0.50% flat per VA Lender's Handbook Ch.8
 const LOAN_CLS  = {va:'va', fha:'fha', conv:'conv'};
 const LOAN_NAME = {va:'VA Loan', fha:'FHA Loan', conv:'Conventional'};
 
@@ -969,15 +999,45 @@ function fhaMipAnnual(ltv, amt) {
   if (amt<=150000) return 0.0015;
   return ltv<=0.90 ? 0.0050 : 0.0055;
 }
+// PMI annual rate estimate — MGIC-style score × LTV matrix (% of loan/yr)
+// Rows: LTV bands. Cols: FICO bands (760+, 720-759, 680-719, 640-679, 620-639, <620)
 function convPMI(score, ltv) {
   if (ltv<=0.80) return 0;
-  let b = score>=760?0.0030: score>=720?0.0050: score>=680?0.0080: score>=640?0.0110: 0.0140;
-  if (ltv>0.95) b+=0.0025; else if (ltv>0.90) b+=0.0010;
-  return b;
+  const scoreBand = score>=760?0: score>=720?1: score>=680?2: score>=640?3: score>=620?4: 5;
+  // LTV: 80-85, 85-90, 90-95, 95-97 — annual rate as decimal
+  const tbl = [
+    [0.0016, 0.0024, 0.0034, 0.0048, 0.0064, 0.0082], // 80.01-85%
+    [0.0030, 0.0042, 0.0058, 0.0078, 0.0098, 0.0120], // 85.01-90%
+    [0.0046, 0.0062, 0.0082, 0.0108, 0.0132, 0.0160], // 90.01-95%
+    [0.0068, 0.0084, 0.0110, 0.0142, 0.0166, 0.0200], // 95.01-97%
+  ];
+  const row = ltv>0.97?3: ltv>0.95?3: ltv>0.90?2: ltv>0.85?1: 0;
+  return tbl[row][Math.min(scoreBand, 5)];
 }
 function vaFF(downPct, ffType) {
   const t = VA_FF_TABLE[ffType]||VA_FF_TABLE.first;
   return downPct>=0.10 ? t.d10 : downPct>=0.05 ? t.d5 : t.d0;
+}
+
+// ═══════════════════════════════════════
+// CASH-OUT TOGGLE + NEW LOAN CALC
+// ═══════════════════════════════════════
+function toggleCashOutFields() {
+  const purpose = document.getElementById('refi-purpose').value;
+  const el = document.getElementById('cashout-fields');
+  if (el) el.style.display = purpose==='cashout' ? '' : 'none';
+  if (purpose!=='cashout') {
+    const co = document.getElementById('cashout-amount');
+    const nl = document.getElementById('new-loan-amt');
+    if (co) co.value='';
+    if (nl) nl.value='';
+  }
+}
+function calcNewLoanAmt() {
+  const bal = parseFloat(document.getElementById('curr-balance').value)||0;
+  const co  = parseFloat(document.getElementById('cashout-amount').value)||0;
+  const nl  = document.getElementById('new-loan-amt');
+  if (nl) nl.value = bal+co > 0 ? (bal+co).toFixed(0) : '';
 }
 
 // ═══════════════════════════════════════
@@ -1125,7 +1185,7 @@ function qualify(sc, inp) {
       return {status:'disqualified', iss, warn, pos};
     }
     if (inp.score<580)      iss.push(`Credit score ${inp.score} is below the VA minimum of 580. Most lenders require 580–620.`);
-    else if (inp.score<620) warn.push(`Score ${inp.score} is below 620 — some VA lenders require 620. Confirm with underwriting.`);
+    else if (inp.score<620) { warn.push(`Score ${inp.score} is below 620 — this loan will require MANUAL UNDERWRITE. Stronger compensating factors required: low DTI, cash reserves, stable employment history.`); }
     else                    pos.push(`Credit score ${inp.score} meets VA guidelines.`);
 
     // DTI estimate
@@ -1163,6 +1223,11 @@ function qualify(sc, inp) {
       iss.push(`Score ${inp.score} is below FHA's minimum of 500.`);
       return {status:'disqualified', iss, warn, pos};
     }
+    if (inp.score<580) {
+      warn.push(`⚠️ MANUAL UNDERWRITE REQUIRED — Score ${inp.score} (500–579). 10% down required. Compensating factors needed: stable employment, low residual debt, 12-month clean payment history.`);
+    } else if (inp.score<620) {
+      warn.push(`⚠️ MANUAL UNDERWRITE REQUIRED — Score ${inp.score} (580–619). AUS will refer to manual. Need 12 months clean payment history and at least one compensating factor: verified cash reserves, minimal discretionary debt, or low DTI.`);
+    }
     const minDP = inp.score>=580 ? 0.035 : 0.10;
     if (appMode==='purchase' && inp.price>0) {
       if (inp.downPct < minDP-0.001) {
@@ -1173,7 +1238,8 @@ function qualify(sc, inp) {
         pos.push(`Down payment of ${fmtPct(inp.downPct)} meets FHA minimum.`);
       }
     }
-    if (inp.score>=580) pos.push('Score qualifies for 3.5% minimum down payment.');
+    if (inp.score>=620) pos.push(`Credit score ${inp.score} meets FHA guidelines — AUS eligible.`);
+    else if (inp.score>=580) pos.push('Score qualifies for 3.5% minimum down payment — manual UW required.');
     const ltv = inp.price>0 ? inp.loanAmt/inp.price : 1;
     if (ltv>0.90) warn.push('LTV is above 90% — FHA MIP will last the LIFE of the loan. Critical to explain to borrower.');
     else          pos.push('LTV ≤90% — FHA MIP will cancel after 11 years.');
@@ -1377,6 +1443,59 @@ function buildTalkingPoints(results, bestId, inp) {
   </div>`;
 }
 
+
+// ═══════════════════════════════════════
+// PRODUCT KEY NOTES
+// ═══════════════════════════════════════
+function productNotes(type, inp, pmt) {
+  const notes = [];
+  if (type==='va') {
+    notes.push({icon:'🎖️', t:'No monthly mortgage insurance — ever. $0/month MI savings vs. FHA/Conv.'});
+    notes.push({icon:'🏦', t:'Assumable loan — future buyer can take over the VA rate. Huge asset when rates are high.'});
+    notes.push({icon:'📄', t:'COE required. Confirm entitlement availability and whether full or reduced entitlement applies.'});
+    notes.push({icon:'🔄', t:'IRRRL eligible when time comes to refi — no appraisal, minimal docs, 0.5% funding fee.'});
+    if (appMode==='refi') notes.push({icon:'🏠', t:'VA IRRRL: Eligible on primary, 2nd home, and investment. Occupancy at time of original purchase controls.'});
+  } else if (type==='fha') {
+    const ltv = inp.price>0 ? inp.loanAmt/inp.price : 1;
+    notes.push({icon:'💸', t:'UFMIP 1.75% financed into loan. MIP 0.55%/yr monthly. '+(ltv>0.90?'⚠️ LTV >90%: MIP lasts LIFE of loan — discuss refi roadmap.':'LTV ≤90%: MIP cancels after 11 years.')});
+    notes.push({icon:'🏡', t:'Primary residence only. Cannot be used for investment or second home.'});
+    notes.push({icon:'📋', t:'FHA to FHA only for Streamline. Going Conv→FHA or VA→FHA is always a full doc loan.'});
+    notes.push({icon:'🔧', t:'Stricter property condition requirements — appraiser will flag health/safety items.'});
+  } else if (type==='conv') {
+    const ltv = inp.price>0 ? inp.loanAmt/inp.price : 1;
+    const pmiRate = convPMI(inp.score, ltv);
+    if (ltv>0.80 && pmiRate>0) {
+      const pmiMo = Math.round((inp.loanAmt*pmiRate)/12);
+      const pmiAnn = (pmiRate*100).toFixed(2);
+      notes.push({icon:'📊', t:`Est. PMI: ~${pmiAnn}%/yr = ~${fmt(pmiMo)}/mo (MGIC-style estimate, score ${inp.score}, LTV ${fmtPct(ltv)}). PMI cancels automatically at 80% LTV.`});
+      // Estimate months to 80% LTV
+      if (inp.loanAmt>0 && pmt) {
+        const piPmt  = pmt.pi||0;
+        const monthlyRate = (parseFloat(inp.currRate||0)||0)/1200;
+        // rough: assume ~25% of early payment is principal on 30yr
+        const estPrincipalPct = 0.25;
+        const monthlyPrincipal = piPmt * estPrincipalPct;
+        const target80 = inp.price * 0.80;
+        const amtToPay = inp.loanAmt - target80;
+        const moToPMICancel = amtToPay>0 && monthlyPrincipal>0 ? Math.ceil(amtToPay/monthlyPrincipal) : null;
+        if (moToPMICancel && moToPMICancel>0 && moToPMICancel<360) {
+          notes.push({icon:'⏱️', t:`Rough PMI cancellation: ~${moToPMICancel} months (${Math.round(moToPMICancel/12)} yrs) at scheduled paydown. Appreciation accelerates this.`});
+        }
+      }
+    } else {
+      notes.push({icon:'✅', t:'No PMI — LTV at or below 80%. Best-case scenario for conventional.'});
+    }
+    notes.push({icon:'🏠', t:'Works for primary, second home, and investment properties.'});
+    notes.push({icon:'💳', t:'LLPA pricing: score and LTV drive cost. 740+ score + 80% LTV = best tier.'});
+    if (inp.loanAmt>806500) notes.push({icon:'⚠️', t:`Loan ${fmt(inp.loanAmt)} exceeds conforming limit — jumbo pricing and stricter underwriting apply.`});
+  }
+  if (!notes.length) return '';
+  return `<div class="prod-notes-wrap">
+    <div class="prod-notes-hdr">📋 Key Notes for This Product</div>
+    ${notes.map(n=>`<div class="prod-note-item"><span class="pn-icon">${n.icon}</span><span class="pn-text">${n.t}</span></div>`).join('')}
+  </div>`;
+}
+
 // ═══════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════
@@ -1417,7 +1536,7 @@ function renderResults(results, inp) {
         ${pmt.mip>0 ? `<div class="pay-row"><span class="pay-label">FHA MIP <span class="tip" data-tip="FHA mortgage insurance (monthly). Duration: ${pmt.mipDur}. If LTV was above 90% at closing, this never cancels.">?</span></span><span class="pay-val">${fmt(pmt.mip)}/mo (${pmt.mipDur})</span></div>` : ''}
         ${pmt.pmi>0 ? `<div class="pay-row"><span class="pay-label">PMI <span class="tip" data-tip="Private Mortgage Insurance (~${fmtPct(pmt.pmiR)}/yr). Cancels automatically when LTV hits 80% — much better than FHA MIP.">?</span></span><span class="pay-val">${fmt(pmt.pmi)}/mo</span></div>` : ''}
         ${pmt.mip===0&&pmt.pmi===0 ? `<div class="pay-row"><span class="pay-label">Mortgage Insurance</span><span class="pay-val" style="color:var(--green-text);font-weight:700">None ✓</span></div>` : ''}
-        ${pmt.ffAmt>0 ? `<div class="pay-row"><span class="pay-label">VA Funding Fee <span class="tip" data-tip="VCI rates: FTU=2.6%, Subsequent=3.3%, IRRRL=0.5%. Financed into loan: ${fmtPct(pmt.ffPct)} = ${fmt(pmt.ffAmt)} added to balance.">?</span></span><span class="pay-val">${fmt(pmt.ffAmt)} (${fmtPct(pmt.ffPct)})</span></div>` : ''}
+        ${pmt.ffAmt>0 ? `<div class="pay-row"><span class="pay-label">VA Funding Fee <span class="tip" data-tip="VA.gov rates (eff. Apr 7 2023): FTU=2.15%, Subsequent=3.30%, 5%+ down=1.50%, 10%+ down=1.25%. IRRRL=0.50% flat. Financed into loan: ${fmtPct(pmt.ffPct)} = ${fmt(pmt.ffAmt)} added to balance.">?</span></span><span class="pay-val">${fmt(pmt.ffAmt)} (${fmtPct(pmt.ffPct)})</span></div>` : ''}
         ${pmt.ufmip>0 ? `<div class="pay-row"><span class="pay-label">FHA UFMIP <span class="tip" data-tip="Upfront Mortgage Insurance Premium: 1.75% of the loan, financed in. Not monthly, but increases the loan balance.">?</span></span><span class="pay-val">${fmt(pmt.ufmip)} upfront</span></div>` : ''}
         <div class="pay-row"><span class="pay-label">Tax + Insurance (est.)</span><span class="pay-val">${fmt(pmt.tax+pmt.ins)}/mo</span></div>
         <div class="pay-row total-row${isLow&&n>1?' lowest':''}">
@@ -1451,6 +1570,7 @@ function renderResults(results, inp) {
         <div class="flags">
           ${allFlags.map(f=>`<div class="flag ${f.c}"><span class="fdot ${f.d}">●</span><span>${f.t}</span></div>`).join('')}
         </div>
+        ${productNotes(sc.type, inp, pmt)}
       </div>
     </div>`;
   }).join('');
@@ -1469,6 +1589,27 @@ function renderResults(results, inp) {
   if (tpEl) tpEl.innerHTML = tpHtml;
 
   renderRefi(results, inp);
+}
+
+
+// ═══════════════════════════════════════
+// IRRRL 36-MONTH RECOUP CHECK
+// ═══════════════════════════════════════
+function buildRecoup36(vaR, inp, estCC) {
+  if (!vaR.pmt || !inp.currPmt) return '';
+  const newPmt   = vaR.pmt.total;
+  const save     = inp.currPmt - newPmt;
+  if (save <= 0) {
+    return `<div class="callout warn" style="margin-top:6px"><span>⚠️</span><div><strong>IRRRL Recoup (&gt;36 mo.) — Review Carefully</strong> New total payment (${fmt(newPmt)}/mo) is not lower than current (${fmt(inp.currPmt)}/mo). VCI requires recoup within 36 months. This IRRRL may not meet the net tangible benefit test on payment savings alone.</div></div>`;
+  }
+  // Estimate IRRRL closing costs: 0.5% funding fee + ~$2,500 closing costs typical
+  const ffAmt  = vaR.pmt.ffAmt || (inp.loanAmt * VA_FF_IRRRL);
+  const ccEst  = ffAmt + 2500; // funding fee + typical title/recording
+  const months = Math.ceil(ccEst / save);
+  if (months > 36) {
+    return `<div class="callout warn" style="margin-top:6px"><span>⚠️</span><div><strong>IRRRL Recoup: ${months} months — Fails 36-Month Rule</strong> Est. closing costs ~${fmt(Math.round(ccEst))} ÷ ${fmt(Math.round(save))}/mo savings = ${months}-month recoup. VCI requires recoup within 36 months. Borrower does not break even fast enough.</div></div>`;
+  }
+  return `<div class="callout info" style="margin-top:6px"><span>✅</span><div><strong>IRRRL Recoup: ${months} months — Meets 36-Month Rule</strong> Est. closing costs ~${fmt(Math.round(ccEst))} (0.5% FF + title/recording) ÷ ${fmt(Math.round(save))}/mo savings. Borrower recoups costs in <strong>${months} months</strong> — well within the 36-month requirement.</div></div>`;
 }
 
 function renderRefi(results, inp) {
@@ -1508,14 +1649,16 @@ function renderRefi(results, inp) {
           const neededRate = (inp.currRate - 0.02).toFixed(3);
           streamNote += `<div class="callout warn"><span>⚠️</span><div><strong>IRRRL Failed — Fixed → ARM Requires 2% Rate Reduction (${vaR.sc.label})</strong><br>Current rate: ${inp.currRate}% → New rate: ${newRate}% = ${rateDrop > 0 ? rateDrop.toFixed(3) + '% reduction' : 'no reduction'}. Need ${neededRate}% or lower to meet the 2% minimum rate drop required when going Fixed → ARM.</div></div>`;
         } else {
-          streamNote += `<div class="callout info"><span>⚡</span><div><strong>IRRRL Eligible — Fixed → ARM (${vaR.sc.label})</strong> Rate drops ${rateDrop.toFixed(3)}% — meets the 2% minimum rate reduction. No appraisal, 0.5% funding fee, 1×30 late in past 12 months allowed.</div></div>`;
+          const recoupHtml36 = buildRecoup36(vaR, inp, cc);
+          streamNote += `<div class="callout info"><span>⚡</span><div><strong>IRRRL Eligible — Fixed → ARM (${vaR.sc.label})</strong> Rate drops ${rateDrop.toFixed(3)}% — meets the 2% minimum rate reduction. No appraisal, 0.5% funding fee, 1×30 late in past 12 months allowed.</div></div>${recoupHtml36}`;
         }
       } else {
         // All other transitions: rate must simply decrease
         if (rateDrop <= 0) {
           streamNote += `<div class="callout warn"><span>⚠️</span><div><strong>IRRRL Failed — ${transLabel} Requires Lower Rate (${vaR.sc.label})</strong> New rate (${newRate}%) must be lower than current rate (${inp.currRate}%). No minimum drop required — just needs to decrease.</div></div>`;
         } else {
-          streamNote += `<div class="callout info"><span>⚡</span><div><strong>IRRRL Eligible — ${transLabel} (${vaR.sc.label})</strong> Rate drops from ${inp.currRate}% to ${newRate}% (−${rateDrop.toFixed(3)}%). No appraisal, 0.5% funding fee, 1×30 late in past 12 months allowed.</div></div>`;
+          const recoupHtml36 = buildRecoup36(vaR, inp, cc);
+          streamNote += `<div class="callout info"><span>⚡</span><div><strong>IRRRL Eligible — ${transLabel} (${vaR.sc.label})</strong> Rate drops from ${inp.currRate}% to ${newRate}% (−${rateDrop.toFixed(3)}%). No appraisal, 0.5% funding fee, 1×30 late in past 12 months allowed.</div></div>${recoupHtml36}`;
         }
       }
     });
@@ -1573,13 +1716,18 @@ function runAnalysis() {
     loanAmt = price-downAmt;
     downPct = price>0 ? downAmt/price : 0;
   } else {
-    const homeVal = parseFloat(document.getElementById('home-value').value)||0;
-    const currBal = parseFloat(document.getElementById('curr-balance').value)||0;
+    const homeVal   = parseFloat(document.getElementById('home-value').value)||0;
+    const currBal   = parseFloat(document.getElementById('curr-balance').value)||0;
+    const coAmt     = parseFloat(document.getElementById('cashout-amount').value)||0;
+    const newLoanEl = document.getElementById('new-loan-amt');
+    const newLoanOverride = newLoanEl ? parseFloat(newLoanEl.value)||0 : 0;
     if (!homeVal && !currBal) { alert('Please enter the home value or current balance.'); return; }
+    const refiPurpose = document.getElementById('refi-purpose').value;
     price      = homeVal;
-    loanAmt    = currBal || homeVal;
-    downAmt    = homeVal-loanAmt;
-    downPct    = homeVal>0 ? (homeVal-loanAmt)/homeVal : 0;
+    // For cash-out: new loan = balance + cash-out amount; R&T/Streamline: just current balance
+    loanAmt    = refiPurpose==='cashout' && (currBal+coAmt)>0 ? currBal+coAmt : (currBal || homeVal);
+    downAmt    = homeVal - loanAmt;
+    downPct    = homeVal>0 ? Math.max(0,(homeVal-loanAmt)/homeVal) : 0;
     currPmt    = parseFloat(document.getElementById('curr-payment').value)||0;
     currRate   = parseFloat(document.getElementById('curr-rate').value)||0;
     currLoanType = document.getElementById('curr-loan-type').value;
@@ -1589,7 +1737,8 @@ function runAnalysis() {
   const tax = taxIn>0 ? taxIn : (price*0.012)/12;
   const ins = insIn;
 
-  const inp = {score, income, debts, price, loanAmt, downAmt, downPct, propType, tax, ins, currPmt, currRate, currLoanType, currLoanStructure};
+  const refiPurposeVal = appMode==='refi' ? document.getElementById('refi-purpose').value : 'purchase';
+  const inp = {score, income, debts, price, loanAmt, downAmt, downPct, propType, tax, ins, currPmt, currRate, currLoanType, currLoanStructure, refiPurpose:refiPurposeVal, cashOutAmt:coAmt||0};
 
   const missingRate = scenarios.find(s=>!s.rate);
   if (missingRate && !confirm(`"${missingRate.label}" has no rate. Continue without a payment estimate for it?`)) return;
