@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lead Pipeline — Lindon Branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─── */
+:root{
+  --navy:#0D2340;--navy-mid:#1a3a5c;--navy-light:#234a78;
+  --gold:#C9A84C;--gold-light:#e0c06a;--gold-pale:#f5edd8;
+  --off-white:#FAF9F6;--cream:#F3EFE8;--white:#fff;
+  --text-dark:#1a2535;--text-mid:#4a5568;--text-muted:#8a97a8;
+  --green:#1a7a4a;--green-bg:#e8f5ee;--green-border:rgba(26,122,74,.2);
+  --amber:#b45309;--amber-bg:#fef3cd;--amber-border:rgba(180,83,9,.25);
+  --red:#c0392b;--red-bg:#fdecea;--red-border:rgba(192,57,43,.2);
+  --blue:#1d4ed8;--blue-bg:#eff6ff;--blue-border:rgba(29,78,216,.2);
+  --purple:#6d28d9;--purple-bg:#f5f3ff;--purple-border:rgba(109,40,217,.2);
+  --border:rgba(13,35,64,.10);--border-mid:rgba(13,35,64,.15);
+  --shadow:0 2px 16px rgba(13,35,64,.08);
+  --shadow-lg:0 8px 40px rgba(13,35,64,.14);
+  --r:10px;--r-sm:6px;--r-xs:4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh}
+
+/* ─── NAV ─── */
+nav{background:var(--navy);padding:0 28px;display:flex;align-items:center;height:52px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--gold);letter-spacing:.5px;white-space:nowrap;margin-right:24px}
+.nav-links{display:flex;overflow-x:auto;scrollbar-width:none;flex:1}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{font-size:11.5px;font-weight:500;color:rgba(255,255,255,.62);text-decoration:none;padding:0 13px;height:52px;display:flex;align-items:center;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-links a.active{color:var(--gold);border-bottom-color:var(--gold)}
+.nav-lo{display:flex;align-items:center;gap:8px;margin-left:16px;flex-shrink:0}
+.nav-lo-label{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap}
+.nav-lo select{height:28px;padding:0 8px;border-radius:var(--r-xs);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none}
+.nav-lo select option{background:var(--navy);color:#fff}
+
+/* ─── HERO / TOOLBAR ─── */
+.hero{background:var(--navy);padding:28px 32px 24px}
+.hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3.5vw,38px);font-weight:600;color:#fff;line-height:1.15}
+.hero-lo{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
+.hero-lo strong{color:rgba(255,255,255,.85)}
+.hero-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+
+/* STAT STRIP */
+.stat-strip{background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.08);padding:14px 32px;display:flex;gap:0;overflow-x:auto}
+.stat-pill{padding:0 24px;border-right:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.stat-pill:first-child{padding-left:0}
+.stat-pill:last-child{border-right:none}
+.sp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sp-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;line-height:1}
+.sp-lbl{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px}
+
+/* ─── TOOLBAR ─── */
+.toolbar{background:var(--cream);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:180px;max-width:300px}
+.search-wrap input{height:34px;padding:0 10px 0 32px;border:1.5px solid var(--border-mid);border-radius:var(--r-sm);font-size:13px;width:100%;background:#fff}
+.search-wrap input:focus{outline:none;border-color:var(--gold)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--text-muted)}
+.filter-select{height:34px;padding:0 10px;border:1.5px solid var(--border-mid);border-radius:var(--r-sm);font-size:12.5px;background:#fff;cursor:pointer;color:var(--text-mid)}
+.filter-select:focus{outline:none;border-color:var(--gold)}
+.view-toggle{display:flex;background:#fff;border:1.5px solid var(--border-mid);border-radius:var(--r-sm);overflow:hidden;margin-left:auto}
+.vt-btn{height:32px;padding:0 12px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--text-muted);transition:all .15s}
+.vt-btn.active{background:var(--navy);color:#fff}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-navy:hover{background:var(--navy-light)}
+.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-outline{background:#fff;color:var(--navy);border-color:var(--border-mid)}
+.btn-outline:hover{border-color:var(--navy);background:var(--cream)}
+.btn-sm{height:28px;padding:0 10px;font-size:11.5px;gap:4px}
+.btn-danger{background:#fff;color:var(--red);border-color:var(--red-border)}
+.btn-danger:hover{background:var(--red-bg)}
+
+/* ─── STAGE COLORS ─── */
+.stage-quote    {--sc:var(--blue);     --sbg:var(--blue-bg);   --sbo:var(--blue-border)}
+.stage-followup {--sc:var(--amber);    --sbg:var(--amber-bg);  --sbo:var(--amber-border)}
+.stage-waiting  {--sc:var(--purple);   --sbg:var(--purple-bg); --sbo:var(--purple-border)}
+.stage-dead     {--sc:var(--text-muted);--sbg:var(--cream);    --sbo:var(--border)}
+.stage-won      {--sc:var(--green);    --sbg:var(--green-bg);  --sbo:var(--green-border)}
+
+/* ─── KANBAN ─── */
+.kanban-wrap{padding:20px 24px 80px;overflow-x:auto}
+.kanban{display:flex;gap:16px;align-items:flex-start;min-width:max-content;padding-bottom:8px}
+.kb-col{width:280px;flex-shrink:0}
+.kb-col-hdr{border-radius:var(--r-sm) var(--r-sm) 0 0;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--sbg,var(--cream));border:1px solid var(--sbo,var(--border));border-bottom:none}
+.kb-col-title{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--sc,var(--text-mid))}
+.kb-count{font-size:11px;font-weight:700;background:var(--sc,var(--text-muted));color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.kb-body{background:rgba(13,35,64,.025);border:1px solid var(--sbo,var(--border));border-top:none;border-radius:0 0 var(--r-sm) var(--r-sm);padding:8px;min-height:80px;display:flex;flex-direction:column;gap:8px}
+.kb-empty{text-align:center;padding:24px 10px;color:var(--text-muted);font-size:12px;font-style:italic}
+
+/* LEAD CARD */
+.lead-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 14px;cursor:pointer;transition:all .18s;box-shadow:0 1px 4px rgba(13,35,64,.05)}
+.lead-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(13,35,64,.1);transform:translateY(-1px)}
+.lead-card.overdue{border-left:3px solid var(--red)}
+.lead-card.due-today{border-left:3px solid var(--amber)}
+.lc-name{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.3}
+.lc-prog{font-size:11px;font-weight:600;color:var(--sc,var(--text-muted));background:var(--sbg,var(--cream));padding:2px 7px;border-radius:20px;display:inline-block;margin-bottom:6px}
+.lc-meta{font-size:11.5px;color:var(--text-mid);display:flex;flex-direction:column;gap:3px}
+.lc-meta-row{display:flex;align-items:center;gap:5px}
+.lc-meta-icon{font-size:11px;width:14px;text-align:center;flex-shrink:0}
+.lc-follow{font-size:11px;font-weight:600;margin-top:6px;padding:4px 8px;border-radius:var(--r-xs);display:inline-flex;align-items:center;gap:4px}
+.lc-follow.overdue{background:var(--red-bg);color:var(--red)}
+.lc-follow.today{background:var(--amber-bg);color:var(--amber)}
+.lc-follow.upcoming{background:var(--green-bg);color:var(--green)}
+.lc-follow.none{background:var(--cream);color:var(--text-muted)}
+.lc-days{font-size:10.5px;color:var(--text-muted);margin-top:5px}
+
+/* ─── TABLE VIEW ─── */
+.table-wrap{padding:20px 24px 80px;overflow-x:auto}
+table.lead-tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+table.lead-tbl th{background:var(--navy);color:rgba(255,255,255,.75);font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:10px 13px;text-align:left;white-space:nowrap}
+table.lead-tbl td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle}
+table.lead-tbl tr:last-child td{border-bottom:none}
+table.lead-tbl tr:hover td{background:var(--cream);cursor:pointer}
+table.lead-tbl tr.overdue td:first-child{border-left:3px solid var(--red)}
+table.lead-tbl tr.due-today td:first-child{border-left:3px solid var(--amber)}
+.stage-chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:.3px;background:var(--sbg);color:var(--sc);border:1px solid var(--sbo)}
+.days-chip{font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--cream);color:var(--text-muted)}
+.days-chip.hot{background:var(--red-bg);color:var(--red)}
+.days-chip.warm{background:var(--amber-bg);color:var(--amber)}
+
+/* ─── MODAL ─── */
+.overlay{position:fixed;inset:0;background:rgba(13,35,64,.55);z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.overlay.hidden{display:none}
+.modal{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:660px}
+.modal-hdr{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-radius:var(--r) var(--r) 0 0}
+.modal-hdr h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer;padding:2px 8px;line-height:1;transition:color .15s}
+.modal-close:hover{color:#fff}
+.modal-body{padding:22px}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:space-between;align-items:center}
+
+/* FORM INSIDE MODAL */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.fg:last-child{margin-bottom:0}
+.fg-row{display:grid;gap:12px;margin-bottom:14px}
+.fg-2{grid-template-columns:1fr 1fr}
+.fg-3{grid-template-columns:1fr 1fr 1fr}
+.flabel{font-size:11px;font-weight:600;color:var(--text-mid);letter-spacing:.3px}
+.flabel span{color:var(--red);margin-left:2px}
+input[type=text],input[type=tel],input[type=email],input[type=number],input[type=date],select,textarea{
+  padding:8px 10px;border:1.5px solid var(--border-mid);border-radius:var(--r-sm);
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);
+  background:#fff;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+.fsec-hdr{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--gold-pale);margin-top:4px}
+
+/* CALL LOG */
+.call-log{max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.log-entry{background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--border)}
+.log-entry-meta{font-size:10.5px;color:var(--text-muted);margin-bottom:4px;display:flex;justify-content:space-between}
+.log-entry-text{font-size:12.5px;color:var(--text-dark);line-height:1.55}
+.log-empty{text-align:center;padding:16px;color:var(--text-muted);font-size:12px;font-style:italic}
+.log-add{display:flex;gap:8px;align-items:flex-end;margin-top:4px}
+.log-add textarea{min-height:52px;flex:1}
+
+/* STAGE SELECT VISUAL */
+.stage-select-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.stage-opt{display:none}
+.stage-opt-label{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border-mid);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text-mid);background:#fff;user-select:none}
+.stage-opt:checked + .stage-opt-label{border-color:var(--sc);background:var(--sbg);color:var(--sc)}
+
+/* DETAIL VIEW HEADER */
+.detail-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.detail-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:20px;background:var(--cream);color:var(--text-mid);border:1px solid var(--border)}
+
+/* ─── EMPTY STATE ─── */
+.empty-state{text-align:center;padding:80px 20px;color:var(--text-muted)}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.empty-sub{font-size:13px;line-height:1.6;max-width:380px;margin:0 auto 20px}
+
+/* ─── FOLLOW-UP ALERT BAR ─── */
+.alert-bar{background:var(--red-bg);border-bottom:1px solid var(--red-border);padding:10px 28px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--red)}
+.alert-bar.hidden{display:none}
+.alert-bar strong{font-weight:700}
+.alert-bar .ab-leads{text-decoration:underline;cursor:pointer;font-weight:600}
+
+/* TIMESTAMP */
+#build-stamp{position:fixed;bottom:10px;right:14px;z-index:999;font-size:10px;color:rgba(13,35,64,.4);background:rgba(255,255,255,.82);backdrop-filter:blur(4px);border:1px solid rgba(13,35,64,.08);border-radius:6px;padding:4px 9px;pointer-events:none}
+
+@media(max-width:640px){
+  .hero{padding:20px 16px 18px}
+  .toolbar{padding:10px 16px}
+  .kanban-wrap,.table-wrap{padding:16px 12px 60px}
+  .stat-strip{padding:12px 16px}
+}
+@media print{
+  nav,.hero-actions,.toolbar,#build-stamp,.alert-bar,.log-add,.modal-footer,.btn-danger{display:none!important}
+  .table-wrap{padding:0}
+  .overlay{display:none!important}
+}
+
+/* ─── POPCX IMPORT ─── */
+.pcx-token-status{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;margin-bottom:16px}
+.pcx-token-status.connected{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.pcx-token-status.expired{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.pcx-token-status.none{background:var(--cream);color:var(--text-muted);border:1px solid var(--border)}
+.pcx-entry-list{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.pcx-entry{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color .15s}
+.pcx-entry:hover{border-color:var(--gold)}
+.pcx-entry-info{flex:1;min-width:0}
+.pcx-entry-name{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.pcx-entry-meta{font-size:11.5px;color:var(--text-muted);display:flex;gap:10px;flex-wrap:wrap}
+.pcx-entry-meta span{display:flex;align-items:center;gap:3px}
+.pcx-pagination{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--text-muted)}
+.pcx-loading{text-align:center;padding:28px;color:var(--text-muted);font-size:13px}
+.pcx-empty{text-align:center;padding:24px;color:var(--text-muted);font-size:12.5px;font-style:italic}
+.pcx-error{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--r-sm);padding:10px 13px;font-size:12.5px;color:var(--red);margin-top:10px}
+.pcx-btn-connect{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:none}
+.pcx-btn-connect:hover{background:linear-gradient(135deg,#16213e,#0f3460)}
+.token-instructions{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:var(--text-mid);line-height:1.7;margin-bottom:12px}
+.token-instructions ol{padding-left:16px;margin-top:6px}
+.token-instructions li{margin-bottom:3px}
+.token-instructions code{background:rgba(13,35,64,.08);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:11px}
+.pcx-search-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:4px}
+.pcx-search-row input{flex:1}
+.pcx-list-id-hint{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.pcx-field-map{background:var(--cream);border-radius:var(--r-sm);padding:10px 13px;font-size:11.5px;color:var(--text-mid);border:1px solid var(--border);margin-bottom:12px}
+.pcx-field-map strong{color:var(--navy)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Village Capital · Lindon</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="va-quote-creator.html">Quote Lab</a>
+    <a href="matrix.html">Matrix</a>
+    <a href="loan-compass.html">Loan Compass</a>
+    <a href="rate-watch.html">Rate Watch</a>
+    <a href="file-checklist.html">File Checklist</a>
+    <a href="lead-pipeline.html" class="active">Lead Pipeline</a>
+    <a href="VillageMarket.html">Village Market</a>
+    <a href="shoutouts.html">Shout Outs</a>
+  </div>
+  <div class="nav-lo">
+    <span class="nav-lo-label">LO:</span>
+    <select id="lo-select" onchange="switchLO()">
+      <option value="">— Select LO —</option>
+      <option>KC Smalley</option>
+      <option>Colby McBride</option>
+      <option>Lis Malley</option>
+      <option>Tyler Smith</option>
+      <option>Bryce Hammons</option>
+      <option>Jordan Call</option>
+      <option>Nick Petersen</option>
+    </select>
+  </div>
+</nav>
+
+<!-- FOLLOW-UP ALERT BAR -->
+<div class="alert-bar hidden" id="alert-bar">
+  <span>🔔</span>
+  <span id="alert-text"></span>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-row">
+    <div>
+      <div class="hero-eyebrow">Lindon Branch · Lead Nurture</div>
+      <div class="hero-title">Lead Pipeline</div>
+      <div class="hero-lo" id="hero-lo-line">Select your name above to load your pipeline.</div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-outline" onclick="exportCSV()" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)">⬇ Export CSV</button>
+      <button class="btn pcx-btn-connect" onclick="openPCXModal()" id="pcx-btn" title="Import leads from PopCX">🔗 PopCX Import</button>
+      <button class="btn btn-gold" onclick="openAddModal()" id="add-btn" disabled>＋ Add Lead</button>
+    </div>
+  </div>
+  <!-- STAT STRIP -->
+  <div class="stat-strip" id="stat-strip">
+    <div class="stat-pill"><div class="sp-dot" style="background:rgba(255,255,255,.3)"></div><div><div class="sp-val" id="st-total">—</div><div class="sp-lbl">Total Leads</div></div></div>
+    <div class="stat-pill stage-quote"><div class="sp-dot" style="background:var(--blue)"></div><div><div class="sp-val" id="st-quote">—</div><div class="sp-lbl">Quote Sent</div></div></div>
+    <div class="stat-pill stage-followup"><div class="sp-dot" style="background:var(--amber)"></div><div><div class="sp-val" id="st-followup">—</div><div class="sp-lbl">Following Up</div></div></div>
+    <div class="stat-pill stage-waiting"><div class="sp-dot" style="background:var(--purple)"></div><div><div class="sp-val" id="st-waiting">—</div><div class="sp-lbl">Waiting</div></div></div>
+    <div class="stat-pill stage-won"><div class="sp-dot" style="background:var(--green)"></div><div><div class="sp-val" id="st-won">—</div><div class="sp-lbl">Won</div></div></div>
+    <div class="stat-pill"><div class="sp-dot" style="background:var(--red)"></div><div><div class="sp-val" id="st-overdue">—</div><div class="sp-lbl">Overdue Follow-Up</div></div></div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search leads…" oninput="renderAll()"/>
+  </div>
+  <select class="filter-select" id="filter-stage" onchange="renderAll()">
+    <option value="">All Stages</option>
+    <option value="quote">Quote Sent</option>
+    <option value="followup">Following Up</option>
+    <option value="waiting">Waiting on Borrower</option>
+    <option value="dead">Dead / Not Interested</option>
+    <option value="won">Closed — Won</option>
+  </select>
+  <select class="filter-select" id="filter-source" onchange="renderAll()">
+    <option value="">All Sources</option>
+    <option>Referral</option>
+    <option>Zillow</option>
+    <option>Walk-in</option>
+    <option>Social Media</option>
+    <option>Agent</option>
+    <option>Repeat Client</option>
+    <option>Internet Lead</option>
+    <option>Other</option>
+  </select>
+  <select class="filter-select" id="filter-followup" onchange="renderAll()">
+    <option value="">All Follow-Ups</option>
+    <option value="overdue">Overdue</option>
+    <option value="today">Due Today</option>
+    <option value="week">This Week</option>
+    <option value="none">No Date Set</option>
+  </select>
+  <div class="view-toggle">
+    <button class="vt-btn active" id="vbtn-kanban" onclick="setView('kanban',this)">🗂 Kanban</button>
+    <button class="vt-btn" id="vbtn-table" onclick="setView('table',this)">📋 Table</button>
+  </div>
+</div>
+
+<!-- KANBAN VIEW -->
+<div id="kanban-view">
+  <div class="kanban-wrap">
+    <div class="kanban" id="kanban-board"></div>
+  </div>
+</div>
+
+<!-- TABLE VIEW -->
+<div id="table-view" style="display:none">
+  <div class="table-wrap">
+    <div id="table-container"></div>
+  </div>
+</div>
+
+<!-- ── ADD / EDIT MODAL ── -->
+<div class="overlay hidden" id="lead-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="modal-title">Add New Lead</h3>
+      <button class="modal-close" onclick="closeModal('lead-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="fsec-hdr">Borrower Info</div>
+      <div class="fg-row fg-2">
+        <div class="fg"><label class="flabel">Full Name <span>*</span></label><input type="text" id="f-name" placeholder="John & Jane Smith"/></div>
+        <div class="fg"><label class="flabel">Phone</label><input type="tel" id="f-phone" placeholder="(801) 555-0000"/></div>
+      </div>
+      <div class="fg-row fg-2">
+        <div class="fg"><label class="flabel">Email</label><input type="email" id="f-email" placeholder="borrower@email.com"/></div>
+        <div class="fg"><label class="flabel">Source</label>
+          <select id="f-source">
+            <option value="">— Select —</option>
+            <option>Referral</option><option>Zillow</option><option>Walk-in</option>
+            <option>Social Media</option><option>Agent</option><option>Repeat Client</option>
+            <option>Internet Lead</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="flabel">Referring Agent / Realtor</label><input type="text" id="f-agent" placeholder="Agent name (optional)"/></div>
+
+      <div class="fsec-hdr" style="margin-top:18px">Loan Details</div>
+      <div class="fg-row fg-3">
+        <div class="fg"><label class="flabel">Loan Program</label>
+          <select id="f-program">
+            <option value="">—</option>
+            <option>VA</option><option>FHA</option><option>Conventional</option><option>USDA</option><option>Jumbo</option><option>TBD</option>
+          </select>
+        </div>
+        <div class="fg"><label class="flabel">Loan Amount ($)</label><input type="number" id="f-amount" placeholder="400,000"/></div>
+        <div class="fg"><label class="flabel">Rate Quoted (%)</label><input type="number" id="f-rate" placeholder="6.750" step="0.125"/></div>
+      </div>
+      <div class="fg"><label class="flabel">Quote Notes (program details, down payment, etc.)</label>
+        <textarea id="f-quote-notes" placeholder="e.g. 30yr Fixed, 5% down, closing costs ~$8,200…"></textarea>
+      </div>
+
+      <div class="fsec-hdr" style="margin-top:18px">Pipeline Status</div>
+      <div class="fg">
+        <label class="flabel">Stage <span>*</span></label>
+        <div class="stage-select-wrap">
+          <input type="radio" class="stage-opt" name="f-stage" id="fs-quote"    value="quote"    /><label class="stage-opt-label stage-quote"    for="fs-quote">Quote Sent</label>
+          <input type="radio" class="stage-opt" name="f-stage" id="fs-followup" value="followup" /><label class="stage-opt-label stage-followup" for="fs-followup">Following Up</label>
+          <input type="radio" class="stage-opt" name="f-stage" id="fs-waiting"  value="waiting"  /><label class="stage-opt-label stage-waiting"  for="fs-waiting">Waiting on Borrower</label>
+          <input type="radio" class="stage-opt" name="f-stage" id="fs-dead"     value="dead"     /><label class="stage-opt-label stage-dead"     for="fs-dead">Dead / Not Interested</label>
+          <input type="radio" class="stage-opt" name="f-stage" id="fs-won"      value="won"      /><label class="stage-opt-label stage-won"      for="fs-won">Closed — Won 🏆</label>
+        </div>
+      </div>
+      <div class="fg-row fg-2" style="margin-top:14px">
+        <div class="fg"><label class="flabel">Next Follow-Up Date</label><input type="date" id="f-followup"/></div>
+        <div class="fg"><label class="flabel">Date Added</label><input type="date" id="f-added"/></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="delete-btn" onclick="deleteLead()" style="display:none">🗑 Delete Lead</button>
+      <div style="display:flex;gap:8px;margin-left:auto">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('lead-modal')">Cancel</button>
+        <button class="btn btn-navy btn-sm" onclick="saveLead()">💾 Save Lead</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL / LOG MODAL ── -->
+<div class="overlay hidden" id="detail-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="dm-name">Lead Detail</h3>
+      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-meta" id="dm-chips"></div>
+
+      <div id="dm-info" style="margin-bottom:18px"></div>
+
+      <div class="fsec-hdr">📝 Call Log & Notes</div>
+      <div class="call-log" id="dm-log"></div>
+      <div class="log-add">
+        <textarea id="log-input" placeholder="Add a note — what happened on the call? Next step? Any objections?"></textarea>
+        <button class="btn btn-navy btn-sm" style="height:52px;flex-shrink:0" onclick="addLogEntry()">Add Note</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('detail-modal')">Close</button>
+      <button class="btn btn-gold btn-sm" onclick="editFromDetail()">✏️ Edit Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── POPCX IMPORT MODAL ── -->
+<div class="overlay hidden" id="pcx-modal">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-hdr" style="background:linear-gradient(135deg,#1a1a2e,#0f3460)">
+      <h3 style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">🔗</span> PopCX Import
+        <span id="pcx-nav-badge" style="font-size:11px;font-weight:500;background:rgba(255,255,255,.12);padding:2px 9px;border-radius:20px;letter-spacing:.3px"></span>
+      </h3>
+      <button class="modal-close" onclick="closeModal('pcx-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px 22px">
+
+      <!-- TOKEN STATUS -->
+      <div id="pcx-token-status-bar" class="pcx-token-status none">⚪ Not connected — paste your PopCX token below</div>
+
+      <!-- TAB NAV -->
+      <div style="display:flex;border-bottom:2px solid var(--border);margin-bottom:16px;gap:0">
+        <button class="pcx-tab-btn active" data-tab="browse" onclick="switchPCXTab('browse',this)"
+          style="padding:7px 16px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--navy);border-bottom:2px solid var(--gold);margin-bottom:-2px">
+          📋 Browse Leads
+        </button>
+        <button class="pcx-tab-btn" data-tab="setup" onclick="switchPCXTab('setup',this)"
+          style="padding:7px 16px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px">
+          ⚙️ Token Setup
+        </button>
+      </div>
+
+      <!-- BROWSE TAB -->
+      <div id="pcx-tab-browse">
+        <div style="margin-bottom:10px">
+          <label class="flabel">Call List ID <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0"> — find this in your PopCX URL when viewing a call list (e.g. /call-lists/<strong>8</strong>/entries)</span></label>
+          <div class="pcx-search-row" style="margin-top:5px">
+            <input type="number" id="pcx-list-id" placeholder="e.g. 8" style="max-width:110px"/>
+            <input type="text" id="pcx-search-name" placeholder="Search by name (optional)…" style="flex:1"/>
+            <button class="btn btn-navy btn-sm" onclick="fetchPCXEntries(1)">Fetch Leads</button>
+          </div>
+        </div>
+
+        <div id="pcx-results-area">
+          <div class="pcx-empty">Enter a Call List ID above and click Fetch to browse your PopCX leads.</div>
+        </div>
+      </div>
+
+      <!-- SETUP TAB -->
+      <div id="pcx-tab-setup" style="display:none">
+        <div class="token-instructions">
+          <strong>How to get your PopCX token:</strong>
+          <ol>
+            <li>Log into <a href="https://popcx.com" target="_blank" style="color:var(--navy)">popcx.com</a> in Chrome</li>
+            <li>Press <code>F12</code> to open Developer Tools</li>
+            <li>Click <strong>Network</strong> tab → filter by <strong>Fetch/XHR</strong></li>
+            <li>Click any XHR request → <strong>Headers</strong> → find <strong>Authorization</strong></li>
+            <li>Copy everything after "Bearer " — that's your token</li>
+          </ol>
+          <div style="margin-top:8px;color:var(--amber);font-weight:600">⏱ Tokens expire after ~12 hours. You'll need to refresh when it stops working.</div>
+        </div>
+        <div class="fg">
+          <label class="flabel">Paste Bearer Token <span>*</span></label>
+          <textarea id="pcx-token-input" placeholder="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9…" style="min-height:90px;font-family:monospace;font-size:11px;word-break:break-all"></textarea>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <label class="flabel">Your PopCX User ID <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0"> — visible in PopCX URLs (e.g. user_id=<strong>7157</strong>)</span></label>
+          <input type="number" id="pcx-user-id" placeholder="e.g. 7157" style="max-width:160px"/>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="btn btn-navy btn-sm" onclick="savePCXToken()">💾 Save Token</button>
+          <button class="btn btn-danger btn-sm" onclick="clearPCXToken()">🗑 Clear Token</button>
+        </div>
+        <div id="pcx-save-msg" style="margin-top:10px;font-size:12px"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer" style="font-size:11.5px;color:var(--text-muted)">
+      <span>Fields imported: Name · Phone · Email · Source set to "PopCX Import"</span>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('pcx-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="build-stamp">Last updated: <span id="build-ts"></span></div>
+
+<script data-cfasync="false">
+// ═══════════════════════════════════════════════
+// DATA LAYER
+// (Swap localStorage for fetch() calls to swap in a real backend later)
+// ═══════════════════════════════════════════════
+
+const STORAGE_KEY = lo => `vci-leads-${lo.toLowerCase().replace(/\s+/g,'_')}`;
+
+function loadLeads(lo) {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY(lo))||'[]'); }
+  catch(e) { return []; }
+}
+function saveLeads(lo, leads) {
+  localStorage.setItem(STORAGE_KEY(lo), JSON.stringify(leads));
+}
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentLO    = localStorage.getItem('vci-current-lo')||'';
+let leads        = [];
+let editingId    = null;
+let detailId     = null;
+let currentView  = 'kanban';
+
+const STAGES = [
+  {key:'quote',    label:'Quote Sent',           cls:'stage-quote'},
+  {key:'followup', label:'Following Up',          cls:'stage-followup'},
+  {key:'waiting',  label:'Waiting on Borrower',   cls:'stage-waiting'},
+  {key:'dead',     label:'Dead / Not Interested', cls:'stage-dead'},
+  {key:'won',      label:'Closed — Won 🏆',       cls:'stage-won'},
+];
+const STAGE_MAP = Object.fromEntries(STAGES.map(s=>[s.key,s]));
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+const fmt$ = v => v ? '$'+Number(v).toLocaleString() : '—';
+const today = () => new Date().toISOString().slice(0,10);
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  const diff = Date.now() - new Date(dateStr).getTime();
+  return Math.floor(diff / 86400000);
+}
+function followupStatus(dateStr) {
+  if (!dateStr) return 'none';
+  const d = new Date(dateStr), t = new Date(today());
+  if (d < t) return 'overdue';
+  if (d.toDateString()===t.toDateString()) return 'today';
+  const week = new Date(t); week.setDate(week.getDate()+7);
+  if (d <= week) return 'upcoming';
+  return 'upcoming';
+}
+function followupLabel(dateStr) {
+  if (!dateStr) return {cls:'none',text:'No follow-up set'};
+  const s = followupStatus(dateStr);
+  const fmt = new Date(dateStr).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  if (s==='overdue') return {cls:'overdue',text:'⚠️ Overdue: '+fmt};
+  if (s==='today')   return {cls:'today',  text:'📅 Due today: '+fmt};
+  return {cls:'upcoming',text:'📆 '+fmt};
+}
+function genId() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function lastContactDate(lead) {
+  if (lead.log && lead.log.length) return lead.log[lead.log.length-1].date;
+  return lead.added || null;
+}
+
+// ═══════════════════════════════════════════════
+// LO MANAGEMENT
+// ═══════════════════════════════════════════════
+function switchLO() {
+  currentLO = document.getElementById('lo-select').value;
+  localStorage.setItem('vci-current-lo', currentLO);
+  if (currentLO) {
+    leads = loadLeads(currentLO);
+    document.getElementById('add-btn').disabled = false;
+    document.getElementById('hero-lo-line').innerHTML =
+      `Viewing pipeline for <strong>${currentLO}</strong> — ${leads.length} lead${leads.length!==1?'s':''}`;
+  } else {
+    leads = [];
+    document.getElementById('add-btn').disabled = true;
+    document.getElementById('hero-lo-line').textContent = 'Select your name above to load your pipeline.';
+  }
+  renderAll();
+  updateStats();
+  checkAlerts();
+}
+
+// Restore last LO
+window.addEventListener('DOMContentLoaded', () => {
+  if (currentLO) {
+    const sel = document.getElementById('lo-select');
+    sel.value = currentLO;
+    if (!sel.value) { currentLO=''; } // name not in list
+    else switchLO();
+  }
+});
+
+// ═══════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════
+function checkAlerts() {
+  const overdue = leads.filter(l => l.stage!=='dead' && l.stage!=='won' && followupStatus(l.followup)==='overdue');
+  const bar = document.getElementById('alert-bar');
+  if (overdue.length) {
+    document.getElementById('alert-text').innerHTML =
+      `<strong>${overdue.length} lead${overdue.length>1?'s':''}</strong> with overdue follow-ups: ` +
+      overdue.map(l=>`<span class="ab-leads" onclick="openDetail('${l.id}')">${l.name.split(' ')[0]}</span>`).join(', ');
+    bar.classList.remove('hidden');
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════
+function updateStats() {
+  const active = leads.filter(l=>l.stage!=='dead');
+  document.getElementById('st-total').textContent    = active.length;
+  document.getElementById('st-quote').textContent    = leads.filter(l=>l.stage==='quote').length;
+  document.getElementById('st-followup').textContent = leads.filter(l=>l.stage==='followup').length;
+  document.getElementById('st-waiting').textContent  = leads.filter(l=>l.stage==='waiting').length;
+  document.getElementById('st-won').textContent      = leads.filter(l=>l.stage==='won').length;
+  document.getElementById('st-overdue').textContent  = leads.filter(l=>
+    l.stage!=='dead'&&l.stage!=='won'&&followupStatus(l.followup)==='overdue'
+  ).length;
+  if (currentLO) {
+    document.getElementById('hero-lo-line').innerHTML =
+      `Viewing pipeline for <strong>${currentLO}</strong> — ${active.length} active lead${active.length!==1?'s':''}`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// FILTER + SEARCH
+// ═══════════════════════════════════════════════
+function filteredLeads() {
+  const q      = document.getElementById('search-input').value.toLowerCase();
+  const stage  = document.getElementById('filter-stage').value;
+  const source = document.getElementById('filter-source').value;
+  const fuF    = document.getElementById('filter-followup').value;
+
+  return leads.filter(l => {
+    if (q && !JSON.stringify(l).toLowerCase().includes(q)) return false;
+    if (stage  && l.stage!==stage) return false;
+    if (source && l.source!==source) return false;
+    if (fuF) {
+      const fs = followupStatus(l.followup);
+      if (fuF==='overdue'  && fs!=='overdue')  return false;
+      if (fuF==='today'    && fs!=='today')     return false;
+      if (fuF==='week'     && fs!=='upcoming')  return false;
+      if (fuF==='none'     && l.followup)       return false;
+    }
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════════════
+// VIEW TOGGLE
+// ═══════════════════════════════════════════════
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('kanban-view').style.display = v==='kanban' ? '' : 'none';
+  document.getElementById('table-view').style.display  = v==='table'  ? '' : 'none';
+  renderAll();
+}
+
+function renderAll() {
+  if (currentView==='kanban') renderKanban();
+  else renderTable();
+  updateStats();
+}
+
+// ═══════════════════════════════════════════════
+// KANBAN
+// ═══════════════════════════════════════════════
+function renderKanban() {
+  if (!currentLO) {
+    document.getElementById('kanban-board').innerHTML = `
+      <div class="empty-state" style="width:100%;min-width:0">
+        <div class="empty-icon">👤</div>
+        <div class="empty-title">Select your name to get started</div>
+        <div class="empty-sub">Choose your name in the top-right corner to load your pipeline.</div>
+      </div>`;
+    return;
+  }
+  const list = filteredLeads();
+  document.getElementById('kanban-board').innerHTML = STAGES.map(stage => {
+    const cards = list.filter(l=>l.stage===stage.key);
+    const colCards = cards.length
+      ? cards.map(l => buildCard(l)).join('')
+      : `<div class="kb-empty">No leads in this stage</div>`;
+    return `
+      <div class="kb-col ${stage.cls}">
+        <div class="kb-col-hdr">
+          <span class="kb-col-title">${stage.label.replace(' 🏆','')}</span>
+          <span class="kb-count">${cards.length}</span>
+        </div>
+        <div class="kb-body">${colCards}</div>
+      </div>`;
+  }).join('');
+}
+
+function buildCard(l) {
+  const fu     = followupLabel(l.followup);
+  const lcd    = lastContactDate(l);
+  const days   = daysSince(lcd);
+  const isOverdue = followupStatus(l.followup)==='overdue';
+  const isToday   = followupStatus(l.followup)==='today';
+  return `
+    <div class="lead-card ${isOverdue?'overdue':isToday?'due-today':''} ${STAGE_MAP[l.stage]?.cls||''}"
+         onclick="openDetail('${l.id}')">
+      <div class="lc-name">${l.name}</div>
+      ${l.program?`<span class="lc-prog">${l.program}${l.rate?' · '+l.rate+'%':''}</span>`:''}
+      <div class="lc-meta">
+        ${l.phone?`<div class="lc-meta-row"><span class="lc-meta-icon">📞</span>${l.phone}</div>`:''}
+        ${l.amount?`<div class="lc-meta-row"><span class="lc-meta-icon">💰</span>${fmt$(l.amount)}</div>`:''}
+        ${l.source?`<div class="lc-meta-row"><span class="lc-meta-icon">📍</span>${l.source}</div>`:''}
+        ${l.agent?`<div class="lc-meta-row"><span class="lc-meta-icon">🤝</span>${l.agent}</div>`:''}
+      </div>
+      <div class="lc-follow ${fu.cls}">${fu.text}</div>
+      ${days!=null?`<div class="lc-days">Last contact: ${days===0?'Today':`${days}d ago`}</div>`:''}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// TABLE
+// ═══════════════════════════════════════════════
+function renderTable() {
+  if (!currentLO) {
+    document.getElementById('table-container').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        <div class="empty-title">Select your name to get started</div>
+      </div>`;
+    return;
+  }
+  const list = filteredLeads();
+  if (!list.length) {
+    document.getElementById('table-container').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No leads match your filters</div>
+        <div class="empty-sub">Try adjusting the search or filter options above.</div>
+      </div>`;
+    return;
+  }
+  const rows = list.map(l => {
+    const fu     = followupLabel(l.followup);
+    const lcd    = lastContactDate(l);
+    const days   = daysSince(lcd);
+    const stage  = STAGE_MAP[l.stage];
+    const isOver = followupStatus(l.followup)==='overdue';
+    const isToday= followupStatus(l.followup)==='today';
+    const dCls   = days!=null && days>7 ? 'hot' : days!=null && days>3 ? 'warm' : '';
+    return `
+      <tr class="${isOver?'overdue':isToday?'due-today':''}" onclick="openDetail('${l.id}')">
+        <td><strong>${l.name}</strong>${l.agent?`<br><span style="font-size:10.5px;color:var(--text-muted)">Agent: ${l.agent}</span>`:''}</td>
+        <td>${l.phone?`<a href="tel:${l.phone}" onclick="event.stopPropagation()" style="color:var(--navy)">${l.phone}</a>`:'—'}</td>
+        <td><span class="stage-chip ${stage?.cls||''}">${stage?.label||l.stage}</span></td>
+        <td>${l.program||'—'}${l.rate?` · <strong>${l.rate}%</strong>`:''}</td>
+        <td>${fmt$(l.amount)}</td>
+        <td>${l.source||'—'}</td>
+        <td><span class="lc-follow ${fu.cls}" style="display:inline-flex">${fu.text}</span></td>
+        <td><span class="days-chip ${dCls}">${days!=null?(days===0?'Today':days+'d'):'-'}</span></td>
+        <td>${l.log?.length||0} note${l.log?.length!==1?'s':''}</td>
+      </tr>`;
+  }).join('');
+
+  document.getElementById('table-container').innerHTML = `
+    <table class="lead-tbl">
+      <thead>
+        <tr>
+          <th>Name</th><th>Phone</th><th>Stage</th><th>Program / Rate</th>
+          <th>Amount</th><th>Source</th><th>Next Follow-Up</th>
+          <th>Last Contact</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════
+// ADD / EDIT MODAL
+// ═══════════════════════════════════════════════
+function openAddModal(id) {
+  if (!currentLO) { alert('Please select your name first.'); return; }
+  editingId = id||null;
+  const lead = id ? leads.find(l=>l.id===id) : null;
+  document.getElementById('modal-title').textContent = lead ? 'Edit Lead' : 'Add New Lead';
+  document.getElementById('delete-btn').style.display = lead ? '' : 'none';
+
+  // Fill fields
+  const fv = (fid,val) => { const el=document.getElementById(fid); if(el) el.value=val||''; };
+  fv('f-name',   lead?.name);
+  fv('f-phone',  lead?.phone);
+  fv('f-email',  lead?.email);
+  fv('f-source', lead?.source);
+  fv('f-agent',  lead?.agent);
+  fv('f-program',lead?.program);
+  fv('f-amount', lead?.amount);
+  fv('f-rate',   lead?.rate);
+  fv('f-quote-notes', lead?.quoteNotes);
+  fv('f-followup', lead?.followup||'');
+  fv('f-added',  lead?.added||today());
+
+  // Stage radio
+  document.querySelectorAll('input[name="f-stage"]').forEach(r => r.checked = (r.value===(lead?.stage||'quote')));
+
+  document.getElementById('lead-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('f-name').focus(),100);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+  editingId = detailId = null;
+}
+
+function saveLead() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Borrower name is required.'); return; }
+  const stageEl = document.querySelector('input[name="f-stage"]:checked');
+  const stage   = stageEl ? stageEl.value : 'quote';
+
+  const lead = {
+    id:         editingId || genId(),
+    name,
+    phone:      document.getElementById('f-phone').value.trim(),
+    email:      document.getElementById('f-email').value.trim(),
+    source:     document.getElementById('f-source').value,
+    agent:      document.getElementById('f-agent').value.trim(),
+    program:    document.getElementById('f-program').value,
+    amount:     document.getElementById('f-amount').value,
+    rate:       document.getElementById('f-rate').value,
+    quoteNotes: document.getElementById('f-quote-notes').value.trim(),
+    stage,
+    followup:   document.getElementById('f-followup').value,
+    added:      document.getElementById('f-added').value || today(),
+    log:        editingId ? (leads.find(l=>l.id===editingId)?.log||[]) : [],
+    lastModified: today(),
+  };
+
+  if (editingId) {
+    leads = leads.map(l => l.id===editingId ? lead : l);
+  } else {
+    leads.unshift(lead);
+  }
+  saveLeads(currentLO, leads);
+  closeModal('lead-modal');
+  renderAll();
+  checkAlerts();
+}
+
+function deleteLead() {
+  if (!confirm('Delete this lead? This cannot be undone.')) return;
+  leads = leads.filter(l=>l.id!==editingId);
+  saveLeads(currentLO, leads);
+  closeModal('lead-modal');
+  renderAll();
+  checkAlerts();
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL / LOG MODAL
+// ═══════════════════════════════════════════════
+function openDetail(id) {
+  const l = leads.find(x=>x.id===id);
+  if (!l) return;
+  detailId = id;
+  const stage = STAGE_MAP[l.stage];
+  const fu    = followupLabel(l.followup);
+  const lcd   = lastContactDate(l);
+  const days  = daysSince(lcd);
+
+  document.getElementById('dm-name').textContent = l.name;
+
+  // Chips
+  const chips = [
+    stage ? `<span class="detail-chip stage-chip ${stage.cls}">${stage.label}</span>` : '',
+    l.program ? `<span class="detail-chip">📋 ${l.program}${l.rate?' · '+l.rate+'%':''}</span>` : '',
+    l.amount  ? `<span class="detail-chip">💰 ${fmt$(l.amount)}</span>` : '',
+    l.source  ? `<span class="detail-chip">📍 ${l.source}</span>` : '',
+    `<span class="detail-chip lc-follow ${fu.cls}" style="border:none">${fu.text}</span>`,
+    days!=null ? `<span class="detail-chip">🕒 Last contact: ${days===0?'today':days+'d ago'}</span>` : '',
+  ].filter(Boolean).join('');
+  document.getElementById('dm-chips').innerHTML = chips;
+
+  // Info block
+  let info = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">';
+  if (l.phone) info += `<div>📞 <a href="tel:${l.phone}" style="color:var(--navy);font-weight:600">${l.phone}</a></div>`;
+  if (l.email) info += `<div>✉️ <a href="mailto:${l.email}" style="color:var(--navy)">${l.email}</a></div>`;
+  if (l.agent) info += `<div>🤝 Agent: <strong>${l.agent}</strong></div>`;
+  if (l.added) info += `<div>📅 Added: ${new Date(l.added).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`;
+  info += '</div>';
+  if (l.quoteNotes) info += `<div style="margin-top:10px;background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;color:var(--text-mid);border:1px solid var(--border)"><strong>Quote:</strong> ${l.quoteNotes}</div>`;
+  document.getElementById('dm-info').innerHTML = info;
+
+  // Log
+  renderLog(l);
+  document.getElementById('log-input').value = '';
+  document.getElementById('detail-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('log-input').focus(),100);
+}
+
+function renderLog(l) {
+  const log = l.log||[];
+  if (!log.length) {
+    document.getElementById('dm-log').innerHTML = `<div class="log-empty">No notes yet — add your first call note below.</div>`;
+    return;
+  }
+  document.getElementById('dm-log').innerHTML = [...log].reverse().map(e=>`
+    <div class="log-entry">
+      <div class="log-entry-meta">
+        <span>${new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+        <span>${e.time||''}</span>
+      </div>
+      <div class="log-entry-text">${e.text.replace(/\n/g,'<br>')}</div>
+    </div>`).join('');
+}
+
+function addLogEntry() {
+  const text = document.getElementById('log-input').value.trim();
+  if (!text) return;
+  const l = leads.find(x=>x.id===detailId);
+  if (!l) return;
+  const now = new Date();
+  l.log = l.log||[];
+  l.log.push({
+    date: now.toISOString().slice(0,10),
+    time: now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
+    text,
+  });
+  l.lastModified = today();
+  saveLeads(currentLO, leads);
+  renderLog(l);
+  document.getElementById('log-input').value = '';
+  renderAll();
+}
+
+function editFromDetail() {
+  const id = detailId;
+  closeModal('detail-modal');
+  openAddModal(id);
+}
+
+// ═══════════════════════════════════════════════
+// QUICK STAGE MOVE (from kanban future enhancement note)
+// ═══════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════
+// EXPORT CSV
+// ═══════════════════════════════════════════════
+function exportCSV() {
+  if (!currentLO||!leads.length) { alert('No leads to export.'); return; }
+  const hdr = ['Name','Phone','Email','Stage','Program','Rate','Amount','Source','Agent','Follow-Up Date','Added','Last Contact','Notes Count'];
+  const rows = leads.map(l => {
+    const lcd = lastContactDate(l);
+    return [
+      l.name, l.phone||'', l.email||'',
+      STAGE_MAP[l.stage]?.label||l.stage,
+      l.program||'', l.rate||'', l.amount||'',
+      l.source||'', l.agent||'',
+      l.followup||'', l.added||'', lcd||'',
+      (l.log?.length||0)
+    ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+  });
+  const csv  = [hdr.join(','),...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'),{href:url,download:`leads-${currentLO.replace(/\s+/g,'-')}-${today()}.csv`});
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════
+// POPCX INTEGRATION
+// ═══════════════════════════════════════════════
+const PCX_TOKEN_KEY = 'vci-pcx-token';
+const PCX_USER_KEY  = 'vci-pcx-user-id';
+let pcxPage = 1;
+let pcxTotalPages = 1;
+let pcxLastListId = null;
+
+function getPCXToken() { return localStorage.getItem(PCX_TOKEN_KEY)||''; }
+function getPCXUserId(){ return localStorage.getItem(PCX_USER_KEY)||''; }
+
+function pcxTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch(e) { return false; }
+}
+
+function updatePCXStatusBar() {
+  const token = getPCXToken();
+  const bar   = document.getElementById('pcx-token-status-bar');
+  if (!token) {
+    bar.className = 'pcx-token-status none';
+    bar.textContent = '⚪ Not connected — paste your PopCX token in the Setup tab';
+  } else if (pcxTokenExpired(token)) {
+    bar.className = 'pcx-token-status expired';
+    bar.textContent = '⚠️ Token expired — go to Setup tab to paste a fresh token';
+  } else {
+    const userId = getPCXUserId();
+    bar.className = 'pcx-token-status connected';
+    bar.textContent = `✅ Connected${userId ? ' · User ID '+userId : ''} — token valid`;
+  }
+}
+
+function openPCXModal() {
+  updatePCXStatusBar();
+  // Pre-fill setup fields with saved values
+  const t = getPCXToken(), u = getPCXUserId();
+  if (t) document.getElementById('pcx-token-input').value = t;
+  if (u) document.getElementById('pcx-user-id').value = u;
+  document.getElementById('pcx-modal').classList.remove('hidden');
+}
+
+function switchPCXTab(tab, btn) {
+  document.querySelectorAll('.pcx-tab-btn').forEach(b => {
+    b.style.color          = 'var(--text-muted)';
+    b.style.borderBottom   = '2px solid transparent';
+  });
+  btn.style.color        = 'var(--navy)';
+  btn.style.borderBottom = '2px solid var(--gold)';
+  document.getElementById('pcx-tab-browse').style.display = tab==='browse' ? '' : 'none';
+  document.getElementById('pcx-tab-setup').style.display  = tab==='setup'  ? '' : 'none';
+}
+
+function savePCXToken() {
+  const token = document.getElementById('pcx-token-input').value.trim();
+  const uid   = document.getElementById('pcx-user-id').value.trim();
+  const msg   = document.getElementById('pcx-save-msg');
+  if (!token) { msg.innerHTML='<span style="color:var(--red)">Please paste a token first.</span>'; return; }
+  localStorage.setItem(PCX_TOKEN_KEY, token);
+  if (uid) localStorage.setItem(PCX_USER_KEY, uid);
+  updatePCXStatusBar();
+  if (pcxTokenExpired(token)) {
+    msg.innerHTML='<span style="color:var(--amber)">⚠️ Token saved but it appears to be expired. Get a fresh one from PopCX.</span>';
+  } else {
+    msg.innerHTML='<span style="color:var(--green)">✅ Token saved! Switch to Browse tab to import leads.</span>';
+  }
+}
+
+function clearPCXToken() {
+  if (!confirm('Clear saved PopCX token?')) return;
+  localStorage.removeItem(PCX_TOKEN_KEY);
+  document.getElementById('pcx-token-input').value = '';
+  document.getElementById('pcx-save-msg').innerHTML = '<span style="color:var(--text-muted)">Token cleared.</span>';
+  updatePCXStatusBar();
+}
+
+async function fetchPCXEntries(page=1) {
+  const token   = getPCXToken();
+  const userId  = getPCXUserId();
+  const listId  = document.getElementById('pcx-list-id').value.trim();
+  const search  = document.getElementById('pcx-search-name').value.trim().toLowerCase();
+  const area    = document.getElementById('pcx-results-area');
+
+  if (!token) {
+    area.innerHTML = '<div class="pcx-error">⚠️ No token saved. Go to the Setup tab first.</div>'; return;
+  }
+  if (pcxTokenExpired(token)) {
+    area.innerHTML = '<div class="pcx-error">⚠️ Token expired. Go to Setup tab and paste a fresh token from PopCX.</div>'; return;
+  }
+  if (!listId) {
+    area.innerHTML = '<div class="pcx-error">Please enter a Call List ID.</div>'; return;
+  }
+
+  pcxLastListId = listId;
+  area.innerHTML = '<div class="pcx-loading">⏳ Fetching leads from PopCX…</div>';
+
+  try {
+    const params = new URLSearchParams({ page });
+    if (userId) params.set('specialist_user_id[]', userId);
+
+    const res = await fetch(
+      `https://api.popcx.com/call-lists/${listId}/entries?${params}`,
+      { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Api-Version': '1' } }
+    );
+
+    if (res.status===401) {
+      area.innerHTML = '<div class="pcx-error">🔒 Unauthorized — token may be expired. Go to Setup tab to refresh.</div>'; return;
+    }
+    if (!res.ok) {
+      area.innerHTML = `<div class="pcx-error">❌ API error ${res.status}. Check your Call List ID and try again.</div>`; return;
+    }
+
+    const data = await res.json();
+    // Handle both {data:[...]} and direct array responses
+    let entries = Array.isArray(data) ? data : (data.data || data.entries || data.results || []);
+    pcxPage = page;
+    // Pagination — try to detect total pages from meta
+    const meta = data.meta || data.pagination || {};
+    pcxTotalPages = meta.last_page || meta.total_pages || Math.ceil((meta.total||entries.length)/25) || 1;
+
+    if (!entries.length) {
+      area.innerHTML = '<div class="pcx-empty">No entries found in this call list.</div>'; return;
+    }
+
+    // Filter by name search if provided
+    if (search) entries = entries.filter(e => {
+      const name = extractPCXName(e).toLowerCase();
+      return name.includes(search);
+    });
+    if (!entries.length) {
+      area.innerHTML = '<div class="pcx-empty">No entries match that name search.</div>'; return;
+    }
+
+    renderPCXEntries(entries, listId);
+
+  } catch(err) {
+    area.innerHTML = `<div class="pcx-error">❌ Network error: ${err.message}. PopCX may be blocking this request.</div>`;
+  }
+}
+
+function extractPCXName(entry) {
+  // PopCX entries can store contact info in various shapes
+  const c = entry.contact || entry.borrower || entry.lead || entry;
+  if (c.first_name || c.last_name) return `${c.first_name||''} ${c.last_name||''}`.trim();
+  if (c.name) return c.name;
+  if (entry.name) return entry.name;
+  // Try fields array (PopCX custom fields)
+  const fields = entry.fields || entry.custom_fields || [];
+  const fn = fields.find(f=>/(first.?name|fname)/i.test(f.name||f.key||''));
+  const ln = fields.find(f=>/(last.?name|lname)/i.test(f.name||f.key||''));
+  if (fn||ln) return `${fn?.value||''} ${ln?.value||''}`.trim();
+  const nm = fields.find(f=>/(full.?name|name)/i.test(f.name||f.key||''));
+  if (nm) return nm.value||'';
+  return `Entry #${entry.id||'?'}`;
+}
+
+function extractPCXField(entry, patterns) {
+  const c = entry.contact || entry.borrower || entry.lead || entry;
+  for (const key of patterns) {
+    if (c[key]) return String(c[key]);
+    if (entry[key]) return String(entry[key]);
+  }
+  // Try fields array
+  const fields = entry.fields || entry.custom_fields || [];
+  for (const p of patterns) {
+    const f = fields.find(fld => new RegExp(p,'i').test(fld.name||fld.key||fld.label||''));
+    if (f?.value) return String(f.value);
+  }
+  return '';
+}
+
+function renderPCXEntries(entries, listId) {
+  const area = document.getElementById('pcx-results-area');
+  const cards = entries.map(e => {
+    const name  = extractPCXName(e);
+    const phone = extractPCXField(e, ['phone','phone_number','mobile','cell','telephone']);
+    const email = extractPCXField(e, ['email','email_address']);
+    const eid   = e.id||'';
+    return `
+      <div class="pcx-entry">
+        <div class="pcx-entry-info">
+          <div class="pcx-entry-name">${name || '—'}</div>
+          <div class="pcx-entry-meta">
+            ${phone?`<span>📞 ${phone}</span>`:''}
+            ${email?`<span>✉️ ${email}</span>`:''}
+            ${eid?`<span style="color:var(--text-muted)">ID: ${eid}</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick='importPCXEntry(${JSON.stringify({id:eid,name,phone,email})})'>
+          Import →
+        </button>
+      </div>`;
+  }).join('');
+
+  const pagination = pcxTotalPages > 1 ? `
+    <div class="pcx-pagination">
+      <button class="btn btn-outline btn-sm" onclick="fetchPCXEntries(${pcxPage-1})" ${pcxPage<=1?'disabled':''}>← Prev</button>
+      <span>Page ${pcxPage} of ${pcxTotalPages}</span>
+      <button class="btn btn-outline btn-sm" onclick="fetchPCXEntries(${pcxPage+1})" ${pcxPage>=pcxTotalPages?'disabled':''}>Next →</button>
+    </div>` : '';
+
+  area.innerHTML = `
+    <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px">${entries.length} lead${entries.length!==1?'s':''} found in Call List ${listId}</div>
+    <div class="pcx-entry-list">${cards}</div>
+    ${pagination}`;
+}
+
+function importPCXEntry(entry) {
+  if (!currentLO) { alert('Please select your LO name first.'); return; }
+  // Close PopCX modal, open Add Lead modal pre-filled
+  closeModal('pcx-modal');
+  // Small delay so modals don't stack visually
+  setTimeout(() => {
+    openAddModal(); // opens blank form
+    if (entry.name)  document.getElementById('f-name').value  = entry.name;
+    if (entry.phone) document.getElementById('f-phone').value = entry.phone;
+    if (entry.email) document.getElementById('f-email').value = entry.email;
+    // Set source to PopCX
+    document.getElementById('f-source').value = 'Internet Lead';
+    // Default stage to Quote Sent
+    const stageEl = document.getElementById('fs-quote');
+    if (stageEl) stageEl.checked = true;
+    // Focus the first empty field the LO needs to fill
+    setTimeout(() => {
+      const prog = document.getElementById('f-program');
+      if (prog) prog.focus();
+    }, 150);
+  }, 150);
+}
+
+// ═══════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') {
+    document.querySelectorAll('.overlay:not(.hidden)').forEach(o=>o.classList.add('hidden'));
+    editingId=detailId=null;
+  }
+  if (e.key==='n' && (e.metaKey||e.ctrlKey)) { e.preventDefault(); openAddModal(); }
+});
+
+// ═══════════════════════════════════════════════
+// TIMESTAMP
+// ═══════════════════════════════════════════════
+(function(){
+  const d=new Date(document.lastModified);
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h=d.getHours(),m=d.getMinutes(),ampm=h>=12?'PM':'AM',h12=h%12||12;
+  document.getElementById('build-ts').textContent=mo[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()+' · '+h12+':'+(m<10?'0'+m:m)+' '+ampm;
+})();
+</script>
+</body>
+</html>
