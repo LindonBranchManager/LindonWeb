@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>File Checklist Builder — Lindon Branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#0D2340;--navy-mid:#1a3a5c;--navy-light:#234a78;
+  --gold:#C9A84C;--gold-light:#e0c06a;--gold-pale:#f5edd8;
+  --off-white:#FAF9F6;--cream:#F3EFE8;--white:#fff;
+  --text-dark:#1a2535;--text-mid:#4a5568;--text-muted:#8a97a8;
+  --green:#1a7a4a;--green-bg:#e8f5ee;
+  --amber:#b45309;--amber-bg:#fef3cd;
+  --red:#c0392b;--red-bg:#fdecea;
+  --border:rgba(13,35,64,.10);
+  --shadow:0 2px 16px rgba(13,35,64,.08);
+  --shadow-lg:0 8px 40px rgba(13,35,64,.13);
+  --r:10px;--r-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh}
+
+/* NAV */
+nav{background:var(--navy);padding:0 28px;display:flex;align-items:center;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--gold);letter-spacing:.5px;white-space:nowrap;margin-right:28px}
+.nav-links{display:flex;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{font-size:11.5px;font-weight:500;color:rgba(255,255,255,.62);text-decoration:none;padding:0 13px;height:52px;display:flex;align-items:center;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-links a.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* HERO */
+.hero{background:var(--navy);padding:36px 32px 32px;color:#fff}
+.hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,40px);font-weight:600;line-height:1.15;margin-bottom:10px}
+.hero-sub{font-size:13.5px;color:rgba(255,255,255,.65);max-width:600px;line-height:1.6}
+
+/* LAYOUT */
+.wrap{max-width:1160px;margin:0 auto;padding:28px 24px 80px}
+.two-col{display:grid;grid-template-columns:320px 1fr;gap:22px;align-items:start}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.card:last-child{margin-bottom:0}
+.card-hdr{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-hdr h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff}
+.card-hdr .badge{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:var(--gold);color:var(--navy);padding:3px 8px;border-radius:20px;white-space:nowrap}
+.card-body{padding:20px}
+
+/* FORM */
+.fsec{margin-bottom:18px}
+.fsec-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--gold-pale)}
+.fgroup{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fgroup:last-child{margin-bottom:0}
+.flabel{font-size:11px;font-weight:600;color:var(--text-mid);letter-spacing:.3px}
+input[type=text],input[type=number],select,textarea{padding:8px 10px;border:1.5px solid rgba(13,35,64,.15);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);background:#fff;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+
+/* CHECKBOX PILL GROUPS */
+.pill-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.pill-cb{display:none}
+.pill-label{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;border:1.5px solid rgba(13,35,64,.15);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text-mid);background:#fff;user-select:none}
+.pill-cb:checked + .pill-label{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pill-label:hover{border-color:var(--navy);background:var(--cream)}
+
+/* BUTTONS */
+.run-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:46px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:#fff;border:none;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.run-btn:hover{background:linear-gradient(135deg,var(--navy-light),var(--navy));transform:translateY(-1px);box-shadow:0 4px 18px rgba(13,35,64,.25)}
+.btn-sm{height:34px;padding:0 14px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-outline{background:#fff;color:var(--navy);border-color:var(--border)}
+.btn-outline:hover{border-color:var(--navy);background:var(--cream)}
+.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-gold:hover{background:var(--gold-light)}
+
+/* VIEW TOGGLE */
+.view-toggle{display:flex;gap:0;background:var(--cream);border-radius:var(--r-sm);padding:3px;border:1px solid var(--border);margin-bottom:0}
+.view-btn{flex:1;height:32px;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;background:none;color:var(--text-mid)}
+.view-btn.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* CHECKLIST OUTPUT */
+#checklist-out{display:none}
+
+.section-hdr{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--gold-pale);display:flex;align-items:center;gap:8px}
+.section-hdr .count-badge{font-size:10px;font-weight:700;background:var(--gold-pale);color:var(--gold);padding:1px 7px;border-radius:20px;letter-spacing:0;text-transform:none}
+
+/* LO VIEW — item rows */
+.cl-item{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(13,35,64,.06)}
+.cl-item:last-child{border-bottom:none}
+.cl-cb{width:18px;height:18px;accent-color:var(--navy);cursor:pointer;margin-top:2px;flex-shrink:0}
+.cl-main{display:flex;flex-direction:column;gap:3px}
+.cl-doc{font-size:13px;font-weight:600;color:var(--text-dark);line-height:1.35}
+.cl-why{font-size:11.5px;color:var(--text-muted);line-height:1.5;font-style:italic}
+.cl-note-input{margin-top:5px;font-size:12px;height:30px;padding:4px 8px;border:1px dashed rgba(13,35,64,.2);border-radius:4px;color:var(--text-mid);background:rgba(13,35,64,.02)}
+.cl-note-input:focus{border-style:solid;border-color:var(--gold);background:#fff}
+.cl-received{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:var(--green-bg);color:var(--green);white-space:nowrap;opacity:0;transition:opacity .2s;align-self:flex-start;margin-top:2px}
+.cl-item.done .cl-received{opacity:1}
+.cl-item.done .cl-doc{text-decoration:line-through;color:var(--text-muted)}
+
+/* BORROWER VIEW */
+.bwr-section{margin-bottom:22px}
+.bwr-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--navy);margin-bottom:10px;padding-bottom:7px;border-bottom:2px solid var(--gold-pale);display:flex;align-items:center;gap:8px}
+.bwr-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(13,35,64,.05)}
+.bwr-item:last-child{border-bottom:none}
+.bwr-check{width:18px;height:18px;border:2px solid rgba(13,35,64,.2);border-radius:4px;flex-shrink:0;margin-top:1px}
+.bwr-text{display:flex;flex-direction:column;gap:2px}
+.bwr-doc{font-size:13.5px;font-weight:600;color:var(--text-dark)}
+.bwr-why{font-size:12px;color:var(--text-muted);line-height:1.5}
+
+/* TOOLBAR ACTIONS */
+.checklist-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.progress-bar-wrap{flex:1;min-width:120px;background:rgba(13,35,64,.08);border-radius:20px;height:6px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:20px;transition:width .3s}
+.progress-lbl{font-size:11px;color:var(--text-muted);white-space:nowrap}
+
+/* PRINT STYLES */
+@media print{
+  nav,.hero,.two-col > .card:first-child,.checklist-toolbar,#build-stamp,
+  .cl-note-input,.cl-cb,.run-btn,.btn-sm,.view-toggle,
+  .card-hdr .badge{display:none!important}
+  body{background:#fff;font-size:12px}
+  .two-col{display:block}
+  #checklist-out{display:block!important}
+  .card{box-shadow:none;border:none;border-radius:0}
+  .card-hdr{background:#fff!important;padding:0;margin-bottom:8px}
+  .card-hdr h3{color:var(--navy)!important;font-size:16px}
+  .print-header{display:block!important}
+  .cl-item{border-bottom:1px solid #e5e7eb}
+  .bwr-item{border-bottom:1px solid #e5e7eb}
+  page-break-inside:avoid
+}
+.print-header{display:none;text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--navy)}
+.print-header h1{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--navy)}
+.print-header p{font-size:12px;color:var(--text-muted);margin-top:4px}
+
+/* EMPTY STATE */
+#checklist-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
+#checklist-empty .ei{font-size:40px;margin-bottom:12px}
+#checklist-empty p{font-size:13px;line-height:1.6}
+
+/* TIMESTAMP */
+#build-stamp{position:fixed;bottom:10px;right:14px;z-index:999;font-size:10px;color:rgba(13,35,64,.4);background:rgba(255,255,255,.82);backdrop-filter:blur(4px);border:1px solid rgba(13,35,64,.08);border-radius:6px;padding:4px 9px;pointer-events:none;line-height:1.4}
+
+@media(max-width:840px){.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Village Capital · Lindon</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="va-quote-creator.html">Quote Lab</a>
+    <a href="matrix.html">Matrix</a>
+    <a href="loan-compass.html">Loan Compass</a>
+    <a href="rate-watch.html">Rate Watch</a>
+    <a href="file-checklist.html" class="active">File Checklist</a>
+    <a href="VillageMarket.html">Village Market</a>
+    <a href="shoutouts.html">Shout Outs</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Lindon Branch · Operations Tool</div>
+  <div class="hero-title">File Checklist Builder</div>
+  <div class="hero-sub">Build a customized doc checklist for any borrower scenario. Switch between LO tracking view and a clean borrower-facing printout.</div>
+</div>
+
+<div class="wrap">
+<div class="two-col">
+
+  <!-- ══ BUILDER PANEL ══ -->
+  <div style="position:sticky;top:68px">
+    <div class="card">
+      <div class="card-hdr"><h3>Build Checklist</h3></div>
+      <div class="card-body">
+
+        <div class="fsec">
+          <div class="fsec-label">Borrower Info</div>
+          <div class="fgroup">
+            <label class="flabel">Borrower Name</label>
+            <input type="text" id="b-name" placeholder="Smith, John &amp; Jane" />
+          </div>
+          <div class="fgroup">
+            <label class="flabel">LO Name</label>
+            <input type="text" id="b-lo" placeholder="Your name" />
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Date</label>
+            <input type="text" id="b-date" placeholder="auto" readonly style="background:var(--cream);color:var(--text-mid)" />
+          </div>
+        </div>
+
+        <div class="fsec">
+          <div class="fsec-label">Loan Details</div>
+          <div class="fgroup">
+            <label class="flabel">Loan Program</label>
+            <select id="b-program">
+              <option value="va">VA</option>
+              <option value="fha">FHA</option>
+              <option value="conv" selected>Conventional</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Transaction Type</label>
+            <select id="b-type">
+              <option value="purchase">Purchase</option>
+              <option value="rateterm">Refinance — Rate &amp; Term</option>
+              <option value="cashout">Refinance — Cash-Out</option>
+              <option value="streamline">IRRRL / FHA Streamline</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Property Type</label>
+            <select id="b-prop">
+              <option value="sfr">Single Family</option>
+              <option value="condo">Condo / PUD</option>
+              <option value="multi">2–4 Unit</option>
+              <option value="mfg">Manufactured Home</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Occupancy</label>
+            <select id="b-occ">
+              <option value="primary">Primary Residence</option>
+              <option value="second">Second Home</option>
+              <option value="invest">Investment Property</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fsec">
+          <div class="fsec-label">Borrower Profile</div>
+          <div class="fgroup">
+            <label class="flabel">Income Types (select all that apply)</label>
+            <div class="pill-group">
+              <input type="checkbox" class="pill-cb" id="inc-w2" value="w2" /><label class="pill-label" for="inc-w2">W-2 / Salaried</label>
+              <input type="checkbox" class="pill-cb" id="inc-bonus" value="bonus" /><label class="pill-label" for="inc-bonus">Bonus / Commission</label>
+              <input type="checkbox" class="pill-cb" id="inc-se" value="se" /><label class="pill-label" for="inc-se">Self-Employed</label>
+              <input type="checkbox" class="pill-cb" id="inc-ssi" value="ssi" /><label class="pill-label" for="inc-ssi">SSI / Disability / Pension</label>
+              <input type="checkbox" class="pill-cb" id="inc-joboffer" value="joboffer" /><label class="pill-label" for="inc-joboffer">Job Offer / New Job</label>
+              <input type="checkbox" class="pill-cb" id="inc-rental" value="rental" /><label class="pill-label" for="inc-rental">Rental Income</label>
+              <input type="checkbox" class="pill-cb" id="inc-vadis" value="vadis" /><label class="pill-label" for="inc-vadis">VA Disability</label>
+            </div>
+          </div>
+          <div class="fgroup" style="margin-top:8px">
+            <label class="flabel">Borrower Flags (select all that apply)</label>
+            <div class="pill-group">
+              <input type="checkbox" class="pill-cb" id="flag-cobwr" value="cobwr" /><label class="pill-label" for="flag-cobwr">Co-Borrower</label>
+              <input type="checkbox" class="pill-cb" id="flag-divorce" value="divorce" /><label class="pill-label" for="flag-divorce">Divorce / Child Support</label>
+              <input type="checkbox" class="pill-cb" id="flag-bk" value="bk" /><label class="pill-label" for="flag-bk">Prior Bankruptcy</label>
+              <input type="checkbox" class="pill-cb" id="flag-fore" value="fore" /><label class="pill-label" for="flag-fore">Prior Foreclosure</label>
+              <input type="checkbox" class="pill-cb" id="flag-gift" value="gift" /><label class="pill-label" for="flag-gift">Gift Funds</label>
+              <input type="checkbox" class="pill-cb" id="flag-nps" value="nps" /><label class="pill-label" for="flag-nps">Non-Purchasing Spouse</label>
+              <input type="checkbox" class="pill-cb" id="flag-foreign" value="foreign" /><label class="pill-label" for="flag-foreign">Foreign Income / ITIN</label>
+            </div>
+          </div>
+        </div>
+
+        <button class="run-btn" onclick="buildChecklist()">
+          <span>📋</span> Generate Checklist
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHECKLIST OUTPUT ══ -->
+  <div>
+    <div id="checklist-empty">
+      <div class="ei">📄</div>
+      <p>Configure the borrower details on the left<br>and click <strong>Generate Checklist</strong>.</p>
+    </div>
+
+    <div id="checklist-out">
+
+      <!-- PRINT HEADER -->
+      <div class="print-header" id="print-hdr"></div>
+
+      <!-- TOOLBAR -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-body" style="padding:14px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--navy)" id="cl-title"></div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="cl-meta"></div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div class="view-toggle">
+                <button class="view-btn active" id="vbtn-lo" onclick="setView('lo',this)">🗂 LO View</button>
+                <button class="view-btn" id="vbtn-bwr" onclick="setView('borrower',this)">👤 Borrower View</button>
+              </div>
+              <button class="btn-sm btn-outline" onclick="window.print()">🖨 Print / PDF</button>
+              <button class="btn-sm btn-gold" onclick="resetChecklist()">↺ Reset</button>
+            </div>
+          </div>
+          <!-- Progress bar (LO view) -->
+          <div id="progress-wrap" style="margin-top:12px;display:flex;align-items:center;gap:10px">
+            <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+            <span class="progress-lbl" id="prog-lbl">0 of 0 received</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LO VIEW -->
+      <div id="lo-view"></div>
+
+      <!-- BORROWER VIEW -->
+      <div id="borrower-view" style="display:none"></div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div id="build-stamp">Last updated: <span id="build-ts"></span></div>
+
+<script data-cfasync="false">
+// ═══════════════════════════════
+// CHECKLIST DATA
+// ═══════════════════════════════
+// Each item: { doc, why, tags[] }
+// tags: used to decide inclusion — 'all' | loan program | transaction | income | flag | prop | occ
+
+const ITEMS = {
+
+  // ── IDENTITY / UNIVERSAL ──
+  identity: {
+    label: '🪪 Identity & General',
+    items: [
+      { doc: 'Government-issued photo ID (driver\'s license or passport)', why: 'Federal law requires lenders to verify who they\'re lending to. A clear copy of your unexpired ID is required for every loan.' },
+      { doc: 'Social Security card or ITIN documentation', why: 'Required to verify your SSN matches what\'s on the application and to pull your credit report.' },
+      { doc: 'Signed and dated loan application (1003)', why: 'The 1003 is the foundation of your loan file — it captures your income, assets, debts, and the property details.' },
+    ]
+  },
+
+  // ── CREDIT / LIABILITIES ──
+  credit: {
+    label: '💳 Credit & Liabilities',
+    items: [
+      { doc: '12 months canceled checks or bank statements showing on-time mortgage/rent payments', why: 'Demonstrates a strong payment history on housing — one of the strongest compensating factors in underwriting.' },
+      { doc: 'Written explanation for any credit inquiries within the past 120 days', why: 'Underwriters need to know whether new accounts were opened (which could affect your DTI). A brief letter is all that\'s needed.' },
+      { doc: 'Written explanation letter for any derogatory credit (lates, collections, charge-offs)', why: 'Helps underwriting understand the circumstances — a one-time event (job loss, medical) is viewed differently than a pattern.' },
+    ]
+  },
+
+  // ── ASSETS / BANK STATEMENTS ──
+  assets: {
+    label: '🏦 Assets & Bank Statements',
+    items: [
+      { doc: 'Most recent 2 months bank statements — ALL pages, ALL accounts', why: 'Verifies you have the funds to close and that they are yours. "All pages" includes blank pages — missing pages will send the file back.' },
+      { doc: 'Most recent 60 days statements for any investment/retirement accounts used for reserves', why: 'Retirement and brokerage accounts can count as reserves, but underwriting needs to see the full account history.' },
+      { doc: 'Written explanation for any large deposits outside of payroll (if > $500)', why: 'Any unexplained deposit must be sourced and documented. Undocumented deposits can\'t be counted toward closing funds.' },
+    ]
+  },
+
+  // ── INCOME: W-2 ──
+  'inc-w2': {
+    label: '📄 W-2 / Salaried Income',
+    items: [
+      { doc: 'Most recent 30 days pay stubs (showing year-to-date earnings)', why: 'Confirms current employment and income. YTD earnings allow us to verify against the prior year W-2.' },
+      { doc: 'W-2s for the past 2 years (all employers)', why: 'Two years of W-2 history establishes income stability. If you changed jobs, include W-2s from all employers in that period.' },
+      { doc: 'Most recent federal tax returns — 2 years (1040s, all schedules)', why: 'Used to verify income, identify unreimbursed employee expenses, and catch any side income or deductions that affect qualifying income.' },
+      { doc: 'Written VOE (Verification of Employment) — if required by AUS', why: 'Sometimes AUS requires a third-party employer verification in addition to pay stubs. Your LO will let you know if this is needed.' },
+    ]
+  },
+
+  // ── INCOME: BONUS/COMMISSION ──
+  'inc-bonus': {
+    label: '💼 Bonus / Commission / Overtime Income',
+    items: [
+      { doc: 'Most recent 2 years W-2s showing bonus/commission breakdown', why: 'Variable income requires a 2-year history to average. One-time bonuses generally cannot be counted without a documented history.' },
+      { doc: 'Most recent 2 years federal tax returns (1040s + all schedules)', why: 'Tax returns are used alongside W-2s to verify commission income and identify any unreimbursed business expenses that reduce qualifying income.' },
+      { doc: 'Most recent 30 days pay stubs', why: 'Confirms you\'re still employed and receiving the variable income. Shows current YTD commissions for the averaging calculation.' },
+      { doc: 'Employer letter confirming continuance of bonus/commission structure', why: 'If commission or bonus is a large portion of income, underwriting may require confirmation that it\'s expected to continue.' },
+    ]
+  },
+
+  // ── INCOME: SELF-EMPLOYED ──
+  'inc-se': {
+    label: '🏢 Self-Employed / 1099 / K-1 Income',
+    items: [
+      { doc: 'Most recent 2 years personal federal tax returns (1040s) — ALL schedules', why: 'For self-employed borrowers, net income after business expenses on the tax return is what qualifying income is based on — not gross revenue.' },
+      { doc: 'Most recent 2 years business tax returns (1120S, 1065, or Schedule C) — ALL schedules', why: 'Business returns show the health of the business and allow us to add back non-cash deductions (depreciation, depletion) to income.' },
+      { doc: 'Year-to-date Profit & Loss statement (CPA-prepared or signed by borrower)', why: 'If the most recent tax return is more than a year old, a current P&L helps underwriting assess whether income has held steady or changed.' },
+      { doc: 'Business bank statements — most recent 2 months (all pages)', why: 'Confirms the business is operating and that revenue matches what\'s reported on the P&L.' },
+      { doc: 'Evidence of business ownership (business license, CPA letter, or state registration)', why: 'Confirms the business is real, active, and that you own ≥25% — which is the threshold for self-employed treatment.' },
+      { doc: 'CPA or tax preparer contact information (name, phone, firm)', why: 'Underwriting may need to verify returns were actually filed with the IRS, especially for complex returns.' },
+    ]
+  },
+
+  // ── INCOME: SSI / DISABILITY / PENSION ──
+  'inc-ssi': {
+    label: '📮 Social Security / Disability / Pension Income',
+    items: [
+      { doc: 'Most recent SSA award letter or benefits verification letter', why: 'This is the primary document used to verify the amount and continuance of Social Security or disability income.' },
+      { doc: '12 months bank statements showing consistent deposit of benefits', why: 'Confirms the benefit is being received and shows the deposit amount matches the award letter.' },
+      { doc: 'Pension or retirement benefit statement (most recent)', why: 'Shows the monthly pension amount and confirms whether it is a fixed benefit or variable.' },
+      { doc: '1099-SSA or 1099-R for most recent tax year', why: 'Used to verify the income amount on the tax return and confirms the type of benefit received.' },
+      { doc: 'Documentation confirming continuance of benefits (if disability income — must continue 3+ years)', why: 'Disability income must be documented to continue for at least 3 years to be used for qualifying. The award letter usually addresses this.' },
+    ]
+  },
+
+  // ── INCOME: JOB OFFER / NEW JOB ──
+  'inc-joboffer': {
+    label: '📝 Job Offer / New Employment Income',
+    items: [
+      { doc: 'Written offer letter on employer letterhead (signed by borrower)', why: 'A signed offer letter can be used in lieu of pay stubs if the start date is within 60–90 days of closing and the income is non-contingent.' },
+      { doc: 'Offer letter must include: start date, salary/hourly rate, full-time status, job title', why: 'Underwriting needs to confirm the income is sufficient, guaranteed, and that the position is full-time. Part-time new employment generally cannot be used.' },
+      { doc: 'Evidence of prior employment in same field (resume or prior employer contact)', why: 'For new employment to be used, there must be a reasonable career progression. A gap in the same field or a sudden career change raises questions.' },
+      { doc: 'First pay stub upon receipt if closing is after start date', why: 'If the borrower has started the new job by the time of closing, the first pay stub confirming the rate of pay is required.' },
+    ]
+  },
+
+  // ── INCOME: RENTAL ──
+  'inc-rental': {
+    label: '🏘 Rental Income',
+    items: [
+      { doc: 'Most recent 2 years federal tax returns with Schedule E', why: 'Schedule E is where rental income and expenses are reported. Qualifying rental income is typically 75% of gross rent minus expenses from the tax return.' },
+      { doc: 'Current signed lease agreements for all rental properties', why: 'Lease confirms current tenancy, the rent amount, and the lease term. Month-to-month leases may require additional documentation.' },
+      { doc: 'Most recent 2 months bank statements showing rental deposits', why: 'Confirms the rent is actually being received and matches the amount on the lease.' },
+      { doc: 'Property management agreement (if applicable)', why: 'If a property manager is used, the agreement confirms the rental arrangement and management fee, which reduces qualifying income.' },
+      { doc: 'Appraisal with 1007 (Single-Family Comparable Rent Schedule) for subject property rental income', why: 'If using income from the subject property being purchased, an appraisal with a 1007 rent schedule is required by Fannie/Freddie.' },
+    ]
+  },
+
+  // ── INCOME: VA DISABILITY ──
+  'inc-vadis': {
+    label: '🎖️ VA Disability Income',
+    items: [
+      { doc: 'VA disability award letter showing monthly benefit amount and disability rating', why: 'VA disability compensation is non-taxable income and typically grossed up 25% for qualifying purposes. The award letter is required to document the amount.' },
+      { doc: '12 months bank statements showing consistent VA disability deposit', why: 'Confirms the benefit is being received and that the amount matches the award letter.' },
+      { doc: 'Confirmation that disability is permanent (if required by AUS)', why: 'VA disability income is generally considered stable and ongoing, but some investors require documentation of permanent status for long-term qualifying.' },
+    ]
+  },
+
+  // ── PURCHASE-SPECIFIC ──
+  purchase: {
+    label: '🏠 Purchase Transaction',
+    items: [
+      { doc: 'Fully executed Purchase & Sale Agreement (all pages, all addenda)', why: 'The contract defines the purchase price, closing date, earnest money, and seller concessions — all critical to the loan structure.' },
+      { doc: 'Receipt for earnest money deposit (canceled check or wire confirmation)', why: 'Confirms the earnest money was actually paid and can be used toward closing costs. The source must be verified.' },
+      { doc: 'MLS listing or property details for subject property', why: 'Helps the processor confirm HOA status, property type, and square footage before ordering the appraisal.' },
+      { doc: 'Homeowner\'s insurance binder / declaration page (prior to closing)', why: 'Required before funding. The lender must be listed as mortgagee. Get this ordered early — insurance can take time in high-risk markets.' },
+    ]
+  },
+
+  // ── REFI-SPECIFIC ──
+  refi: {
+    label: '🔄 Refinance',
+    items: [
+      { doc: 'Current mortgage statement (most recent)', why: 'Shows the current balance, payment, lender, and loan number — required to pay off the existing loan at closing.' },
+      { doc: 'Current homeowner\'s insurance policy with lender listed as mortgagee', why: 'The lender must verify active insurance coverage. If the policy needs to be updated with the new lender info, do this before closing.' },
+      { doc: 'Copy of current note and deed of trust', why: 'For cash-out and some rate/term refis, underwriting needs to review the terms of the existing loan, including any prepayment penalties.' },
+      { doc: 'Property tax statement (most recent)', why: 'Confirms the tax amount to set up the escrow account correctly and verify no delinquent taxes exist.' },
+      { doc: 'HOA statement (if applicable) — confirming no delinquency', why: 'Any HOA delinquency must be resolved before closing. The HOA must also confirm the property is not in litigation.' },
+    ]
+  },
+
+  // ── CASHOUT ADDITIONAL ──
+  cashout: {
+    label: '💵 Cash-Out Specific',
+    items: [
+      { doc: 'Written explanation of intended use of cash-out proceeds', why: 'Some loan programs or investors require documentation of why funds are being taken out — debt consolidation, home improvement, etc. Also helps with the borrower conversation.' },
+      { doc: 'Payoff statements for any debts being paid at closing (if applicable)', why: 'If the cash-out is being used to pay off debts, payoff statements must match what\'s on the final CD.' },
+    ]
+  },
+
+  // ── IRRRL / STREAMLINE ──
+  streamline: {
+    label: '⚡ IRRRL / Streamline Specific',
+    items: [
+      { doc: 'Certificate of Eligibility (COE) — VA IRRRL only', why: 'VA IRRRL requires the original loan to be a VA loan and entitlement to be active. COE confirms eligibility.' },
+      { doc: 'Current VA or FHA loan number and servicer information', why: 'Required to confirm the loan being refinanced is the correct program (VA-to-VA or FHA-to-FHA — no cross-program streamlines).' },
+      { doc: 'Most recent 12 months mortgage payment history (no 30-day lates in past 12 months)', why: 'VA IRRRL allows one 30-day late older than 12 months. FHA Streamline requires no lates in the past 12 months. This must be documented.' },
+      { doc: 'Current mortgage statement showing balance and payment', why: 'Needed to document net tangible benefit — the new payment must be lower than the current payment.' },
+      { doc: 'VA IRRRL Worksheet (VA Form 26-8923) — VA only', why: 'VA requires the IRRRL Worksheet to document net tangible benefit, recoupment of costs within 36 months, and funding fee calculation.' },
+    ]
+  },
+
+  // ── VA PROGRAM ──
+  va: {
+    label: '🎖️ VA Loan Requirements',
+    items: [
+      { doc: 'Certificate of Eligibility (COE) — or authorization to pull from VA portal', why: 'The COE confirms eligibility, entitlement amount, and whether any prior VA loans are outstanding. Many lenders can pull this directly.' },
+      { doc: 'DD-214 (Certificate of Release/Discharge from Active Duty) — if not on active duty', why: 'Confirms honorable discharge and qualifying service. Veteran must have met minimum service requirements.' },
+      { doc: 'Statement of Service — if currently active duty (signed by commanding officer)', why: 'Active duty members use a Statement of Service in place of a DD-214. Must include rank, branch, SSN, entry date, and expected separation date.' },
+      { doc: 'VA disability rating documentation (if claiming exemption from funding fee)', why: 'A 10%+ disability rating exempts the veteran from the VA funding fee — which can be thousands of dollars. This must be documented before closing.' },
+    ]
+  },
+
+  // ── FHA PROGRAM ──
+  fha: {
+    label: '🏛 FHA Loan Requirements',
+    items: [
+      { doc: 'FHA case number assignment documentation', why: 'Every FHA loan requires an FHA case number assigned to the property. Your LO handles this, but it must happen before the appraisal is ordered.' },
+      { doc: 'Evidence that property meets FHA minimum property standards (MPR)', why: 'FHA appraisers flag health and safety deficiencies. Any conditions noted must be repaired before closing.' },
+      { doc: 'Explanation letter if any FHA loans in the past 3 years (potential MIP credit)', why: 'Borrowers refinancing from an older FHA loan may be entitled to an UFMIP refund credit. Documenting the prior FHA case number is required.' },
+    ]
+  },
+
+  // ── PROPERTY: CONDO ──
+  condo: {
+    label: '🏢 Condo / PUD Specific',
+    items: [
+      { doc: 'HOA contact information and management company name', why: 'Required to order the HOA questionnaire, which verifies the project is approved (or approvable) for the selected loan program.' },
+      { doc: 'HOA budget and financial statements (current year)', why: 'Fannie Mae, FHA, and VA all require the HOA to have adequate reserves — typically 10%+ of the annual budget. Underfunded HOAs can kill a condo approval.' },
+      { doc: 'Master insurance policy for the condo project', why: 'The project must carry adequate hazard and liability insurance. This is separate from the unit owner\'s HO-6 policy.' },
+      { doc: 'Certificate of occupancy or evidence project is 90%+ sold (new construction)', why: 'New construction condos must meet presale requirements. Investor concentration limits also apply.' },
+    ]
+  },
+
+  // ── PROPERTY: 2-4 UNIT ──
+  multi: {
+    label: '🏘 2–4 Unit Property',
+    items: [
+      { doc: 'Current signed leases for all occupied units', why: 'Rental income from non-owner units can be used to qualify. Leases are required to document the income amount.' },
+      { doc: 'Operating income statement or Schedule E for existing rental income', why: 'If the borrower currently owns rental units, the income history must be documented on the tax return.' },
+      { doc: '1025 (Small Residential Income Property Appraisal) instead of 1004', why: 'Multi-unit properties require a different appraisal form that includes a rental income analysis and comparable rentals.' },
+    ]
+  },
+
+  // ── PROPERTY: MANUFACTURED ──
+  mfg: {
+    label: '🚐 Manufactured Home',
+    items: [
+      { doc: 'Title showing home is titled as real property (not personal property / chattel)', why: 'For VA, FHA, and conventional financing, the manufactured home must be permanently affixed and titled as real estate — not as a vehicle or chattel.' },
+      { doc: 'HUD Certification Label (Data Plate) showing compliance with HUD standards', why: 'All manufactured homes must comply with HUD Manufactured Home Construction and Safety Standards. The data plate is usually found inside a cabinet.' },
+      { doc: 'Engineer certification or engineer\'s report on the foundation', why: 'VA and FHA require the foundation to meet the Permanent Foundations Guide for Manufactured Housing (HUD 4930.3G). An engineer must certify this.' },
+      { doc: 'Survey showing lot lines and setbacks (if on owned land)', why: 'Confirms the home complies with local zoning and setback requirements — required for title insurance.' },
+    ]
+  },
+
+  // ── FLAGS ──
+  'flag-cobwr': {
+    label: '👥 Co-Borrower',
+    items: [
+      { doc: 'Government-issued photo ID for co-borrower', why: 'Same identity verification requirement applies to all borrowers on the application.' },
+      { doc: 'Income and employment documentation for co-borrower (same set as primary borrower)', why: 'All borrowers on the note must be qualified. Full income documentation is required for each.' },
+      { doc: 'Authorization for credit pull — co-borrower', why: 'A separate signed authorization is required to pull the co-borrower\'s credit.' },
+    ]
+  },
+
+  'flag-divorce': {
+    label: '⚖️ Divorce / Child Support / Alimony',
+    items: [
+      { doc: 'Fully executed divorce decree (all pages)', why: 'The divorce decree governs asset division, support obligations, and any claims against jointly held property. All pages are required — not just the signature page.' },
+      { doc: 'Child support / alimony award order showing amount and terms', why: 'Support income can be used for qualifying if it is documented to continue for 3+ years. Obligations must be counted as debts.' },
+      { doc: '12 months bank statements showing receipt of support payments', why: 'Confirms support is actually being paid and is consistent. Missed payments or irregular receipt may make the income unusable for qualifying.' },
+      { doc: 'Quitclaim deed (if applicable — removing ex-spouse from title)', why: 'If one party is keeping the property, the ex-spouse must be removed from title. This must happen before or at closing.' },
+    ]
+  },
+
+  'flag-bk': {
+    label: '📜 Prior Bankruptcy',
+    items: [
+      { doc: 'Bankruptcy discharge paperwork — ALL pages', why: 'Documents the type of bankruptcy (Ch. 7 or Ch. 13), discharge date, and which debts were discharged. Waiting period runs from discharge date.' },
+      { doc: 'Schedule of creditors included in bankruptcy', why: 'Underwriting uses this to confirm that any debts showing on the credit report were included in the BK, which eliminates the obligation.' },
+      { doc: 'Written explanation letter describing circumstances of bankruptcy', why: 'A well-written explanation (medical hardship, job loss, etc.) provides context. A one-time event is treated differently than a pattern of financial irresponsibility.' },
+      { doc: 'Documentation of re-established credit since discharge (2 years preferred)', why: 'Most programs want to see 2+ years of clean credit history after discharge. Show accounts opened and paid on time.' },
+    ]
+  },
+
+  'flag-fore': {
+    label: '🏚 Prior Foreclosure / Short Sale / DIL',
+    items: [
+      { doc: 'Final foreclosure/trustee sale date documentation', why: 'Waiting periods (typically 3–7 years depending on program) run from the foreclosure completion date — not the last payment date.' },
+      { doc: 'Short sale approval letter or settlement statement (if short sale)', why: 'Documents the date of settlement and confirms any deficiency was waived or settled. DIL letters serve the same function.' },
+      { doc: 'Written explanation of circumstances leading to foreclosure/short sale', why: 'Extenuating circumstances (job loss, medical emergency, death of co-borrower) can shorten waiting periods under some programs.' },
+    ]
+  },
+
+  'flag-gift': {
+    label: '🎁 Gift Funds',
+    items: [
+      { doc: 'Signed gift letter (donor name, relationship to borrower, amount, and statement that repayment is not required)', why: 'All gift funds must be accompanied by a gift letter. "No repayment required" language is mandatory — a gift that must be repaid is actually a loan and affects DTI.' },
+      { doc: 'Bank statement from donor showing funds available prior to transfer', why: 'Documents the donor had the funds — underwriting must verify the source. Print it before the transfer, so it shows the balance.' },
+      { doc: 'Wire confirmation or cashier\'s check showing transfer of gift funds to borrower', why: 'Must show the exact dollar amount matching the gift letter and that it has already been transferred into the borrower\'s account.' },
+    ]
+  },
+
+  'flag-nps': {
+    label: '💍 Non-Purchasing Spouse (Community Property State)',
+    items: [
+      { doc: 'Non-purchasing spouse credit authorization and credit report', why: 'In community property states (AZ, CA, ID, LA, NV, NM, TX, WA, WI), the NPS\'s debts appear on the borrower\'s obligation profile even if they\'re not on the loan. Credit must be pulled.' },
+      { doc: 'Non-purchasing spouse government-issued ID', why: 'Required for identity verification in community property states where the NPS\'s financial profile affects the qualifying borrower.' },
+      { doc: 'List of all NPS debts and monthly obligations', why: 'Community property debts of the NPS must be counted in the borrower\'s DTI calculation. Failure to disclose is a compliance violation.' },
+    ]
+  },
+
+  'flag-foreign': {
+    label: '🌐 Foreign Income / ITIN Borrower',
+    items: [
+      { doc: 'ITIN documentation (IRS-issued Individual Taxpayer Identification Number)', why: 'ITIN borrowers must have a valid, current ITIN. Confirm with the investor whether ITIN loans are eligible — not all programs allow them.' },
+      { doc: '2 years federal tax returns filed with ITIN', why: 'Tax return history under the ITIN establishes income continuity. Foreign income not reported in the US cannot typically be used for qualifying.' },
+      { doc: 'Foreign income documentation translated to English with certified translation', why: 'Any income documents in a foreign language must be accompanied by a certified English translation.' },
+      { doc: 'Evidence of legal presence (visa, work authorization, resident alien card)', why: 'Lenders must verify the borrower\'s legal status and that income is expected to continue in the US.' },
+    ]
+  },
+
+  // ── OCCUPANCY: INVESTMENT ──
+  invest: {
+    label: '📈 Investment Property',
+    items: [
+      { doc: 'Lease agreement or evidence of rental market rate (if not yet leased)', why: 'Investment property qualifying often uses 75% of the market rent. An appraisal with a 1007 or signed lease is required.' },
+      { doc: 'Reserves documentation — 6 months PITI for each investment property owned', why: 'Fannie Mae requires 6 months PITIA reserves for investment properties. This is in addition to closing funds.' },
+      { doc: 'Landlord experience letter or rental history (if applicable)', why: 'Some programs prefer evidence that the borrower has managed rental properties before, which reduces risk.' },
+    ]
+  },
+
+  // ── OCCUPANCY: SECOND HOME ──
+  second: {
+    label: '🏖 Second Home',
+    items: [
+      { doc: 'Written explanation confirming intended use as second home (not rental)', why: 'Misrepresenting occupancy is mortgage fraud. Underwriting will look for rental agreements, management contracts, or listing sites that contradict second home occupancy.' },
+      { doc: 'Evidence of distance from primary residence (typically 50+ miles)', why: 'The property must be a reasonable distance from the primary home to qualify as a second home — not a rental with a convenient cover story.' },
+    ]
+  },
+
+};
+
+// ═══════════════════════════════
+// BUILD LOGIC
+// ═══════════════════════════════
+let currentView = 'lo';
+let totalItems  = 0;
+
+function buildChecklist() {
+  const name    = document.getElementById('b-name').value || 'Borrower';
+  const lo      = document.getElementById('b-lo').value   || '';
+  const program = document.getElementById('b-program').value;
+  const type    = document.getElementById('b-type').value;
+  const prop    = document.getElementById('b-prop').value;
+  const occ     = document.getElementById('b-occ').value;
+
+  const incomes = ['w2','bonus','se','ssi','joboffer','rental','vadis']
+    .filter(k => document.getElementById('inc-'+k).checked);
+  const flags = ['cobwr','divorce','bk','fore','gift','nps','foreign']
+    .filter(k => document.getElementById('flag-'+k).checked);
+
+  // Determine which sections to include
+  const sections = [];
+  sections.push(ITEMS.identity);
+  sections.push(ITEMS.credit);
+  sections.push(ITEMS.assets);
+
+  // Income sections
+  incomes.forEach(k => { if (ITEMS['inc-'+k]) sections.push(ITEMS['inc-'+k]); });
+
+  // Transaction sections
+  if (type==='purchase')    sections.push(ITEMS.purchase);
+  if (type==='rateterm' || type==='cashout') sections.push(ITEMS.refi);
+  if (type==='cashout')     sections.push(ITEMS.cashout);
+  if (type==='streamline')  sections.push(ITEMS.streamline);
+
+  // Program sections
+  if (program==='va')  sections.push(ITEMS.va);
+  if (program==='fha') sections.push(ITEMS.fha);
+
+  // Property sections
+  if (prop==='condo') sections.push(ITEMS.condo);
+  if (prop==='multi') sections.push(ITEMS.multi);
+  if (prop==='mfg')   sections.push(ITEMS.mfg);
+
+  // Occupancy sections
+  if (occ==='invest') sections.push(ITEMS.invest);
+  if (occ==='second') sections.push(ITEMS.second);
+
+  // Flag sections
+  flags.forEach(k => { if (ITEMS['flag-'+k]) sections.push(ITEMS['flag-'+k]); });
+
+  totalItems = sections.reduce((sum,s)=>sum+s.items.length,0);
+
+  // Meta labels
+  const progLabel  = {va:'VA',fha:'FHA',conv:'Conventional'}[program];
+  const typeLabel  = {purchase:'Purchase',rateterm:'Rate & Term Refi',cashout:'Cash-Out Refi',streamline:'IRRRL / Streamline'}[type];
+  const today      = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  // Set title / meta
+  document.getElementById('cl-title').textContent = name + ' — File Checklist';
+  document.getElementById('cl-meta').textContent  = `${progLabel} · ${typeLabel} · ${lo ? 'LO: '+lo+' · ' : ''}Generated ${today}`;
+
+  // Print header
+  document.getElementById('print-hdr').innerHTML = `
+    <h1>Village Capital &amp; Investment — Lindon Branch</h1>
+    <p><strong>${name}</strong> — ${progLabel} ${typeLabel} File Checklist</p>
+    <p>Generated: ${today}${lo?' · LO: '+lo:''}</p>`;
+
+  // ── LO VIEW ──
+  let loHtml = '';
+  sections.forEach(sec => {
+    loHtml += `<div class="card"><div class="card-hdr">
+      <h3>${sec.label}</h3>
+      <span class="badge">${sec.items.length} item${sec.items.length!==1?'s':''}</span>
+    </div><div class="card-body">`;
+    sec.items.forEach((item, idx) => {
+      const id = `cb-${Math.random().toString(36).slice(2)}`;
+      loHtml += `
+        <div class="cl-item" id="item-${id}">
+          <input type="checkbox" class="cl-cb" id="${id}" onchange="toggleItem('${id}')" />
+          <div class="cl-main">
+            <label class="cl-doc" for="${id}">${item.doc}</label>
+            <div class="cl-why">${item.why}</div>
+            <input type="text" class="cl-note-input" placeholder="Notes..." oninput="updateProgress()" />
+          </div>
+          <span class="cl-received">✓ Received</span>
+        </div>`;
+    });
+    loHtml += '</div></div>';
+  });
+  document.getElementById('lo-view').innerHTML = loHtml;
+
+  // ── BORROWER VIEW ──
+  let bwrHtml = '';
+  sections.forEach(sec => {
+    bwrHtml += `<div class="card bwr-section"><div class="card-body">
+      <div class="bwr-section-title">${sec.label}</div>`;
+    sec.items.forEach(item => {
+      bwrHtml += `
+        <div class="bwr-item">
+          <div class="bwr-check"></div>
+          <div class="bwr-text">
+            <div class="bwr-doc">${item.doc}</div>
+            <div class="bwr-why">${item.why}</div>
+          </div>
+        </div>`;
+    });
+    bwrHtml += '</div></div>';
+  });
+  document.getElementById('borrower-view').innerHTML = bwrHtml;
+
+  // Show output
+  document.getElementById('checklist-empty').style.display = 'none';
+  document.getElementById('checklist-out').style.display   = '';
+  setView(currentView, document.getElementById('vbtn-'+currentView));
+  updateProgress();
+  setTimeout(()=>document.getElementById('checklist-out').scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+
+function toggleItem(id) {
+  const cb   = document.getElementById(id);
+  const wrap = document.getElementById('item-'+id);
+  if (cb.checked) wrap.classList.add('done');
+  else            wrap.classList.remove('done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const all     = document.querySelectorAll('.cl-cb');
+  const checked = document.querySelectorAll('.cl-cb:checked');
+  const pct     = all.length ? (checked.length/all.length)*100 : 0;
+  document.getElementById('prog-bar').style.width = pct+'%';
+  document.getElementById('prog-lbl').textContent = `${checked.length} of ${all.length} received`;
+}
+
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('lo-view').style.display       = v==='lo'       ? '' : 'none';
+  document.getElementById('borrower-view').style.display = v==='borrower' ? '' : 'none';
+  document.getElementById('progress-wrap').style.display = v==='lo'       ? '' : 'none';
+}
+
+function resetChecklist() {
+  document.querySelectorAll('.cl-cb').forEach(cb=>{
+    cb.checked=false;
+    const wrap=document.getElementById('item-'+cb.id);
+    if (wrap) wrap.classList.remove('done');
+  });
+  document.querySelectorAll('.cl-note-input').forEach(i=>i.value='');
+  updateProgress();
+}
+
+// ─ Date autofill
+document.getElementById('b-date').value = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+// ─ Timestamp
+(function(){
+  const d=new Date(document.lastModified);
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h=d.getHours(),m=d.getMinutes(),ampm=h>=12?'PM':'AM',h12=h%12||12;
+  document.getElementById('build-ts').textContent=mo[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()+' · '+h12+':'+(m<10?'0'+m:m)+' '+ampm;
+})();
+</script>
+</body>
+</html>
