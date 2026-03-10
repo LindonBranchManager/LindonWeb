@@ -1209,8 +1209,8 @@ function qualify(sc, inp) {
       if (inp.currRate > 0) {
         if (!currIsARM && newIsARM) {
           // Fixed → ARM: 2% interest rate reduction required
-          if (rateDrop < 0.02) {
-            const needed = (inp.currRate - 0.02).toFixed(3);
+          if (rateDrop < 2.0) {
+            const needed = (inp.currRate - 2.0).toFixed(3);
             iss.push('IRRRL FAILS — Fixed to ARM requires a 2.00% interest rate reduction. '
               + 'Current: ' + inp.currRate + '% → New: ' + newRate + '% = '
               + (rateDrop > 0 ? rateDrop.toFixed(3) + '% drop' : 'rate not reduced')
@@ -1675,8 +1675,8 @@ function renderRefi(results, inp) {
 
       if (fixedToArm) {
         // Fixed → ARM: only case requiring a 2% rate drop
-        if (rateDrop < 0.02) {
-          const neededRate = (inp.currRate - 0.02).toFixed(3);
+        if (rateDrop < 2.0) {
+          const neededRate = (inp.currRate - 2.0).toFixed(3);
           streamNote += `<div class="callout warn"><span>⚠️</span><div><strong>IRRRL Failed — Fixed → ARM Requires 2% Rate Reduction (${vaR.sc.label})</strong><br>Current rate: ${inp.currRate}% → New rate: ${newRate}% = ${rateDrop > 0 ? rateDrop.toFixed(3) + '% reduction' : 'no reduction'}. Need ${neededRate}% or lower to meet the 2% minimum rate drop required when going Fixed → ARM.</div></div>`;
         } else {
           const recoupHtml36 = buildRecoup36(vaR, inp, cc);
