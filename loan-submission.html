@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>New Loan Submission — Village Capital & Investment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0b1f3a;
+    --navy-mid: #132d52;
+    --navy-light: #1e4175;
+    --gold: #c9a227;
+    --gold-light: #e8be45;
+    --white: #ffffff;
+    --offwhite: #f5f7fa;
+    --muted: #8a9bbf;
+    --border: #d0daea;
+    --success: #1db87a;
+    --error: #e04b4b;
+    --text: #1a2640;
+    --text-light: #4a5a78;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--offwhite);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .site-header .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .site-header .brand-icon {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: var(--navy);
+    font-family: 'DM Mono', monospace;
+  }
+  .site-header .brand-text {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .site-header .brand-sub {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .header-badge {
+    background: var(--navy-light);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid rgba(201,162,39,0.3);
+  }
+
+  /* ── Progress bar ── */
+  .progress-bar-wrap {
+    background: var(--navy-mid);
+    height: 4px;
+  }
+  .progress-bar-fill {
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Layout ── */
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 36px;
+  }
+  .page-subtitle span {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ── Section cards ── */
+  .form-section {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(11,31,58,0.06);
+    transition: box-shadow 0.2s;
+  }
+  .form-section:focus-within {
+    box-shadow: 0 4px 20px rgba(11,31,58,0.12);
+  }
+  .section-header {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-weight: 500;
+  }
+  .section-title {
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .section-body {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .section-body.cols-1 { grid-template-columns: 1fr; }
+  .section-body.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── Field groups ── */
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-group.span-2 { grid-column: span 2; }
+  .field-group.span-3 { grid-column: span 3; }
+  .field-group.span-full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+  label .req { color: var(--error); margin-left: 2px; }
+
+  input[type="text"], input[type="date"], input[type="number"], input[type="tel"],
+  select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--navy-light);
+    box-shadow: 0 0 0 3px rgba(30,65,117,0.1);
+  }
+  input.error, select.error, textarea.error {
+    border-color: var(--error);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5a78' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+  /* ── Radio / Checkbox groups ── */
+  .radio-group, .check-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 2px;
+  }
+  .radio-option, .check-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--offwhite);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .radio-option:hover, .check-option:hover {
+    border-color: var(--navy-light);
+    background: #eef2f9;
+  }
+  .radio-option input, .check-option input { display: none; }
+  .radio-option.selected, .check-option.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--white);
+  }
+  .radio-option .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .radio-option.selected .dot { border-color: var(--gold); background: var(--gold); }
+
+  /* ── Conditional fields ── */
+  .conditional { display: none; }
+  .conditional.visible { display: contents; }
+  .conditional-block { display: none; }
+  .conditional-block.visible { display: block; }
+
+  /* ── Helper text ── */
+  .field-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── Divider ── */
+  .section-divider {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 4px 0;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Submit area ── */
+  .submit-area {
+    margin-top: 32px;
+    text-align: center;
+  }
+  .btn-submit {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 16px 56px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(11,31,58,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(11,31,58,0.4);
+  }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .submit-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  /* ── Toast / status ── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--navy);
+    color: var(--white);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 4px solid var(--gold);
+  }
+  .toast.visible { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left-color: var(--success); }
+  .toast.error { border-left-color: var(--error); }
+  .toast-icon { font-size: 18px; }
+
+  /* ── Setup banner ── */
+  .setup-banner {
+    background: #fffbea;
+    border: 1.5px solid #f0d070;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: #7a5c00;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .setup-banner .icon { font-size: 20px; flex-shrink: 0; }
+  .setup-banner strong { color: #5a3e00; }
+  .setup-banner code {
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .setup-banner a { color: #7a5c00; font-weight: 600; }
+
+  /* ── Success overlay ── */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(11,31,58,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .success-overlay.visible { display: flex; }
+  .success-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 48px 56px;
+    text-align: center;
+    max-width: 420px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+  }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .success-msg { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+  .btn-reset {
+    margin-top: 28px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-reset:hover { background: var(--navy-light); }
+
+  @media (max-width: 640px) {
+    .section-body { grid-template-columns: 1fr; }
+    .section-body.cols-3 { grid-template-columns: 1fr; }
+    .field-group.span-2, .field-group.span-3, .field-group.span-full { grid-column: auto; }
+    .page-wrap { padding: 24px 16px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-icon">VC</div>
+    <div>
+      <div class="brand-text">Village Capital &amp; Investment</div>
+      <div class="brand-sub">Lindon Branch · NMLS #2776190</div>
+    </div>
+  </div>
+  <div class="header-badge">New Loan Submission</div>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<!-- ── Main ── -->
+<div class="page-wrap">
+  <div class="page-title">New Loan Submission</div>
+  <p class="page-subtitle">Complete all required fields. Submission writes directly to the <span>LOA Pipeline</span> in Branch Tracker.</p>
+
+  <!-- Setup banner — hide this once Apps Script is deployed -->
+  <div class="setup-banner" id="setupBanner">
+    <div class="icon">⚙️</div>
+    <div>
+      <strong>One-time setup required:</strong> This form submits to Google Sheets via an Apps Script web app.
+      Open the Branch Pipeline Tracker → <strong>Extensions → Apps Script</strong>, paste the script below, deploy as a web app (Anyone access), then replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code> in this file with your deployment URL.
+      <br/><br/>
+      <strong>Apps Script code:</strong><br/>
+      <code style="display:block;margin-top:6px;white-space:pre-wrap;line-height:1.6">function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('LOA Pipeline');
+  sheet.appendRow(data.row);
+  return ContentService
+    .createTextOutput(JSON.stringify({success:true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+function doGet() {
+  return ContentService.createTextOutput('OK');
+}</code>
+    </div>
+  </div>
+
+  <form id="loanForm" novalidate>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S1: Submission Type             -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">Submission Type</span>
+      </div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Submission Type <span class="req">*</span></label>
+          <div class="radio-group" id="submissionTypeGroup">
+            <label class="radio-option" onclick="selectRadio(this,'submissionType')">
+              <input type="radio" name="submissionType" value="New App" required/>
+              <span class="dot"></span> New App
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'submissionType')">
+              <input type="radio" name="submissionType" value="Resubmission"/>
+              <span class="dot"></span> Resubmission
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S2: File Info                   -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">File Information</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Borrower Name <span class="req">*</span></label>
+          <input type="text" id="borrowerName" placeholder="Last, First" required/>
+          <span class="field-hint">Format: Last, First (e.g. Smith, John)</span>
+        </div>
+        <div class="field-group">
+          <label>Loan Officer <span class="req">*</span></label>
+          <select id="loanOfficer" required>
+            <option value="">— Select LO —</option>
+            <option>KC</option>
+            <option>Benji</option>
+            <option>Drake</option>
+            <option>Robert</option>
+            <option>Cam</option>
+            <option>Aaron</option>
+            <option>SE Morgan</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Date File Entered</label>
+          <input type="date" id="dateFileEntered"/>
+        </div>
+        <div class="field-group">
+          <label>Lead Source <span class="req">*</span></label>
+          <select id="leadSource" required>
+            <option value="">— Select —</option>
+            <option>Payoff List</option>
+            <option>Referral</option>
+            <option>Internet Lead</option>
+            <option>Past Client</option>
+            <option>USAA Transfer</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Loan Number</label>
+          <input type="text" id="loanNumber" placeholder="Optional — assigned later"/>
+        </div>
+        <div class="field-group">
+          <label>Past LVR Client? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'pastLVR')">
+              <input type="radio" name="pastLVR" value="Yes" required/>
+              <span class="dot"></span> Yes
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'pastLVR')">
+              <input type="radio" name="pastLVR" value="No"/>
+              <span class="dot"></span> No
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S3: VCI to VCI                  -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">VCI to VCI</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group span-full">
+          <label>Is this a VCI to VCI loan? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'vciToVci');toggleVCI(true)">
+              <input type="radio" name="vciToVci" value="Yes" required/>
+              <span class="dot"></span> Yes
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'vciToVci');toggleVCI(false)">
+              <input type="radio" name="vciToVci" value="No"/>
+              <span class="dot"></span> No
+            </label>
+          </div>
+        </div>
+        <div class="field-group conditional" id="vciServNumField">
+          <label>VCI Servicing Number</label>
+          <input type="text" id="vciServicingNumber" placeholder="Servicing #"/>
+        </div>
+        <div class="field-group conditional" id="vciPrevNumField">
+          <label>Previous Encompass Loan Number</label>
+          <input type="text" id="prevEncompassNumber" placeholder="Previous loan #"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S4: Loan Details                -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">Loan Details</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group span-full">
+          <label>Loan Type / Purpose <span class="req">*</span></label>
+          <select id="loanType" required onchange="handleLoanType()">
+            <option value="">— Select —</option>
+            <optgroup label="VA">
+              <option>VA Cash Out</option>
+              <option>VA Purch</option>
+              <option>VA Streamline (IRRRL)</option>
+            </optgroup>
+            <optgroup label="Conventional">
+              <option>Conv. Purch</option>
+              <option>Conv. R/T</option>
+              <option>Conv. Cash Out</option>
+            </optgroup>
+            <optgroup label="FHA">
+              <option>FHA Purch</option>
+              <option>FHA Cash Out</option>
+              <option>FHA Streamline</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field-group conditional" id="coAmtField">
+          <label>Cash-Out Amount <span class="req">*</span></label>
+          <input type="text" id="coAmount" placeholder="e.g. $80,000"/>
+        </div>
+
+        <div class="field-group">
+          <label>Note Rate</label>
+          <input type="text" id="noteRate" placeholder="e.g. 5.750%"/>
+        </div>
+        <div class="field-group">
+          <label>FIX / ARM</label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'fixArm')">
+              <input type="radio" name="fixArm" value="Fix"/>
+              <span class="dot"></span> Fix
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'fixArm')">
+              <input type="radio" name="fixArm" value="ARM"/>
+              <span class="dot"></span> ARM
+            </label>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Est. Pricing (points)</label>
+          <input type="text" id="estPricing" placeholder="e.g. 2.0"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S5: Borrower Info               -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">Borrower Information</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Years / Months at Residence</label>
+          <input type="text" id="yearsAtRes" placeholder="e.g. 5 years / 3 months"/>
+        </div>
+        <div class="field-group">
+          <label>Marital Status <span class="req">*</span></label>
+          <select id="maritalStatus" required>
+            <option value="">— Select —</option>
+            <option value="M">Married (M)</option>
+            <option value="U">Unmarried (U)</option>
+            <option value="S">Separated (S)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Non-Spouse Legal Rightsholder</label>
+          <input type="text" id="nonSpouseLegal" placeholder="Name if applicable"/>
+        </div>
+        <div class="field-group">
+          <label>Number of Dependents &amp; Ages</label>
+          <input type="text" id="dependents" placeholder="e.g. 2 — ages 5, 8"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S6: Credit Authorization        -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">Credit Authorization</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Credit Auth Obtained? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'creditAuth')">
+              <input type="radio" name="creditAuth" value="Y" required/>
+              <span class="dot"></span> Yes
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'creditAuth')">
+              <input type="radio" name="creditAuth" value="N"/>
+              <span class="dot"></span> No
+            </label>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Credit Auth Method</label>
+          <select id="creditAuthMethod">
+            <option value="">— Select —</option>
+            <option>Written</option>
+            <option>Verbal</option>
+            <option>Digital</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Credit Auth Date</label>
+          <input type="date" id="creditAuthDate"/>
+        </div>
+        <div class="field-group">
+          <label>Credit to Pull</label>
+          <input type="text" id="creditToPull" placeholder="e.g. All 3 bureaus"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S7: Employment                  -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <span class="section-title">Employment</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Employer Name</label>
+          <input type="text" id="employerName" placeholder="Employer / Company"/>
+        </div>
+        <div class="field-group">
+          <label>Job Title</label>
+          <input type="text" id="jobTitle" placeholder="Position / Title"/>
+        </div>
+        <div class="field-group">
+          <label>Start Date</label>
+          <input type="date" id="employerStartDate"/>
+        </div>
+        <div class="field-group">
+          <label>Employer Phone</label>
+          <input type="tel" id="employerPhone" placeholder="(xxx) xxx-xxxx"/>
+        </div>
+        <div class="field-group span-full">
+          <label>Employer Address</label>
+          <input type="text" id="employerAddress" placeholder="Full street address"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S8: Income                      -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <span class="section-title">Income Information</span>
+      </div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Income Details <span class="req">*</span></label>
+          <textarea id="incomeInfo" rows="4" placeholder="Annual salary, bonuses, rental income, other sources. Include amounts and frequency." required></textarea>
+          <span class="field-hint">Include base pay, bonuses, overtime, rental income, military pay, etc.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S9: Contact Preference          -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <span class="section-title">Borrower Contact Preference</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Best Form of Contact <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'contactMethod')">
+              <input type="radio" name="contactMethod" value="Phone" required/>
+              <span class="dot"></span> 📞 Phone
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'contactMethod')">
+              <input type="radio" name="contactMethod" value="Email"/>
+              <span class="dot"></span> ✉️ Email
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'contactMethod')">
+              <input type="radio" name="contactMethod" value="Text"/>
+              <span class="dot"></span> 💬 Text
+            </label>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Contact Info <span class="req">*</span></label>
+          <input type="text" id="contactInfo" placeholder="Phone number or email address" required/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────── -->
+    <!-- S10: Additional Notes & Docs    -->
+    <!-- ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <span class="section-title">Additional Notes &amp; Documents</span>
+      </div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Additional Notes for the LOA</label>
+          <textarea id="additionalNotes" rows="5" placeholder="Context on the borrower, competing offers, special circumstances, timing considerations..."></textarea>
+        </div>
+        <div class="field-group">
+          <label>Document Upload Link</label>
+          <input type="text" id="docUploadLink" placeholder="Paste Google Drive folder link"/>
+          <span class="field-hint">Share a Drive folder containing all supporting docs (paystubs, statements, COE, etc.)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button type="submit" class="btn-submit" id="submitBtn">
+        Submit to LOA Pipeline →
+      </button>
+      <p class="submit-note">Submission writes a new row to the LOA Pipeline tab in Branch Tracker.</p>
+    </div>
+
+  </form>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Loan Submitted!</div>
+    <p class="success-msg" id="successMsg">The file has been added to the LOA Pipeline tab in Branch Tracker.</p>
+    <button class="btn-reset" onclick="resetForm()">Submit Another</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">⚠️</span>
+  <span id="toastMsg">Message</span>
+</div>
+
+<script>
+  // ── CONFIGURATION ──────────────────────────────────────────────────────────
+  // Replace this with your deployed Apps Script Web App URL:
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  // ──────────────────────────────────────────────────────────────────────────
+
+  // Progress bar
+  function updateProgress() {
+    const required = document.querySelectorAll('[required]');
+    let filled = 0;
+    required.forEach(el => {
+      if (el.type === 'radio') {
+        const name = el.name;
+        if (document.querySelector(`input[name="${name}"]:checked`)) filled++;
+      } else if (el.value.trim()) filled++;
+    });
+    // Deduplicate radio groups
+    const radioNames = new Set([...document.querySelectorAll('[required][type="radio"]')].map(r => r.name));
+    const totalRequired = required.length - document.querySelectorAll('[required][type="radio"]').length + radioNames.size;
+    const pct = Math.round((filled / totalRequired) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+  document.getElementById('loanForm').addEventListener('input', updateProgress);
+  document.getElementById('loanForm').addEventListener('change', updateProgress);
+
+  // Radio selector
+  function selectRadio(label, name) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      r.closest('.radio-option').classList.remove('selected');
+    });
+    label.classList.add('selected');
+    label.querySelector('input').checked = true;
+    updateProgress();
+  }
+
+  // Toggle VCI fields
+  function toggleVCI(show) {
+    ['vciServNumField','vciPrevNumField'].forEach(id => {
+      document.getElementById(id).classList.toggle('visible', show);
+    });
+  }
+
+  // Handle loan type changes
+  function handleLoanType() {
+    const val = document.getElementById('loanType').value;
+    const isCO = val.includes('Cash Out');
+    document.getElementById('coAmtField').classList.toggle('visible', isCO);
+    if (isCO) document.getElementById('coAmount').setAttribute('required','');
+    else document.getElementById('coAmount').removeAttribute('required');
+  }
+
+  // Get radio value
+  function getRadio(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  }
+
+  // Toast helper
+  function showToast(msg, type = 'info') {
+    const toast = document.getElementById('toast');
+    const icons = { info: 'ℹ️', success: '✅', error: '❌' };
+    toast.className = `toast visible ${type}`;
+    document.getElementById('toastIcon').textContent = icons[type] || 'ℹ️';
+    document.getElementById('toastMsg').textContent = msg;
+    setTimeout(() => toast.classList.remove('visible'), 4000);
+  }
+
+  // Reset form
+  function resetForm() {
+    document.getElementById('loanForm').reset();
+    document.querySelectorAll('.radio-option').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.conditional').forEach(el => el.classList.remove('visible'));
+    document.querySelectorAll('.conditional-block').forEach(el => el.classList.remove('visible'));
+    document.getElementById('successOverlay').classList.remove('visible');
+    document.getElementById('progressBar').style.width = '0%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Form submit
+  document.getElementById('loanForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Basic validation
+    const borrower = document.getElementById('borrowerName').value.trim();
+    const lo = document.getElementById('loanOfficer').value;
+    const loanType = document.getElementById('loanType').value;
+    const income = document.getElementById('incomeInfo').value.trim();
+    const contact = document.getElementById('contactInfo').value.trim();
+    const submissionType = getRadio('submissionType');
+    const vciToVci = getRadio('vciToVci');
+    const pastLVR = getRadio('pastLVR');
+    const creditAuth = getRadio('creditAuth');
+    const contactMethod = getRadio('contactMethod');
+    const leadSource = document.getElementById('leadSource').value;
+
+    if (!submissionType) { showToast('Please select a Submission Type.', 'error'); return; }
+    if (!borrower)        { showToast('Borrower Name is required.', 'error'); return; }
+    if (!lo)              { showToast('Please select a Loan Officer.', 'error'); return; }
+    if (!leadSource)      { showToast('Please select a Lead Source.', 'error'); return; }
+    if (!loanType)        { showToast('Please select a Loan Type/Purpose.', 'error'); return; }
+    if (!vciToVci)        { showToast('Please indicate if this is a VCI to VCI loan.', 'error'); return; }
+    if (!pastLVR)         { showToast('Please indicate if this is a Past LVR Client.', 'error'); return; }
+    if (!creditAuth)      { showToast('Please indicate Credit Auth status.', 'error'); return; }
+    if (!contactMethod)   { showToast('Please select a Contact Method.', 'error'); return; }
+    if (!contact)         { showToast('Please provide Contact Info.', 'error'); return; }
+    if (!income)          { showToast('Income Information is required.', 'error'); return; }
+
+    if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+      showToast('Apps Script URL not configured — see setup banner above.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    // Build timestamp
+    const now = new Date();
+    const ts = now.toLocaleString('en-US');
+
+    // Build row matching LOA Pipeline column order:
+    // Timestamp | Column 1 (type) | Moving Forward Clicked | BLKNT | EConsent Sent |
+    // Loan Number | Date File Entered | Borrower Name | Loan Officer | Lead Source |
+    // VCI to VCI | VCI Servicing Number | Previous Encompass Loan Number |
+    // Loan Type/Purpose | If CO, what CO amount? | Years/Months at Residence |
+    // Marital Status | Non-Spouse Legal Rightsholder | Number of Dependents & Ages |
+    // Credit Auth | Credit Auth Date | Credit Auth Method | Credit to Pull |
+    // Note Rate | FIX/ARM | Est. Pricing | Do you need a Pre Quote? |
+    // Loan Type/Purpose 2 | Prequotes Needed | Employer Name | Start Date |
+    // Income Information | Any additional notes for the LOA? |
+    // Best form of Contact for Borrower | Contact Info | Past LVR Client? |
+    // Upload all docs here | Are you pulling cash out? | Job Title |
+    // Employer Address | Employer Phone
+
+    const isCO = loanType.includes('Cash Out');
+    const row = [
+      ts,
+      submissionType,
+      '',   // Moving Forward Clicked — formula added by sheet
+      '',   // BLKNT
+      '',   // EConsent Sent
+      document.getElementById('loanNumber').value.trim() || '',
+      document.getElementById('dateFileEntered').value || '',
+      borrower,
+      lo,
+      leadSource,
+      vciToVci,
+      document.getElementById('vciServicingNumber').value.trim() || '',
+      document.getElementById('prevEncompassNumber').value.trim() || '',
+      loanType,
+      isCO ? document.getElementById('coAmount').value.trim() : '',
+      document.getElementById('yearsAtRes').value.trim() || '',
+      document.getElementById('maritalStatus').value || '',
+      document.getElementById('nonSpouseLegal').value.trim() || '',
+      document.getElementById('dependents').value.trim() || '',
+      creditAuth,
+      document.getElementById('creditAuthDate').value || '',
+      document.getElementById('creditAuthMethod').value || '',
+      document.getElementById('creditToPull').value.trim() || '',
+      document.getElementById('noteRate').value.trim() || '',
+      getRadio('fixArm') || '',
+      document.getElementById('estPricing').value.trim() || '',
+      needPreQuote === 'Yes' ? document.getElementById('prequotesNeeded').value.trim() : '',
+      document.getElementById('employerName').value.trim() || '',
+      document.getElementById('employerStartDate').value || '',
+      income,
+      document.getElementById('additionalNotes').value.trim() || '',
+      contactMethod,
+      contact,
+      pastLVR,
+      document.getElementById('docUploadLink').value.trim() || '',
+      isCO ? 'Yes' : 'No',
+      document.getElementById('jobTitle').value.trim() || '',
+      document.getElementById('employerAddress').value.trim() || '',
+      document.getElementById('employerPhone').value.trim() || '',
+    ];
+
+    try {
+      const resp = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ row })
+      });
+
+      // no-cors means we can't read the response, but if no error was thrown it worked
+      document.getElementById('successMsg').textContent =
+        `${borrower} submitted by ${lo} — added to LOA Pipeline.`;
+      document.getElementById('successOverlay').classList.add('visible');
+
+    } catch (err) {
+      showToast('Submission failed. Check your network or Apps Script URL.', 'error');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit to LOA Pipeline →';
+    }
+  });
+
+  // Set today's date as default for dateFileEntered
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateFileEntered').value = today;
+</script>
+</body>
+</html>
