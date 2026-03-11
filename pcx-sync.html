@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PopCX Sync Setup — Lindon Branch</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0D2340;--navy-mid:#1a3a5c;--gold:#C9A84C;--gold-light:#e0c06a;
+  --gold-pale:#f5edd8;--off-white:#FAF9F6;--cream:#F3EFE8;--white:#fff;
+  --text-dark:#1a2535;--text-mid:#4a5568;--text-muted:#8a97a8;
+  --green:#1a7a4a;--green-bg:#e8f5ee;--border:rgba(13,35,64,.10);
+  --shadow:0 2px 16px rgba(13,35,64,.08);--shadow-lg:0 8px 40px rgba(13,35,64,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh}
+
+header{
+  background:var(--navy);padding:0 32px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 16px rgba(0,0,0,.25)
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-logo{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--navy)}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#fff}
+.brand-sub{font-size:9px;color:var(--gold-light);letter-spacing:2px;text-transform:uppercase}
+.back-link{font-size:12px;color:rgba(255,255,255,.5);text-decoration:none;display:flex;align-items:center;gap:5px}
+.back-link:hover{color:var(--gold)}
+
+.hero{
+  background:linear-gradient(135deg,var(--navy),var(--navy-mid));
+  padding:48px 32px 44px;text-align:center;position:relative;overflow:hidden
+}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:12px}
+.hero h1 span{color:var(--gold)}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:520px;margin:0 auto;line-height:1.7;font-weight:300}
+
+main{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+
+/* ── STEP CARDS ── */
+.steps{display:flex;flex-direction:column;gap:20px;margin-bottom:40px}
+.step{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.step-hdr{
+  padding:16px 22px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border)
+}
+.step-num{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:var(--navy);color:#fff;
+  font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center
+}
+.step-num.done{background:var(--green)}
+.step-title{font-size:15px;font-weight:700;color:var(--navy)}
+.step-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.step-body{padding:20px 22px}
+.step-body p{font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:12px}
+.step-body p:last-child{margin-bottom:0}
+
+/* ── THE BOOKMARKLET BUTTON ── */
+.bookmarklet-zone{
+  background:linear-gradient(135deg,var(--gold-pale),#fff);
+  border:2px dashed var(--gold);border-radius:12px;
+  padding:28px 24px;text-align:center;margin:16px 0
+}
+.bookmarklet-zone p{font-size:12.5px;color:var(--text-muted);margin-bottom:16px;line-height:1.6}
+.bookmarklet-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--navy),var(--navy-mid));
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  text-decoration:none;cursor:grab;
+  box-shadow:0 4px 16px rgba(13,35,64,.25);
+  border:none;
+  transition:transform .15s,box-shadow .15s;
+  user-select:none
+}
+.bookmarklet-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(13,35,64,.3)}
+.bookmarklet-btn:active{cursor:grabbing}
+.bookmarklet-btn .bk-icon{font-size:18px}
+.drag-hint{margin-top:14px;font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:6px}
+.drag-arrow{font-size:20px;animation:bounce 1.2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* ── HOW TO SHOW BOOKMARKS BAR ── */
+.tip-box{
+  background:var(--gold-pale);border:1px solid rgba(201,168,76,.35);
+  border-radius:8px;padding:13px 16px;
+  font-size:12.5px;color:var(--text-mid);line-height:1.65;
+  display:flex;gap:10px;align-items:flex-start;margin-top:12px
+}
+.tip-box .tip-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+
+/* ── DAILY USE ── */
+.daily-card{
+  background:var(--navy);border-radius:12px;
+  padding:28px 28px;color:#fff;
+  display:flex;gap:24px;align-items:flex-start;
+  box-shadow:var(--shadow-lg);
+  position:relative;overflow:hidden
+}
+.daily-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light),transparent)}
+.daily-icon{font-size:36px;flex-shrink:0;line-height:1}
+.daily-body h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:8px}
+.daily-steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.daily-steps li{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,.72);line-height:1.5}
+.daily-steps li .ds-num{
+  width:22px;height:22px;border-radius:50%;background:var(--gold);
+  color:var(--navy);font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px
+}
+.daily-steps li strong{color:#fff}
+
+/* ── FAQ ── */
+.faq{margin-top:40px}
+.faq h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);margin-bottom:16px}
+.faq-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px;box-shadow:var(--shadow)}
+.faq-q{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.faq-a{font-size:13px;color:var(--text-mid);line-height:1.65}
+
+.btn-back{
+  display:inline-flex;align-items:center;gap:7px;margin-top:32px;
+  padding:10px 20px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--white);color:var(--navy);font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;text-decoration:none;
+  box-shadow:var(--shadow);transition:border-color .15s,background .15s
+}
+.btn-back:hover{border-color:var(--navy);background:var(--cream)}
+
+@media(max-width:560px){
+  main{padding:28px 16px 60px}
+  .hero{padding:32px 20px 28px}
+  .daily-card{flex-direction:column;gap:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-logo">VC</div>
+    <div>
+      <div class="brand-name">Village Capital · Lindon</div>
+      <div class="brand-sub">Branch Hub</div>
+    </div>
+  </div>
+  <a class="back-link" href="lead-pipeline.html">← Lead Pipeline</a>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Lead Pipeline · Setup Guide</div>
+  <h1>Connect Your <span>PopCX Account</span></h1>
+  <p class="hero-sub">One-time setup takes about 60 seconds. After that, syncing your token is a single bookmark click — no passwords, no copying, no DevTools.</p>
+</div>
+
+<main>
+
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-hdr">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Show your Bookmarks Bar</div>
+          <div class="step-sub">You only need to do this once</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>If you don't see a row of bookmarks just below your browser's address bar, turn it on first:</p>
+        <div class="tip-box">
+          <span class="tip-icon">💻</span>
+          <div>
+            <strong>Chrome / Edge:</strong> Press <strong>Ctrl+Shift+B</strong> (Windows) or <strong>Cmd+Shift+B</strong> (Mac) to show the bookmarks bar.<br/>
+            Or click the three-dot menu → <strong>Bookmarks</strong> → <strong>Show bookmarks bar</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-hdr">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Drag the button to your Bookmarks Bar</div>
+          <div class="step-sub">Grab the button below and drag it up to the bookmarks bar</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>Click and hold the button below, then drag it up to your bookmarks bar and release. It will save there as a bookmark called "Sync to Pipeline."</p>
+
+        <div class="bookmarklet-zone">
+          <p>👇 Drag this button up to your bookmarks bar</p>
+          <a class="bookmarklet-btn" id="the-bookmarklet" href="#loading">
+            <span class="bk-icon">🔗</span>
+            Sync to Pipeline
+          </a>
+          <div class="drag-hint">
+            <span class="drag-arrow">↑</span>
+            <span>Drag up to the bookmarks bar</span>
+            <span class="drag-arrow">↑</span>
+          </div>
+        </div>
+
+        <div class="tip-box">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>On a Mac?</strong> Same drag — grab the button and drop it on the bookmarks bar at the top. If you don't see the bar, press <strong>Cmd+Shift+B</strong> first.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-hdr">
+        <div class="step-num done">✓</div>
+        <div>
+          <div class="step-title">You're all set</div>
+          <div class="step-sub">Here's how to use it every day</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <div class="daily-card">
+          <div class="daily-icon">⚡</div>
+          <div class="daily-body">
+            <h3>Your daily sync — 3 seconds</h3>
+            <ul class="daily-steps">
+              <li><span class="ds-num">1</span><span>Log into <strong>PopCX</strong> like normal (you probably do this already)</span></li>
+              <li><span class="ds-num">2</span><span>While you're on any <strong>PopCX page</strong>, click your <strong>"Sync to Pipeline"</strong> bookmark</span></li>
+              <li><span class="ds-num">3</span><span>The Lead Pipeline opens automatically — <strong>token connected, ready to import</strong></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <h2>Common Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">How often do I need to click the bookmark?</div>
+      <div class="faq-a">PopCX tokens expire roughly every 12 hours. The Lead Pipeline will show a red "Token expired" warning when it needs refreshing. When you see that, just go to PopCX and click your bookmark — takes 3 seconds. Most people will do this once in the morning.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What if the bookmark stops working?</div>
+      <div class="faq-a">Make sure you're on a PopCX page (popcx.com) when you click it — it won't work from other sites. If it still doesn't work, come back here and re-drag the button to replace the old bookmark.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Is my PopCX password being stored anywhere?</div>
+      <div class="faq-a">No. The bookmark never touches your password. It only copies a temporary access token — the same kind of short-lived key that PopCX already uses internally when you're logged in. It expires automatically and is only stored in your browser.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">I dragged it but I don't see it in my bookmarks bar</div>
+      <div class="faq-a">The bookmarks bar may be hidden. Press Ctrl+Shift+B (Windows) or Cmd+Shift+B (Mac) to show it, then try dragging again. If the bar is full, right-click any existing bookmark and delete one to make space.</div>
+    </div>
+  </div>
+
+  <a class="btn-back" href="lead-pipeline.html">← Back to Lead Pipeline</a>
+
+</main>
+
+<script>
+// Build the bookmarklet href dynamically so it has the correct pipeline URL
+(function() {
+  const pipelineUrl = window.location.origin + window.location.pathname.replace('pcx-sync.html','lead-pipeline.html');
+
+  // The bookmarklet JS — reads PopCX localStorage, redirects to pipeline with token in URL
+  const bkCode = `(function(){
+    var token=null,uid=null;
+    for(var k in localStorage){
+      try{
+        var v=JSON.parse(localStorage.getItem(k));
+        if(v&&v.token&&typeof v.token==='string'&&v.token.startsWith('eyJ')){
+          token=v.token;
+          if(v.details&&v.details.users){
+            var u=Object.values(v.details.users);
+            if(u.length)uid=u[0].id;
+          }
+          break;
+        }
+      }catch(e){}
+    }
+    if(!token){
+      var direct=localStorage.getItem('token');
+      if(direct&&direct.startsWith('eyJ'))token=direct;
+    }
+    if(!token){alert('Could not find PopCX token.\\nMake sure you are logged into PopCX first, then try again.');return;}
+    var url='${pipelineUrl}?pcx_token='+encodeURIComponent(token)+(uid?'&pcx_uid='+uid:'');
+    window.location.href=url;
+  })();`;
+
+  document.getElementById('the-bookmarklet').href = 'javascript:' + bkCode.replace(/\s+/g,' ').trim();
+})();
+</script>
+</body>
+</html>

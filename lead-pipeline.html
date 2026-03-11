@@ -515,7 +515,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 
     </div>
     <div class="modal-footer" style="font-size:11.5px;color:var(--text-muted)">
-      <span>Fields imported: Name · Phone · Email · Source set to "PopCX Import"</span>
+      <a href="pcx-sync.html" target="_blank" style="color:var(--navy);font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:5px">
+        🔗 Bookmarklet Setup Guide
+      </a>
       <button class="btn btn-outline btn-sm" onclick="closeModal('pcx-modal')">Close</button>
     </div>
   </div>
@@ -613,15 +615,49 @@ function switchLO() {
   checkAlerts();
 }
 
-// Restore last LO
+// Restore last LO + auto-capture token from bookmarklet redirect
 window.addEventListener('DOMContentLoaded', () => {
+
+  // ── BOOKMARKLET TOKEN CAPTURE ──
+  const params = new URLSearchParams(window.location.search);
+  const inboundToken = params.get('pcx_token');
+  const inboundUid   = params.get('pcx_uid');
+  if (inboundToken) {
+    localStorage.setItem(PCX_TOKEN_KEY, inboundToken);
+    if (inboundUid) localStorage.setItem(PCX_USER_KEY, inboundUid);
+    // Clean the URL without reloading
+    window.history.replaceState({}, '', window.location.pathname);
+    // Show a brief success toast
+    showToast('✅ PopCX connected! Token synced from bookmarklet.');
+  }
+
   if (currentLO) {
     const sel = document.getElementById('lo-select');
     sel.value = currentLO;
-    if (!sel.value) { currentLO=''; } // name not in list
+    if (!sel.value) { currentLO=''; }
     else switchLO();
   }
 });
+
+// ── TOAST NOTIFICATION ──
+function showToast(msg, duration=4000) {
+  const existing = document.getElementById('pcx-toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.id = 'pcx-toast';
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+    background:'var(--navy)', color:'#fff', padding:'11px 20px',
+    borderRadius:'8px', fontSize:'13px', fontWeight:'600',
+    boxShadow:'0 4px 20px rgba(0,0,0,.25)', zIndex:'9999',
+    borderLeft:'4px solid var(--gold)', whiteSpace:'nowrap',
+    animation:'fadeUp .3s ease'
+  });
+  document.body.appendChild(t);
+  setTimeout(() => t.style.opacity='0', duration - 400);
+  setTimeout(() => t.remove(), duration);
+}
 
 // ═══════════════════════════════════════════════
 // ALERTS
