@@ -471,18 +471,47 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 
       <!-- BROWSE TAB -->
       <div id="pcx-tab-browse">
-        <div style="margin-bottom:10px">
-          <label class="flabel">Call List ID <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0"> — find this in your PopCX URL when viewing a call list (e.g. /call-lists/<strong>8</strong>/entries)</span></label>
-          <div class="pcx-search-row" style="margin-top:5px">
-            <input type="number" id="pcx-list-id" placeholder="e.g. 8" style="max-width:110px"/>
-            <input type="text" id="pcx-search-name" placeholder="Search by name (optional)…" style="flex:1"/>
-            <button class="btn btn-navy btn-sm" onclick="fetchPCXEntries(1)">Fetch Leads</button>
+
+        <!-- LEAD ID LOOKUP (primary) -->
+        <div style="margin-bottom:18px">
+          <label class="flabel">PopCX Lead ID <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0"> — find this in PopCX when viewing a lead record</span></label>
+          <div class="pcx-search-row" style="margin-top:6px">
+            <input type="number" id="pcx-lead-id" placeholder="e.g. 1680105" style="flex:1;max-width:220px"/>
+            <button class="btn btn-navy btn-sm" onclick="fetchPCXLead()" style="flex-shrink:0">&#x1F50D; Look Up Lead</button>
           </div>
         </div>
 
-        <div id="pcx-results-area">
-          <div class="pcx-empty">Enter a Call List ID above and click Fetch to browse your PopCX leads.</div>
+        <div id="pcx-lead-preview" style="display:none;margin-bottom:14px">
+          <div class="pcx-field-map" id="pcx-preview-content"></div>
+          <button class="btn btn-gold btn-sm" onclick="importPCXLeadData()" style="width:100%;justify-content:center;margin-top:8px">
+            Import This Lead &rarr;
+          </button>
         </div>
+
+        <div id="pcx-results-area">
+          <div class="pcx-empty">Enter a Lead ID from PopCX above and click Look Up to pull their info directly.</div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px;color:var(--text-muted);font-size:11px">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span>or browse by call list</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label class="flabel">Call List ID</label>
+          <div class="pcx-search-row" style="margin-top:5px">
+            <input type="number" id="pcx-list-id" placeholder="e.g. 15" style="max-width:110px"/>
+            <input type="text" id="pcx-search-name" placeholder="Search by name (optional)&hellip;" style="flex:1"/>
+            <button class="btn btn-outline btn-sm" onclick="fetchPCXEntries(1)">Fetch List</button>
+          </div>
+        </div>
+
+        <div id="pcx-list-results-area">
+          <div class="pcx-empty" style="font-size:11.5px">Enter a Call List ID to browse all leads in that list.</div>
+        </div>
+
       </div>
 
       <!-- SETUP TAB -->
@@ -1121,7 +1150,7 @@ async function fetchPCXEntries(page=1) {
   const userId  = getPCXUserId();
   const listId  = document.getElementById('pcx-list-id').value.trim();
   const search  = document.getElementById('pcx-search-name').value.trim().toLowerCase();
-  const area    = document.getElementById('pcx-results-area');
+  const area    = document.getElementById('pcx-list-results-area');
 
   if (!token) {
     area.innerHTML = '<div class="pcx-error">⚠️ No token saved. Go to the Setup tab first.</div>'; return;
@@ -1219,7 +1248,7 @@ function extractPCXField(entry, patterns) {
 }
 
 function renderPCXEntries(entries, listId) {
-  const area = document.getElementById('pcx-results-area');
+  const area = document.getElementById('pcx-list-results-area');
   const cards = entries.map(e => {
     const name  = extractPCXName(e);
     const phone = extractPCXField(e, ['phone','phone_number','mobile','cell','telephone']);
@@ -1252,6 +1281,127 @@ function renderPCXEntries(entries, listId) {
     <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px">${entries.length} lead${entries.length!==1?'s':''} found in Call List ${listId}</div>
     <div class="pcx-entry-list">${cards}</div>
     ${pagination}`;
+}
+
+// ── LEAD ID LOOKUP ──
+let pcxImportData = null; // holds the full parsed lead ready to import
+
+async function fetchPCXLead() {
+  const token  = getPCXToken();
+  const leadId = document.getElementById('pcx-lead-id').value.trim();
+  const area   = document.getElementById('pcx-results-area');
+  const preview= document.getElementById('pcx-lead-preview');
+
+  preview.style.display = 'none';
+  pcxImportData = null;
+
+  if (!token) { area.innerHTML = '<div class="pcx-error">⚠️ No token saved. Go to the Setup tab first.</div>'; return; }
+  if (pcxTokenExpired(token)) { area.innerHTML = '<div class="pcx-error">⚠️ Token expired — go to Setup tab to paste a fresh token.</div>'; return; }
+  if (!leadId) { area.innerHTML = '<div class="pcx-error">Please enter a Lead ID.</div>'; return; }
+
+  area.innerHTML = '<div class="pcx-loading">⏳ Looking up lead…</div>';
+
+  try {
+    const res = await fetch(
+      `https://api.popcx.com/service/vci-loan/profile/lead?lead_id=${leadId}`,
+      { headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Api-Version': '1',
+          'X-Popcx-Business': getPCXBusinessId(),
+      }}
+    );
+
+    if (res.status === 401) { area.innerHTML = '<div class="pcx-error">🔒 Token expired — go to Setup tab to refresh.</div>'; return; }
+    if (!res.ok) {
+      let detail = '';
+      try { const e = await res.json(); detail = e.message || JSON.stringify(e); } catch(x){}
+      area.innerHTML = `<div class="pcx-error">❌ API error ${res.status}${detail ? ': '+detail : ''}. Check the Lead ID and try again.</div>`; return;
+    }
+
+    const json = await res.json();
+    if (!json.success || !json.data) { area.innerHTML = '<div class="pcx-error">No lead found with that ID.</div>'; return; }
+
+    const d  = json.data;
+    const b  = d.borrower || {};
+    const cb = d.co_borrower || {};
+    const ln = d.bkfs_loan || {};
+    const pr = d.property || {};
+
+    // Build borrower name — include co-borrower if present
+    const bName  = [b.first_name, b.last_name].filter(Boolean).join(' ');
+    const cbName = [cb.first_name, cb.last_name].filter(Boolean).join(' ');
+    const fullName = cbName ? `${bName} & ${cbName}` : bName;
+
+    // Format phone
+    const rawPhone = b.main_phone || b.alternate_phone || '';
+    const phone = rawPhone.replace(/\D/g,'').replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+
+    // Rate: stored as decimal (0.05375) → convert to percent
+    const rate = ln.interest_rate ? (ln.interest_rate * 100).toFixed(3) : '';
+
+    // Loan amount — use balance if available, else original
+    const amount = ln.loan_balance || ln.original_loan_amount || '';
+
+    // Program mapping
+    const programMap = { VA:'VA', FHA:'FHA', CONVENTIONAL:'Conventional', CONV:'Conventional', USDA:'USDA' };
+    const program = programMap[(ln.loan_type||'').toUpperCase()] || ln.loan_type || '';
+
+    // Property address
+    const address = [pr.address, pr.city, pr.state].filter(Boolean).join(', ');
+
+    // Notes — package up useful loan context
+    const notes = [
+      ln.loan_rate_type ? `${ln.loan_rate_type} rate` : '',
+      ln.loan_term ? `${ln.loan_term/12}-yr term` : '',
+      ln.total_monthly_payment ? `Payment: $${Number(ln.total_monthly_payment).toLocaleString()}/mo` : '',
+      ln.streamline_refi_date ? `IRRRL eligible: ${ln.streamline_refi_date}` : '',
+      address ? `Property: ${address}` : '',
+    ].filter(Boolean).join(' · ');
+
+    // Store for import
+    pcxImportData = { name:fullName, phone, email:b.email||'', program, amount:Math.round(amount)||'', rate, quoteNotes:notes };
+
+    // Build preview card
+    area.innerHTML = '';
+    document.getElementById('pcx-preview-content').innerHTML = `
+      <div style="font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:8px">${fullName || '—'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--text-mid)">
+        ${phone    ? `<div>📞 ${phone}</div>` : ''}
+        ${b.email  ? `<div>✉️ ${b.email}</div>` : ''}
+        ${program  ? `<div>🏦 ${program}</div>` : ''}
+        ${rate     ? `<div>📊 ${rate}% ${ln.loan_rate_type||''}</div>` : ''}
+        ${amount   ? `<div>💰 $${Number(Math.round(amount)).toLocaleString()} balance</div>` : ''}
+        ${ln.total_monthly_payment ? `<div>💳 $${Number(ln.total_monthly_payment).toLocaleString()}/mo</div>` : ''}
+        ${address  ? `<div style="grid-column:1/-1">📍 ${address}</div>` : ''}
+        ${ln.streamline_refi_date ? `<div style="grid-column:1/-1;color:var(--green);font-weight:600">✅ IRRRL eligible since ${ln.streamline_refi_date}</div>` : ''}
+      </div>`;
+    preview.style.display = 'block';
+
+  } catch(err) {
+    area.innerHTML = `<div class="pcx-error">❌ Network error: ${err.message}</div>`;
+  }
+}
+
+function importPCXLeadData() {
+  if (!currentLO) { alert('Please select your LO name first.'); return; }
+  if (!pcxImportData) return;
+  const d = pcxImportData;
+  closeModal('pcx-modal');
+  setTimeout(() => {
+    openAddModal();
+    if (d.name)       document.getElementById('f-name').value       = d.name;
+    if (d.phone)      document.getElementById('f-phone').value      = d.phone;
+    if (d.email)      document.getElementById('f-email').value      = d.email;
+    if (d.program)    document.getElementById('f-program').value    = d.program;
+    if (d.amount)     document.getElementById('f-amount').value     = d.amount;
+    if (d.rate)       document.getElementById('f-rate').value       = d.rate;
+    if (d.quoteNotes) document.getElementById('f-quote-notes').value= d.quoteNotes;
+    document.getElementById('f-source').value = 'PopCX';
+    const stageEl = document.getElementById('fs-quote');
+    if (stageEl) stageEl.checked = true;
+    setTimeout(() => document.getElementById('f-followup')?.focus(), 150);
+  }, 150);
 }
 
 function importPCXEntry(entry) {
