@@ -1,743 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lindon Branch — Village Capital & Investment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Lindon Branch — Village Capital &amp; Investment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --navy: #0d2340;
-      --navy-mid: #153256;
-      --navy-light: #1e4678;
-      --gold: #c9a84c;
-      --gold-light: #e2c47a;
-      --off-white: #f5f3ef;
-      --warm-gray: #e8e4dd;
-      --text-dark: #1a1a2e;
-      --text-muted: #5a6a7e;
-      --white: #ffffff;
-      --card-shadow: 0 4px 24px rgba(13,35,64,0.10);
-      --card-shadow-hover: 0 12px 40px rgba(13,35,64,0.20);
+      --navy:#0d2340;--navy-mid:#153256;--navy-light:#1e4678;
+      --gold:#c9a84c;--gold-light:#e2c47a;--gold-pale:#f5edd8;
+      --off-white:#f5f3ef;--cream:#eeeae3;--white:#fff;
+      --text-dark:#1a1a2e;--text-mid:#4a5568;--text-muted:#7a8a9e;
+      --border:rgba(13,35,64,.09);--border-mid:rgba(13,35,64,.14);
+      --shadow:0 2px 16px rgba(13,35,64,.08);
+      --shadow-lg:0 8px 40px rgba(13,35,64,.15);
+      --r:12px;--r-sm:8px;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* HEADER */
+    header{background:var(--navy);padding:0 36px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.28)}
+    .brand{display:flex;align-items:center;gap:13px;text-decoration:none}
+    .brand-logo{width:36px;height:36px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--navy)}
+    .brand-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:#fff;line-height:1.1}
+    .brand-sub{font-size:9.5px;color:var(--gold-light);letter-spacing:2px;text-transform:uppercase}
+    .header-right{display:flex;align-items:center;gap:14px}
+    .header-date{font-size:11.5px;color:rgba(255,255,255,.45);white-space:nowrap}
+    .header-badge{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 11px;border-radius:20px}
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--off-white);
-      color: var(--text-dark);
-      min-height: 100vh;
-    }
+    /* HERO */
+    .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,var(--navy-light) 100%);padding:44px 36px 40px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+    .hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 8% 65%,rgba(201,168,76,.1) 0%,transparent 45%),radial-gradient(circle at 92% 20%,rgba(201,168,76,.07) 0%,transparent 40%)}
+    .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+    .hero-left{position:relative}
+    .hero-eyebrow{font-size:10.5px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4.5vw,50px);font-weight:700;color:#fff;line-height:1.1;margin-bottom:10px}
+    .hero h1 span{color:var(--gold)}
+    .hero-desc{font-size:14px;font-weight:300;color:rgba(255,255,255,.58);max-width:400px;line-height:1.75}
+    .hero-contact{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:20px 24px;min-width:230px;backdrop-filter:blur(8px)}
+    .contact-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:2px}
+    .contact-title{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,.2)}
+    .contact-line{display:flex;align-items:center;gap:9px;font-size:12px;color:rgba(255,255,255,.68);margin-bottom:7px}
+    .contact-line:last-child{margin-bottom:0}
+    .contact-line svg{width:13px;height:13px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+    .contact-line a{color:rgba(255,255,255,.68);text-decoration:none}
+    .contact-line a:hover{color:var(--gold)}
 
-    /* ── NAV ── */
-    nav {
-      background: #071828;
-      padding: 0 40px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      height: 40px;
-      border-bottom: 1px solid rgba(201,168,76,0.15);
-      position: sticky;
-      top: 72px;
-      z-index: 90;
-    }
+    /* MAIN */
+    main{max-width:1160px;margin:0 auto;padding:44px 32px 80px}
+    .content-layout{display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start}
 
-    nav a {
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.8px; text-transform: uppercase;
-      color: rgba(255,255,255,0.45); text-decoration: none;
-      padding: 0 14px; height: 100%;
-      display: flex; align-items: center;
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s;
-      white-space: nowrap;
-    }
-    nav a:hover { color: var(--gold-light); }
-    nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+    /* SECTION HEADERS */
+    .section-hdr{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .section-hdr-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .section-hdr-icon.lo{background:rgba(13,35,64,.08)}
+    .section-hdr-icon.ops{background:rgba(201,168,76,.12)}
+    .section-hdr-icon.life{background:rgba(26,122,74,.1)}
+    .section-hdr h2{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--navy)}
+    .section-hdr p{font-size:11.5px;color:var(--text-muted);margin-top:1px}
+    .section-hdr .section-count{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
 
-    /* ── HEADER ── */
-    header {
-      background: var(--navy);
-      padding: 0 40px;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 72px;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.25);
-    }
+    /* LO TOOLKIT - 3 col */
+    .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+    .tool-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;overflow:hidden}
+    .tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--navy),var(--navy-light));opacity:0;transition:opacity .2s}
+    .tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(13,35,64,.2)}
+    .tool-card:hover::before{opacity:1}
+    .tc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .tc-icon{width:38px;height:38px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:18px}
+    .tc-arrow{font-size:18px;color:var(--text-muted);line-height:1;transition:transform .2s,color .2s}
+    .tool-card:hover .tc-arrow{transform:translate(2px,-2px);color:var(--navy)}
+    .tc-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+    .tc-tag{font-size:10.5px;font-weight:600;color:var(--text-muted);letter-spacing:.3px}
+    .tc-desc{font-size:11.5px;color:var(--text-muted);line-height:1.6}
 
-    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
-    .brand-logo {
-      width: 38px; height: 38px; background: var(--gold); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: var(--navy);
-    }
-    .brand-text { display: flex; flex-direction: column; gap: 1px; }
-    .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--white); line-height: 1.1; }
-    .brand-sub { font-size: 10px; color: var(--gold-light); letter-spacing: 2px; text-transform: uppercase; }
-    .header-badge {
-      background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.35);
-      color: var(--gold-light); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 5px 12px; border-radius: 20px;
-    }
+    /* BRANCH OPS - 2 col */
+    .resource-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:32px}
+    .resource-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;padding:16px 18px;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s}
+    .resource-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--gold)}
+    .rc-icon{width:40px;height:40px;flex-shrink:0;border-radius:8px;background:var(--gold-pale);display:flex;align-items:center;justify-content:center;font-size:19px}
+    .rc-body{flex:1;min-width:0}
+    .rc-name{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:3px}
+    .rc-desc{font-size:11.5px;color:var(--text-muted);line-height:1.55}
+    .rc-cta{font-size:11px;font-weight:600;color:var(--gold);margin-top:7px}
 
-    /* ── HERO ── */
-    .hero {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 55%, var(--navy-light) 100%);
-      padding: 56px 40px 52px;
-      position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: space-between; gap: 40px;
-      flex-wrap: wrap;
-    }
+    /* BRANCH LIFE */
+    .life-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:12px}
+    .life-card{background:var(--navy);border-radius:var(--r);text-decoration:none;padding:20px 22px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+    .life-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light),transparent)}
+    .life-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+    .lc-icon{font-size:30px;flex-shrink:0;line-height:1}
+    .lc-body{flex:1;min-width:0}
+    .lc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+    .lc-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+    .lc-arrow{font-size:20px;color:var(--gold);opacity:.7;flex-shrink:0;transition:opacity .2s,transform .2s}
+    .life-card:hover .lc-arrow{opacity:1;transform:translateX(3px)}
 
-    .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background-image:
-        radial-gradient(circle at 10% 60%, rgba(201,168,76,0.09) 0%, transparent 45%),
-        radial-gradient(circle at 90% 20%, rgba(201,168,76,0.06) 0%, transparent 40%);
-    }
+    /* ANNOUNCEMENTS */
+    .announce-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:32px}
+    .announce-hdr{background:var(--navy);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+    .announce-hdr span{font-size:12.5px;font-weight:600;color:#fff}
+    .edit-btn{font-size:11px;font-weight:600;color:var(--gold);text-decoration:none;padding:4px 10px;border:1px solid rgba(201,168,76,.35);border-radius:20px;transition:background .15s}
+    .edit-btn:hover{background:rgba(201,168,76,.12)}
+    #announce-display{padding:16px 18px;font-size:13px;color:var(--text-dark);line-height:1.7;min-height:52px;white-space:pre-wrap}
+    .announce-footer{padding:8px 18px;background:var(--cream);border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)}
 
-    .hero::after {
-      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
+    /* SIDEBAR */
+    .sidebar{display:flex;flex-direction:column;gap:20px}
+    .sidebar-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+    .sidebar-hdr{background:var(--navy);padding:11px 16px;display:flex;align-items:center;gap:9px}
+    .sidebar-hdr svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .sidebar-hdr span{font-size:12px;font-weight:600;color:#fff;letter-spacing:.3px}
+    .calendar-embed{width:100%;display:block;border:none}
+    .quick-links{padding:8px 0}
+    .quick-link{display:flex;align-items:center;gap:11px;padding:10px 16px;text-decoration:none;transition:background .15s}
+    .quick-link:hover{background:var(--cream)}
+    .ql-icon{width:32px;height:32px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .ql-icon.vc{background:rgba(13,35,64,.08)}
+    .ql-icon svg{width:15px;height:15px;stroke:var(--navy);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .ql-icon.nmls{background:var(--gold-pale)}
+    .ql-icon.nmls svg{stroke:var(--gold)}
+    .ql-text{flex:1;min-width:0}
+    .ql-title{font-size:12.5px;font-weight:600;color:var(--navy)}
+    .ql-desc{font-size:11px;color:var(--text-muted)}
+    .ql-arrow{font-size:16px;color:var(--text-muted)}
 
-    .hero-left { position: relative; }
-    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
-    .hero h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(34px, 5vw, 54px); font-weight: 700;
-      color: var(--white); line-height: 1.1; margin-bottom: 10px;
-    }
-    .hero h1 span { color: var(--gold); }
-    .hero-desc { font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.6); max-width: 420px; line-height: 1.7; }
+    footer{background:var(--navy);text-align:center;padding:16px 24px;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.5px}
 
-    .hero-contact {
-      position: relative;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(201,168,76,0.2);
-      border-radius: 14px;
-      padding: 22px 28px;
-      min-width: 240px;
-      backdrop-filter: blur(8px);
-    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .tool-card,.resource-card,.life-card{animation:fadeUp .4s ease both}
+    .tool-card:nth-child(1){animation-delay:.04s}.tool-card:nth-child(2){animation-delay:.09s}.tool-card:nth-child(3){animation-delay:.14s}
+    .tool-card:nth-child(4){animation-delay:.19s}.tool-card:nth-child(5){animation-delay:.24s}.tool-card:nth-child(6){animation-delay:.29s}
+    .resource-card:nth-child(1){animation-delay:.05s}.resource-card:nth-child(2){animation-delay:.1s}
+    .resource-card:nth-child(3){animation-delay:.15s}.resource-card:nth-child(4){animation-delay:.2s}
+    .life-card:nth-child(1){animation-delay:.05s}.life-card:nth-child(2){animation-delay:.1s}
 
-    .contact-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px; font-weight: 700; color: var(--white);
-      margin-bottom: 2px;
-    }
-    .contact-title {
-      font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 16px; padding-bottom: 14px;
-      border-bottom: 1px solid rgba(201,168,76,0.2);
-    }
-    .contact-line {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 12.5px; color: rgba(255,255,255,0.7);
-      margin-bottom: 8px;
-    }
-    .contact-line:last-child { margin-bottom: 0; }
-    .contact-line svg { width: 14px; height: 14px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .contact-line a { color: rgba(255,255,255,0.7); text-decoration: none; }
-    .contact-line a:hover { color: var(--gold); }
-
-    /* ── MAIN GRID ── */
-    main { max-width: 1100px; margin: 0 auto; padding: 52px 40px 80px; }
-
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      grid-template-rows: auto auto;
-      gap: 28px;
-    }
-
-    /* ── SECTION LABEL ── */
-    .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .section-label::before { content: ''; display: block; width: 4px; height: 24px; background: var(--gold); border-radius: 2px; }
-    .section-label h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--navy); }
-    .section-label p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-    /* ── PAGE CARDS ── */
-    .page-cards { grid-column: 1; grid-row: 1; }
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-
-    .page-card {
-      background: var(--white);
-      border-radius: 14px;
-      border: 1px solid rgba(13,35,64,0.07);
-      box-shadow: var(--card-shadow);
-      text-decoration: none;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-      transition: transform 0.22s ease, box-shadow 0.22s ease;
-      animation: fadeUp 0.45s ease both;
-    }
-    .page-card:nth-child(1) { animation-delay: 0.05s; }
-    .page-card:nth-child(2) { animation-delay: 0.12s; }
-    .page-card:nth-child(3) { animation-delay: 0.19s; }
-    .page-card:nth-child(4) { animation-delay: 0.26s; }
-    .page-card:nth-child(5) { animation-delay: 0.33s; }
-
-    .page-card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
-
-    .page-card-top {
-      padding: 24px 22px 18px;
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      position: relative;
-      overflow: hidden;
-    }
-
-    .page-card-top::after {
-      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--gold), var(--gold-light), transparent);
-    }
-
-    .page-card-icon {
-      width: 44px; height: 44px;
-      background: rgba(201,168,76,0.15);
-      border: 1px solid rgba(201,168,76,0.3);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 14px;
-      transition: transform 0.2s;
-    }
-    .page-card:hover .page-card-icon { transform: scale(1.08); }
-    .page-card-icon svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-
-    .page-card-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-    .page-card-subtitle { font-size: 11.5px; color: rgba(255,255,255,0.5); }
-
-    .page-card-body { padding: 16px 22px 20px; flex: 1; }
-    .page-card-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
-    .page-card-cta {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11.5px; font-weight: 600; letter-spacing: 0.5px;
-      text-transform: uppercase; color: var(--gold);
-      transition: gap 0.18s;
-    }
-    .page-card:hover .page-card-cta { gap: 10px; }
-    .page-card-cta svg { width: 13px; height: 13px; stroke: var(--gold); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-
-    /* ── ANNOUNCEMENTS ── */
-    .announcements { grid-column: 1; grid-row: 2; }
-
-    .announce-box {
-      background: var(--white);
-      border-radius: 14px;
-      border: 1px solid rgba(13,35,64,0.07);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-    }
-
-    .announce-header {
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid));
-      padding: 14px 22px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .announce-header span {
-      font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-    }
-
-    .edit-btn {
-      background: rgba(201,168,76,0.15);
-      border: 1px solid rgba(201,168,76,0.3);
-      color: var(--gold);
-      font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
-      padding: 5px 12px; border-radius: 20px; cursor: pointer;
-      transition: background 0.2s;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .edit-btn:hover { background: rgba(201,168,76,0.28); }
-    .edit-btn.saving { color: #6ee7a0; border-color: rgba(110,231,160,0.4); background: rgba(110,231,160,0.1); }
-
-    #announce-display {
-      padding: 20px 22px;
-      min-height: 100px;
-      font-size: 13.5px;
-      line-height: 1.75;
-      color: var(--text-dark);
-      white-space: pre-wrap;
-    }
-
-    #announce-edit {
-      display: none;
-      width: 100%; padding: 20px 22px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13.5px; line-height: 1.75;
-      color: var(--text-dark);
-      border: none; resize: vertical;
-      min-height: 120px;
-      outline: none;
-      background: #fffef9;
-    }
-
-    .announce-footer {
-      padding: 10px 22px 14px;
-      font-size: 11px; color: var(--text-muted); font-style: italic;
-    }
-
-    /* ── SIDEBAR ── */
-    .sidebar { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 24px; }
-
-    /* ── CALENDAR ── */
-    .calendar-card {
-      background: var(--white);
-      border-radius: 14px;
-      border: 1px solid rgba(13,35,64,0.07);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      animation: fadeUp 0.45s ease 0.1s both;
-    }
-
-    .calendar-header {
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid));
-      padding: 14px 20px;
-      display: flex; align-items: center; gap: 10px;
-    }
-
-    .calendar-header svg { width: 16px; height: 16px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .calendar-header span { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.7); }
-
-    .calendar-embed {
-      width: 100%;
-      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         🗓️  PASTE YOUR GOOGLE CALENDAR EMBED URL BELOW
-         Steps:
-         1. Google Calendar → ⚙️ Settings
-         2. Click your Branch Calendar in the left sidebar
-         3. Scroll to "Integrate calendar"
-         4. Copy the "Public URL to this calendar" (ends in .ics)
-            OR copy just the calendar ID (looks like an email address)
-         5. Replace YOUR_CALENDAR_ID_HERE below with that ID
-         Example: abc123xyz@group.calendar.google.com
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-      border: none;
-      display: block;
-    }
-
-    .calendar-placeholder {
-      padding: 32px 20px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .calendar-placeholder .cal-icon { font-size: 32px; margin-bottom: 10px; }
-    .calendar-placeholder strong { display: block; color: var(--navy); font-size: 14px; margin-bottom: 6px; }
-    .calendar-placeholder code {
-      display: inline-block; margin-top: 8px;
-      background: #f0ede8; padding: 4px 10px; border-radius: 6px;
-      font-size: 11px; color: var(--navy-light); font-family: monospace;
-    }
-
-    /* ── QUICK LINKS ── */
-    .quick-links-card {
-      background: var(--white);
-      border-radius: 14px;
-      border: 1px solid rgba(13,35,64,0.07);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      animation: fadeUp 0.45s ease 0.2s both;
-    }
-
-    .quick-links-header {
-      background: linear-gradient(90deg, var(--navy), var(--navy-mid));
-      padding: 14px 20px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .quick-links-header svg { width: 16px; height: 16px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .quick-links-header span { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.7); }
-
-    .quick-links-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-
-    .quick-link {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 14px;
-      border-radius: 9px;
-      background: var(--off-white);
-      border: 1px solid var(--warm-gray);
-      text-decoration: none;
-      transition: background 0.18s, border-color 0.18s, transform 0.18s;
-    }
-    .quick-link:hover { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.3); transform: translateX(3px); }
-
-    .ql-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .ql-icon svg { width: 15px; height: 15px; stroke: var(--white); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .ql-icon.vc { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
-    .ql-icon.nmls { background: linear-gradient(135deg, #1a5c3a, #2ecc71aa); }
-
-    .ql-text { flex: 1; }
-    .ql-title { font-size: 13px; font-weight: 600; color: var(--navy); }
-    .ql-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-
-    .ql-arrow { color: var(--warm-gray); font-size: 14px; transition: color 0.18s; }
-    .quick-link:hover .ql-arrow { color: var(--gold); }
-
-    /* ── DATE DISPLAY ── */
-    .date-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(201,168,76,0.12);
-      border: 1px solid rgba(201,168,76,0.25);
-      border-radius: 20px; padding: 4px 12px;
-      font-size: 11px; color: var(--gold); font-weight: 500;
-    }
-
-    /* ── FOOTER ── */
-    footer { background: var(--navy); padding: 28px 40px; text-align: center; }
-    footer p { font-size: 12px; color: rgba(255,255,255,0.35); }
-    footer strong { color: rgba(255,255,255,0.55); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 860px) {
-      .grid-layout { grid-template-columns: 1fr; }
-      .sidebar { grid-column: 1; grid-row: auto; }
-      .cards-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      header, nav { padding: 0 20px; }
-      .hero { padding: 40px 20px; }
-      main { padding: 32px 20px 60px; }
-      .header-badge { display: none; }
-      footer { padding: 24px 20px; }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @media(max-width:900px){.content-layout{grid-template-columns:1fr}.sidebar{order:-1}.tool-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){main{padding:28px 16px 60px}.hero{padding:28px 20px 24px}header{padding:0 20px}.tool-grid,.resource-grid,.life-grid{grid-template-columns:1fr}}
+    @media print{header,footer{display:none}}
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="brand">
-      <div class="brand-logo">VC</div>
-      <div class="brand-text">
-        <span class="brand-name">Village Capital &amp; Investment</span>
-        <span class="brand-sub">Lindon Branch</span>
-      </div>
-    </div>
-    <div class="header-badge">Internal Use Only</div>
-  </header>
-
-  <!-- NAV -->
-  <nav>
-    <a href="index.html" class="active">Home</a>
-  </nav>
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-left">
-      <div class="hero-eyebrow">Lindon Branch · Internal Portal</div>
-      <h1>Welcome to the<br/><span>Branch Hub</span></h1>
-      <p class="hero-desc">Your central resource for forms, team contacts, loan program guidelines, and branch updates.</p>
-    </div>
-    <div class="hero-contact">
-      <div class="contact-name">KC Smalley</div>
-      <div class="contact-title">Branch Manager</div>
-      <div class="contact-line">
-        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.18 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.13 1 .37 1.98.71 2.93a2 2 0 01-.45 2.11L6.91 7.18a16 16 0 006.72 6.72l.42-.42a2 2 0 012.11-.45c.95.34 1.93.58 2.93.71A2 2 0 0122 16.92z"/></svg>
-        <a href="tel:8017930861">801-793-0861</a>
-      </div>
-      <div class="contact-line">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <span>801-948-2548 Ext 6000</span>
-      </div>
-      <div class="contact-line">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <a href="/cdn-cgi/l/email-protection#1b707868767a77777e625b6d7277777a7c7e787a6b726f7a7735787476"><span class="__cf_email__" data-cfemail="761d15051b171a1a130f36001f1a1a1711131517061f02171a5815191b">[email&#160;protected]</span></a>
-      </div>
-      <div class="contact-line" style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.2);">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span id="today-date" style="font-size:12px;"></span>
-      </div>
+<header>
+  <div class="brand">
+    <div class="brand-logo">VC</div>
+    <div>
+      <div class="brand-name">Village Capital &amp; Investment</div>
+      <div class="brand-sub">Lindon Branch</div>
     </div>
   </div>
+  <div class="header-right">
+    <span class="header-date" id="today-date"></span>
+    <span class="header-badge">Internal Use Only</span>
+  </div>
+</header>
 
-  <!-- MAIN -->
-  <main>
-    <div class="grid-layout">
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Lindon Branch · Internal Portal</div>
+    <h1>Welcome to the<br/><span>Branch Hub</span></h1>
+    <p class="hero-desc">Your central resource for LO tools, branch operations, team contacts, and updates.</p>
+  </div>
+  <div class="hero-contact">
+    <div class="contact-name">KC Smalley</div>
+    <div class="contact-title">Branch Manager</div>
+    <div class="contact-line">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.18 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.13 1 .37 1.98.71 2.93a2 2 0 01-.45 2.11L6.91 7.18a16 16 0 006.72 6.72l.42-.42a2 2 0 012.11-.45c.95.34 1.93.58 2.93.71A2 2 0 0122 16.92z"/></svg>
+      <a href="tel:8017930861">801-793-0861</a>
+    </div>
+    <div class="contact-line">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <span>801-948-2548 Ext 6000</span>
+    </div>
+    <div class="contact-line">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <a href="mailto:kcsmalley@villagecapital.com">kcsmalley@villagecapital.com</a>
+    </div>
+  </div>
+</div>
 
-      <!-- PAGE CARDS -->
-      <div class="page-cards">
-        <div class="section-label">
-          <div><h2>Branch Resources</h2><p>Jump to any section</p></div>
-        </div>
-        <div class="cards-grid">
+<main>
+  <div class="content-layout">
+    <div>
 
-          <a class="page-card" href="forms.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              </div>
-              <div class="page-card-title">Request Forms</div>
-              <div class="page-card-subtitle">6 forms available</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Concessions, new submissions, lock requests, appraisal exceptions, competing offers, and DFT requests.</div>
-              <div class="page-card-cta">Open Forms <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="nmls.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-              </div>
-              <div class="page-card-title">Staff Directory</div>
-              <div class="page-card-subtitle">15 team members</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Full contact info, NMLS license numbers, cell phones, Zoom extensions, and email addresses for every team member.</div>
-              <div class="page-card-cta">View Directory <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="matrix.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-              </div>
-              <div class="page-card-title">Loan Matrix</div>
-              <div class="page-card-subtitle">VA · FHA · Conventional</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Program guidelines, LTV limits, seasoning requirements, MIP tables, income documentation, and credit pull rules.</div>
-              <div class="page-card-cta">View Matrix <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="docs.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-              </div>
-              <div class="page-card-title">Document Center</div>
-              <div class="page-card-subtitle">Training · Templates · HR</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Training guides, call scripts, NMLS prep, LOE templates, HR forms, system job aids, and more — all searchable.</div>
-              <div class="page-card-cta">Open Docs <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="metrics.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-              </div>
-              <div class="page-card-title">Branch Metrics</div>
-              <div class="page-card-subtitle">Leads · LO Performance</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Upload your weekly CRM export to instantly view lead overview, LO performance stats, campaign breakdowns, and conversion rates.</div>
-              <div class="page-card-cta">View Metrics <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="shoutouts.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <div class="page-card-title">Shout Outs</div>
-              <div class="page-card-subtitle">Recognition · Customer Reviews</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Celebrate team wins and share customer reviews. Submit a shout out or post a screenshot of a great review for the whole branch to see.</div>
-              <div class="page-card-cta">View Shout Outs <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="VillageMarket.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-              </div>
-              <div class="page-card-title">Village Market</div>
-              <div class="page-card-subtitle">Snacks · Drinks · Treats</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Browse the branch snack shop. Order drinks, snacks, and treats for the office.</div>
-              <div class="page-card-cta">Open Market <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="va-quote-creator.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              </div>
-              <div class="page-card-title">Quote Lab</div>
-              <div class="page-card-subtitle">VA · FHA · Conventional</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Compare up to 3 loan scenarios side by side across VA, FHA, and Conventional programs. Generate a printable Pre-Quote and Fees Worksheet for each option.</div>
-              <div class="page-card-cta">Open Tool <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-          <a class="page-card" href="loan-compass.html">
-            <div class="page-card-top">
-              <div class="page-card-icon">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-              </div>
-              <div class="page-card-title">Loan Compass</div>
-              <div class="page-card-subtitle">Qualify · Compare · Recommend</div>
-            </div>
-            <div class="page-card-body">
-              <div class="page-card-desc">Enter a borrower scenario to instantly see which loan programs qualify, which is the best fit, and exactly why — for both purchase and refinance situations.</div>
-              <div class="page-card-cta">Open Tool <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-            </div>
-          </a>
-
-        </div>
+      <!-- LO TOOLKIT -->
+      <div class="section-hdr">
+        <div class="section-hdr-icon lo">🛠️</div>
+        <div><h2>LO Toolkit</h2><p>Quoting, qualification, pipeline, and file prep tools</p></div>
+        <span class="section-count">6 tools</span>
+      </div>
+      <div class="tool-grid">
+        <a class="tool-card" href="va-quote-creator.html">
+          <div class="tc-top"><div class="tc-icon">📊</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">Quote Lab</div><div class="tc-tag">VA · FHA · Conventional</div></div>
+          <div class="tc-desc">Side-by-side scenario comparison with printable Pre-Quote and Fees Worksheet.</div>
+        </a>
+        <a class="tool-card" href="loan-compass.html">
+          <div class="tc-top"><div class="tc-icon">🧭</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">Loan Compass</div><div class="tc-tag">Qualify · Compare · Recommend</div></div>
+          <div class="tc-desc">Enter a borrower scenario and see which programs qualify, which fits best, and why.</div>
+        </a>
+        <a class="tool-card" href="rate-watch.html">
+          <div class="tc-top"><div class="tc-icon">📈</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">Rate Watch</div><div class="tc-tag">Breakeven · Trigger Rate · Pipeline</div></div>
+          <div class="tc-desc">Calculate refi breakeven, find trigger rates, and track your rate-sensitive pipeline.</div>
+        </a>
+        <a class="tool-card" href="file-checklist.html">
+          <div class="tc-top"><div class="tc-icon">✅</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">File Checklist</div><div class="tc-tag">Purchase · Refi · VA · FHA · Conv</div></div>
+          <div class="tc-desc">Build a dynamic document checklist by loan type, income type, and borrower flags.</div>
+        </a>
+        <a class="tool-card" href="lead-pipeline.html">
+          <div class="tc-top"><div class="tc-icon">🎯</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">Lead Pipeline</div><div class="tc-tag">Nurture · Follow-Up · PopCX Import</div></div>
+          <div class="tc-desc">Track quote-sent leads through your nurture process with call logs and follow-up reminders.</div>
+        </a>
+        <a class="tool-card" href="matrix.html">
+          <div class="tc-top"><div class="tc-icon">📋</div><span class="tc-arrow">↗</span></div>
+          <div><div class="tc-name">Loan Matrix</div><div class="tc-tag">Guidelines · Limits · MIP Tables</div></div>
+          <div class="tc-desc">Program guidelines, LTV limits, seasoning, MIP tables, and credit requirements.</div>
+        </a>
       </div>
 
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-
-        <!-- CALENDAR -->
-        <div class="calendar-card">
-          <div class="calendar-header">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Branch Calendar</span>
+      <!-- BRANCH OPS -->
+      <div class="section-hdr">
+        <div class="section-hdr-icon ops">⚙️</div>
+        <div><h2>Branch Operations</h2><p>Forms, directory, metrics, and documents</p></div>
+        <span class="section-count">4 resources</span>
+      </div>
+      <div class="resource-grid">
+        <a class="resource-card" href="forms.html">
+          <div class="rc-icon">📝</div>
+          <div class="rc-body">
+            <div class="rc-name">Request Forms</div>
+            <div class="rc-desc">Concessions, lock requests, appraisal exceptions, competing offers, DFT requests.</div>
+            <div class="rc-cta">Open Forms →</div>
           </div>
-
-          <!-- ════════════════════════════════════════════════════
-               🗓️  HOW TO ADD YOUR GOOGLE CALENDAR:
-
-               1. Go to calendar.google.com
-               2. Click ⚙️ (Settings) → your Branch Calendar
-               3. Scroll to "Integrate calendar"
-               4. Find "Public URL to this calendar" — looks like:
-                  https://calendar.google.com/calendar/embed?src=YOUR_ID%40group.calendar.google.com
-               5. Delete the <div class="calendar-placeholder">...</div>
-                  block below and replace it with:
-
-               <iframe
-                 src="YOUR_EMBED_URL_HERE&ctz=America/Denver&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH&height=400"
-                 class="calendar-embed"
-                 height="400"
-               ></iframe>
-          ═══════════════════════════════════════════════════════ -->
-
-          <iframe
-            src="https://calendar.google.com/calendar/embed?src=c_c2771e6f96fe10712fdeaa558ee931efe25155aff6e89a109354057c03dfdf34%40group.calendar.google.com&ctz=America%2FDenver&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH"
-            class="calendar-embed"
-            height="420"
-            frameborder="0"
-            scrolling="no"
-          ></iframe>
-        </div>
-
-        <!-- QUICK LINKS -->
-        <div class="quick-links-card">
-          <div class="quick-links-header">
-            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-            <span>Quick Links</span>
+        </a>
+        <a class="resource-card" href="nmls.html">
+          <div class="rc-icon">👥</div>
+          <div class="rc-body">
+            <div class="rc-name">Staff Directory</div>
+            <div class="rc-desc">NMLS numbers, cell phones, Zoom extensions, and emails for every team member.</div>
+            <div class="rc-cta">View Directory →</div>
           </div>
-          <div class="quick-links-body">
-
-            <a class="quick-link" href="https://sites.google.com/villagecapital.com/support-center/home" target="_blank" rel="noopener">
-              <div class="ql-icon vc">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              </div>
-              <div class="ql-text">
-                <div class="ql-title">VCI Support Center</div>
-                <div class="ql-desc">Corporate resources & support</div>
-              </div>
-              <div class="ql-arrow">›</div>
-            </a>
-
-            <a class="quick-link" href="https://www.nmlsconsumeraccess.org" target="_blank" rel="noopener">
-              <div class="ql-icon nmls">
-                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg>
-              </div>
-              <div class="ql-text">
-                <div class="ql-title">NMLS Consumer Access</div>
-                <div class="ql-desc">License lookup & verification</div>
-              </div>
-              <div class="ql-arrow">›</div>
-            </a>
-
+        </a>
+        <a class="resource-card" href="metrics.html">
+          <div class="rc-icon">📉</div>
+          <div class="rc-body">
+            <div class="rc-name">Branch Metrics</div>
+            <div class="rc-desc">Upload your CRM export for lead overview, LO performance, and conversion stats.</div>
+            <div class="rc-cta">View Metrics →</div>
           </div>
-        </div>
+        </a>
+        <a class="resource-card" href="docs.html">
+          <div class="rc-icon">📁</div>
+          <div class="rc-body">
+            <div class="rc-name">Document Center</div>
+            <div class="rc-desc">Training guides, call scripts, NMLS prep, LOE templates, HR forms — all searchable.</div>
+            <div class="rc-cta">Open Docs →</div>
+          </div>
+        </a>
+      </div>
 
+      <!-- BRANCH LIFE -->
+      <div class="section-hdr">
+        <div class="section-hdr-icon life">🌿</div>
+        <div><h2>Branch Life</h2><p>Team culture, recognition, and the snack shop</p></div>
+        <span class="section-count">2 pages</span>
+      </div>
+      <div class="life-grid">
+        <a class="life-card" href="VillageMarket.html">
+          <div class="lc-icon">🛒</div>
+          <div class="lc-body"><div class="lc-name">Village Market</div><div class="lc-desc">Snacks · Drinks · Treats · Store Credit</div></div>
+          <div class="lc-arrow">→</div>
+        </a>
+        <a class="life-card" href="shoutouts.html">
+          <div class="lc-icon">⭐</div>
+          <div class="lc-body"><div class="lc-name">Shout Outs</div><div class="lc-desc">Team wins · Customer Reviews · Recognition</div></div>
+          <div class="lc-arrow">→</div>
+        </a>
       </div>
 
       <!-- ANNOUNCEMENTS -->
-      <div class="announcements">
-        <div class="section-label">
-          <div><h2>Branch Announcements</h2><p>Updated via Google Sheets — visible to everyone</p></div>
+      <div class="section-hdr" style="margin-top:20px">
+        <div class="section-hdr-icon ops">📢</div>
+        <div><h2>Branch Announcements</h2><p>Updated via Google Sheets — visible to everyone</p></div>
+      </div>
+      <div class="announce-box">
+        <div class="announce-hdr">
+          <span>📢 Latest from KC</span>
+          <a class="edit-btn" id="editSheetLink" href="YOUR_ANNOUNCE_SHEET_URL_HERE" target="_blank" rel="noopener">✏️ Edit in Sheets</a>
         </div>
-        <div class="announce-box">
-          <div class="announce-header">
-            <span>📢 Latest from KC</span>
-            <a class="edit-btn" id="editSheetLink" href="YOUR_ANNOUNCE_SHEET_URL_HERE" target="_blank" rel="noopener" style="text-decoration:none">✏️ Edit in Sheets</a>
-          </div>
-          <div id="announce-display" style="min-height:60px">
-            <span style="color:#8a9ab0;font-style:italic">Loading announcement…</span>
-          </div>
-          <div class="announce-footer" id="announce-footer">Last updated: <span id="last-updated">—</span></div>
-        </div>
+        <div id="announce-display" style="min-height:60px"><span style="color:#8a9ab0;font-style:italic">Loading announcement…</span></div>
+        <div class="announce-footer">Last updated: <span id="last-updated">—</span></div>
       </div>
 
     </div>
-  </main>
 
-  <footer>
-    <p><strong>Village Capital &amp; Investment LLC</strong> · Lindon Branch · Internal Use Only · NMLS #3317</p>
-  </footer>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-hdr">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Branch Calendar</span>
+        </div>
+        <iframe src="https://calendar.google.com/calendar/embed?src=c_c2771e6f96fe10712fdeaa558ee931efe25155aff6e89a109354057c03dfdf34%40group.calendar.google.com&ctz=America%2FDenver&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH" class="calendar-embed" height="400" frameborder="0" scrolling="no"></iframe>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-hdr">
+          <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          <span>Quick Links</span>
+        </div>
+        <div class="quick-links">
+          <a class="quick-link" href="https://sites.google.com/villagecapital.com/support-center/home" target="_blank" rel="noopener">
+            <div class="ql-icon vc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+            <div class="ql-text"><div class="ql-title">VCI Support Center</div><div class="ql-desc">Corporate resources &amp; support</div></div>
+            <div class="ql-arrow">›</div>
+          </a>
+          <a class="quick-link" href="https://www.nmlsconsumeraccess.org" target="_blank" rel="noopener">
+            <div class="ql-icon nmls"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg></div>
+            <div class="ql-text"><div class="ql-title">NMLS Consumer Access</div><div class="ql-desc">License lookup &amp; verification</div></div>
+            <div class="ql-arrow">›</div>
+          </a>
+        </div>
+      </div>
+    </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // ── DATE DISPLAY ──
-    const dateEl = document.getElementById('today-date');
-    if (dateEl) {
-      dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  </div>
+</main>
+
+<footer>
+  <p><strong>Village Capital &amp; Investment LLC</strong> · Lindon Branch · Internal Use Only · NMLS #3317</p>
+</footer>
+
+<script data-cfasync="false">
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  const ANNOUNCE_SHEET_ID = 'YOUR_ANNOUNCE_SHEET_ID_HERE';
+  async function loadAnnouncement() {
+    const display = document.getElementById('announce-display');
+    const lastUpd = document.getElementById('last-updated');
+    if (ANNOUNCE_SHEET_ID === 'YOUR_ANNOUNCE_SHEET_ID_HERE') {
+      display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Setup needed — add your Sheet ID to index.html</span>'; return;
     }
-
-    // ── ANNOUNCEMENTS — pulls from Google Sheets ──
-    // Paste your Announcements Sheet ID below (see setup guide)
-    const ANNOUNCE_SHEET_ID = 'YOUR_ANNOUNCE_SHEET_ID_HERE';
-
-    async function loadAnnouncement() {
-      const display = document.getElementById('announce-display');
-      const lastUpd = document.getElementById('last-updated');
-      if (ANNOUNCE_SHEET_ID === 'YOUR_ANNOUNCE_SHEET_ID_HERE') {
-        display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Setup needed — add your Sheet ID to index.html</span>';
-        return;
-      }
-      try {
-        const url = `https://docs.google.com/spreadsheets/d/${ANNOUNCE_SHEET_ID}/gviz/tq?tqx=out:json&t=${Date.now()}`;
-        const res = await fetch(url);
-        const text = await res.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const rows = json.table.rows;
-        // Row 1 = announcement text, Row 2 = last updated date
-        const msg  = rows[0]?.c[0]?.v || 'No announcement posted yet.';
-        const date = rows[1]?.c[0]?.v || '';
-        display.style.whiteSpace = 'pre-wrap';
-        display.textContent = msg;
-        if (date) lastUpd.textContent = date;
-      } catch(err) {
-        display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Could not load announcement. Check Sheet sharing settings.</span>';
-      }
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${ANNOUNCE_SHEET_ID}/gviz/tq?tqx=out:json&t=${Date.now()}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.substring(47).slice(0,-2));
+      const rows = json.table.rows;
+      const msg  = rows[0]?.c[0]?.v || 'No announcement posted yet.';
+      const date = rows[1]?.c[0]?.v || '';
+      display.style.whiteSpace = 'pre-wrap';
+      display.textContent = msg;
+      if (date) lastUpd.textContent = date;
+    } catch(err) {
+      display.innerHTML = '<span style="color:#8a9ab0;font-style:italic">Could not load announcement.</span>';
     }
-
-    loadAnnouncement();
-
-  </script>
-
+  }
+  loadAnnouncement();
+</script>
 </body>
 </html>
