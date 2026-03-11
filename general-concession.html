@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>General Concession Request — Village Capital & Investment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:#0b1f3a;--navy-mid:#132d52;--navy-light:#1e4175;
+    --gold:#c9a227;--gold-light:#e8be45;
+    --white:#ffffff;--offwhite:#f5f7fa;
+    --muted:#8a9bbf;--border:#d0daea;
+    --success:#1db87a;--error:#e04b4b;
+    --text:#1a2640;--text-light:#4a5a78;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Outfit',sans-serif;background:var(--offwhite);color:var(--text);min-height:100vh}
+  .site-header{background:var(--navy);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--navy);font-family:'DM Mono',monospace}
+  .brand-text{color:var(--white);font-size:15px;font-weight:600}
+  .brand-sub{color:var(--muted);font-size:12px}
+  .back-link{color:var(--muted);font-size:12px;text-decoration:none;transition:color .15s}
+  .back-link:hover{color:var(--gold)}
+  .progress-bar-wrap{background:var(--navy-mid);height:4px}
+  .progress-bar-fill{height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width .4s ease;width:0%}
+  .page-wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+  .page-title{font-size:28px;font-weight:700;color:var(--navy);margin-bottom:4px;letter-spacing:-0.02em}
+  .page-subtitle{font-size:14px;color:var(--text-light);margin-bottom:36px}
+  .page-subtitle span{color:var(--gold);font-weight:600}
+  .info-callout{background:#f0f5ff;border:1.5px solid #c0d0f0;border-radius:10px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:#2a3a6a;display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+  .info-callout .ci{font-size:20px;flex-shrink:0}
+  .setup-banner{background:#fffbea;border:1.5px solid #f0d070;border-radius:10px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:#7a5c00;display:flex;gap:12px;align-items:flex-start}
+  .setup-banner strong{color:#5a3e00}
+  .setup-banner code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace;font-size:12px}
+  .form-section{background:var(--white);border-radius:12px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:0 2px 8px rgba(11,31,58,.06);transition:box-shadow .2s}
+  .form-section:focus-within{box-shadow:0 4px 20px rgba(11,31,58,.12)}
+  .section-header{background:var(--navy);padding:14px 24px;display:flex;align-items:center;gap:10px}
+  .section-num{font-family:'DM Mono',monospace;font-size:11px;background:var(--gold);color:var(--navy);border-radius:4px;padding:2px 6px;font-weight:500}
+  .section-title{color:var(--white);font-size:14px;font-weight:600;letter-spacing:.02em}
+  .section-body{padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .section-body.cols-1{grid-template-columns:1fr}
+  .field-group{display:flex;flex-direction:column;gap:6px}
+  .field-group.span-full{grid-column:1/-1}
+  label{font-size:12px;font-weight:600;color:var(--text-light);letter-spacing:.04em;text-transform:uppercase;font-family:'DM Mono',monospace}
+  label .req{color:var(--error);margin-left:2px}
+  input[type="text"],input[type="email"],select,textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);background:var(--white);transition:border-color .15s,box-shadow .15s;outline:none;-webkit-appearance:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--navy-light);box-shadow:0 0 0 3px rgba(30,65,117,.1)}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5a78' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+  textarea{resize:vertical;min-height:120px;line-height:1.6}
+  .field-hint{font-size:11px;color:var(--muted);margin-top:2px}
+  .amount-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;padding-top:2px}
+  .amount-pill{border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--text);background:var(--offwhite);transition:all .15s;user-select:none}
+  .amount-pill:hover{border-color:var(--navy-light);background:#eef2f9}
+  .amount-pill.selected{background:var(--navy);border-color:var(--navy);color:var(--white)}
+  .amount-pill input{display:none}
+  .submit-area{margin-top:32px;text-align:center}
+  .btn-submit{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:var(--white);border:none;border-radius:10px;padding:16px 56px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:all .2s;box-shadow:0 4px 16px rgba(11,31,58,.3);position:relative;overflow:hidden}
+  .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(11,31,58,.4)}
+  .btn-submit::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--gold)}
+  .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .submit-note{font-size:12px;color:var(--muted);margin-top:10px}
+  .toast{position:fixed;bottom:32px;right:32px;background:var(--navy);color:var(--white);padding:14px 22px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.25);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:999;max-width:380px;display:flex;align-items:center;gap:10px;border-left:4px solid var(--gold)}
+  .toast.visible{transform:translateY(0);opacity:1}
+  .toast.error{border-left-color:var(--error)}
+  .success-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.85);z-index:200;align-items:center;justify-content:center}
+  .success-overlay.visible{display:flex}
+  .success-card{background:var(--white);border-radius:16px;padding:48px 56px;text-align:center;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,.3)}
+  .success-icon{font-size:56px;margin-bottom:16px}
+  .success-title{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px}
+  .success-msg{font-size:14px;color:var(--text-light);line-height:1.6}
+  .btn-reset{margin-top:28px;background:var(--navy);color:var(--white);border:none;border-radius:8px;padding:12px 32px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-reset:hover{background:var(--navy-light)}
+  @media(max-width:640px){.section-body{grid-template-columns:1fr}.field-group.span-full{grid-column:auto}.page-wrap{padding:24px 16px 64px}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-icon">VC</div>
+    <div>
+      <div class="brand-text">Village Capital &amp; Investment</div>
+      <div class="brand-sub">Lindon Branch · NMLS #2776190</div>
+    </div>
+  </div>
+  <a class="back-link" href="index.html">← Hub</a>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">General Concession Request</div>
+  <p class="page-subtitle">Submit a pricing concession for management review. Logged in the <span>General Concession Request</span> tab in Branch Tracker.</p>
+
+  <div class="info-callout">
+    <span class="ci">💡</span>
+    <div>Be specific in your reason — include the loan scenario, what the concession is for (recoup, rate match, closing cost help), any recoup calculations for IRRRLs, and any other context that helps management make a fast decision.</div>
+  </div>
+
+  <div class="setup-banner">
+    <div style="font-size:20px;flex-shrink:0">⚙️</div>
+    <div><strong>One-time setup:</strong> Replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code> with your deployed Apps Script URL.</div>
+  </div>
+
+  <form id="concessionForm" novalidate>
+
+    <div class="form-section">
+      <div class="section-header"><span class="section-num">01</span><span class="section-title">Loan &amp; LO Information</span></div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Loan Number <span class="req">*</span></label>
+          <input type="text" id="loanNumber" placeholder="e.g. 72526020324" required/>
+        </div>
+        <div class="field-group">
+          <label>Borrower Last Name <span class="req">*</span></label>
+          <input type="text" id="borrowerLastName" placeholder="Last, First" required/>
+        </div>
+        <div class="field-group">
+          <label>Loan Officer <span class="req">*</span></label>
+          <select id="loanOfficer" required>
+            <option value="">— Select LO —</option>
+            <option value="kcsmalley@villagecapital.com">KC Smalley</option>
+            <option value="befrandsen@villagecapital.com">Benji Frandsen</option>
+            <option value="drknowles@villagecapital.com">Drake Knowles</option>
+            <option value="robenavides@villagecapital.com">Robert Benavides</option>
+            <option value="cacooper@villagecapital.com">Cam Cooper</option>
+            <option value="aajones@villagecapital.com">Aaron Jones</option>
+            <option value="semorgan@villagecapital.com">SE Morgan</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>LO Email <span class="req">*</span></label>
+          <input type="email" id="loEmail" placeholder="Auto-filled when LO selected" required/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-header"><span class="section-num">02</span><span class="section-title">Concession Amount Requested</span></div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Select Amount <span class="req">*</span></label>
+          <div class="amount-grid">
+            <label class="amount-pill" onclick="selectAmount(this,'0.125% (~$500)')"><input type="radio" name="amt" value="0.125% (~$500)"/>0.125% (~$500)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.250% (~$1k)')"><input type="radio" name="amt" value="0.250% (~$1k)"/>0.250% (~$1k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.375% (~$1.5k)')"><input type="radio" name="amt" value="0.375% (~$1.5k)"/>0.375% (~$1.5k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.500% (~$2k)')"><input type="radio" name="amt" value="0.500% (~$2k)"/>0.500% (~$2k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.625% (~$2.5k)')"><input type="radio" name="amt" value="0.625% (~$2.5k)"/>0.625% (~$2.5k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.750% (~$3k)')"><input type="radio" name="amt" value="0.750% (~$3k)"/>0.750% (~$3k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'0.875% (~$3.5k)')"><input type="radio" name="amt" value="0.875% (~$3.5k)"/>0.875% (~$3.5k)</label>
+            <label class="amount-pill" onclick="selectAmount(this,'1.000% (~$4k)')"><input type="radio" name="amt" value="1.000% (~$4k)"/>1.000% (~$4k)</label>
+          </div>
+          <div style="margin-top:10px">
+            <input type="text" id="customAmount" placeholder="Or type a custom amount — e.g. 0.700% ($3.0k)" oninput="handleCustomAmount()"/>
+            <span class="field-hint">Use this if none of the above match</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-header"><span class="section-num">03</span><span class="section-title">Reason for Concession</span></div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Detailed Explanation <span class="req">*</span></label>
+          <textarea id="reason" rows="7" placeholder="Explain the scenario. Include:&#10;• Why this concession is needed&#10;• Loan type and purpose&#10;• Recoup calculations if IRRRL&#10;• Competing offer context if applicable&#10;• Any other details for management review" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="btn-submit" id="submitBtn">Submit Concession Request →</button>
+      <p class="submit-note">Logged in the General Concession Request tab in Branch Tracker.</p>
+    </div>
+  </form>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Request Submitted!</div>
+    <p class="success-msg" id="successMsg">Your concession request has been logged in Branch Tracker.</p>
+    <button class="btn-reset" onclick="resetForm()">Submit Another</button>
+  </div>
+</div>
+<div class="toast" id="toast"><span id="toastIcon">⚠️</span><span id="toastMsg">Message</span></div>
+
+<script>
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  let selectedAmount = '';
+
+  document.getElementById('loanOfficer').addEventListener('change', function() {
+    document.getElementById('loEmail').value = this.value;
+    updateProgress();
+  });
+
+  function selectAmount(pill, value) {
+    document.querySelectorAll('.amount-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    pill.querySelector('input').checked = true;
+    selectedAmount = value;
+    document.getElementById('customAmount').value = '';
+    updateProgress();
+  }
+
+  function handleCustomAmount() {
+    const val = document.getElementById('customAmount').value.trim();
+    selectedAmount = val || '';
+    if (val) {
+      document.querySelectorAll('.amount-pill').forEach(p => p.classList.remove('selected'));
+      document.querySelectorAll('input[name="amt"]').forEach(r => r.checked = false);
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const ids = ['loanNumber','borrowerLastName','loanOfficer','loEmail','reason'];
+    let filled = ids.filter(id => document.getElementById(id).value.trim()).length;
+    if (selectedAmount) filled++;
+    document.getElementById('progressBar').style.width = Math.round((filled / (ids.length + 1)) * 100) + '%';
+  }
+  document.getElementById('concessionForm').addEventListener('input', updateProgress);
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.className = 'toast visible ' + (type||'info');
+    document.getElementById('toastIcon').textContent = ({info:'ℹ️',success:'✅',error:'❌'})[type||'info'];
+    document.getElementById('toastMsg').textContent = msg;
+    setTimeout(() => t.classList.remove('visible'), 5000);
+  }
+
+  function resetForm() {
+    document.getElementById('concessionForm').reset();
+    selectedAmount = '';
+    document.querySelectorAll('.amount-pill').forEach(p => p.classList.remove('selected'));
+    document.getElementById('successOverlay').classList.remove('visible');
+    document.getElementById('progressBar').style.width = '0%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('concessionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const loanNumber = document.getElementById('loanNumber').value.trim();
+    const borrowerLN = document.getElementById('borrowerLastName').value.trim();
+    const loSelect   = document.getElementById('loanOfficer');
+    const loEmail    = document.getElementById('loEmail').value.trim();
+    const reason     = document.getElementById('reason').value.trim();
+    const loName     = loSelect.options[loSelect.selectedIndex]?.text || '';
+
+    if (!loanNumber)     { showToast('Loan Number is required.', 'error'); return; }
+    if (!borrowerLN)     { showToast('Borrower Last Name is required.', 'error'); return; }
+    if (!loEmail)        { showToast('Please select a Loan Officer.', 'error'); return; }
+    if (!selectedAmount) { showToast('Please select or enter a concession amount.', 'error'); return; }
+    if (!reason)         { showToast('A detailed reason is required.', 'error'); return; }
+    if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') { showToast('Apps Script URL not configured yet.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    const ts = new Date().toLocaleString('en-US');
+    // Columns: Timestamp | Email Address | Loan Number | Borrower Last Name |
+    // Amount of Concession Requested | Reason for Concession | Column 1
+    const row = [ts, loEmail, loanNumber, borrowerLN, selectedAmount, reason, ''];
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheet: 'General Concession Request', row })
+      });
+      document.getElementById('successMsg').textContent =
+        `Concession request for ${borrowerLN} (Loan #${loanNumber}) submitted by ${loName}. Logged in Branch Tracker.`;
+      document.getElementById('successOverlay').classList.add('visible');
+    } catch(err) {
+      showToast('Submission failed. Check your network or Apps Script URL.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Submit Concession Request →';
+    }
+  });
+</script>
+</body>
+</html>

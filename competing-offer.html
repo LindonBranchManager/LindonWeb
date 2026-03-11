@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Competing Offer Request — Village Capital & Investment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0b1f3a; --navy-mid: #132d52; --navy-light: #1e4175;
+    --gold: #c9a227; --gold-light: #e8be45;
+    --white: #ffffff; --offwhite: #f5f7fa;
+    --muted: #8a9bbf; --border: #d0daea;
+    --success: #1db87a; --error: #e04b4b;
+    --text: #1a2640; --text-light: #4a5a78;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Outfit', sans-serif; background: var(--offwhite); color: var(--text); min-height: 100vh; }
+
+  .site-header {
+    background: var(--navy); padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; border-bottom: 3px solid var(--gold);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    width: 36px; height: 36px; background: var(--gold); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: var(--navy); font-family: 'DM Mono', monospace;
+  }
+  .brand-text { color: var(--white); font-size: 15px; font-weight: 600; }
+  .brand-sub  { color: var(--muted); font-size: 12px; }
+  .back-link { color: var(--muted); font-size: 12px; text-decoration: none; transition: color .15s; }
+  .back-link:hover { color: var(--gold); }
+
+  .progress-bar-wrap { background: var(--navy-mid); height: 4px; }
+  .progress-bar-fill { height: 4px; background: linear-gradient(90deg,var(--gold),var(--gold-light)); transition: width .4s ease; width: 0%; }
+
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+  .page-title { font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 4px; letter-spacing: -0.02em; }
+  .page-subtitle { font-size: 14px; color: var(--text-light); margin-bottom: 36px; }
+  .page-subtitle span { color: var(--gold); font-weight: 600; }
+
+  .form-section {
+    background: var(--white); border-radius: 12px; border: 1px solid var(--border);
+    margin-bottom: 20px; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(11,31,58,.06); transition: box-shadow .2s;
+  }
+  .form-section:focus-within { box-shadow: 0 4px 20px rgba(11,31,58,.12); }
+  .section-header { background: var(--navy); padding: 14px 24px; display: flex; align-items: center; gap: 10px; }
+  .section-num {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    background: var(--gold); color: var(--navy); border-radius: 4px; padding: 2px 6px; font-weight: 500;
+  }
+  .section-title { color: var(--white); font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+  .section-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .section-body.cols-1 { grid-template-columns: 1fr; }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-group.span-full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px; font-weight: 600; color: var(--text-light);
+    letter-spacing: .04em; text-transform: uppercase; font-family: 'DM Mono', monospace;
+  }
+  label .req { color: var(--error); margin-left: 2px; }
+
+  input[type="text"], input[type="number"], input[type="email"],
+  select, textarea {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--text);
+    background: var(--white); transition: border-color .15s, box-shadow .15s; outline: none; -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--navy-light); box-shadow: 0 0 0 3px rgba(30,65,117,.1);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5a78' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer;
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .field-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 2px; }
+  .radio-option {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--offwhite); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--text); transition: all .15s; user-select: none;
+  }
+  .radio-option:hover { border-color: var(--navy-light); background: #eef2f9; }
+  .radio-option input { display: none; }
+  .radio-option.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .radio-option .dot {
+    width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--muted);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .radio-option.selected .dot { border-color: var(--gold); background: var(--gold); }
+
+  /* ── Upload Zone ── */
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 36px 24px; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--offwhite); position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--navy-light); background: #eef2f9; }
+  .upload-zone.has-file { border-color: var(--success); background: #f0fdf7; border-style: solid; }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .uz-icon { font-size: 36px; margin-bottom: 10px; }
+  .uz-title { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .uz-sub { font-size: 12px; color: var(--muted); }
+  .uz-file { margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--success); display: none; }
+  .uz-file.visible { display: block; }
+  .uz-progress { margin-top: 14px; height: 5px; background: var(--border); border-radius: 3px; display: none; }
+  .uz-progress.visible { display: block; }
+  .uz-progress-fill { height: 5px; background: linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius: 3px; width: 0%; transition: width .4s ease; }
+
+  .submit-area { margin-top: 32px; text-align: center; }
+  .btn-submit {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white); border: none; border-radius: 10px;
+    padding: 16px 56px; font-family: 'Outfit', sans-serif;
+    font-size: 16px; font-weight: 600; cursor: pointer; letter-spacing: .02em;
+    transition: all .2s; box-shadow: 0 4px 16px rgba(11,31,58,.3);
+    position: relative; overflow: hidden;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(11,31,58,.4); }
+  .btn-submit::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--gold); }
+  .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .submit-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  .toast {
+    position: fixed; bottom: 32px; right: 32px;
+    background: var(--navy); color: var(--white);
+    padding: 14px 22px; border-radius: 10px; font-size: 14px; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,.25); transform: translateY(80px); opacity: 0;
+    transition: all .3s ease; z-index: 999; max-width: 380px;
+    display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--gold);
+  }
+  .toast.visible { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left-color: var(--success); }
+  .toast.error   { border-left-color: var(--error); }
+
+  .success-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(11,31,58,.85); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .success-overlay.visible { display: flex; }
+  .success-card {
+    background: var(--white); border-radius: 16px; padding: 48px 56px;
+    text-align: center; max-width: 440px; box-shadow: 0 24px 80px rgba(0,0,0,.3);
+  }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .success-msg { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+  .btn-reset {
+    margin-top: 28px; background: var(--navy); color: var(--white);
+    border: none; border-radius: 8px; padding: 12px 32px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-reset:hover { background: var(--navy-light); }
+
+  .setup-banner {
+    background: #fffbea; border: 1.5px solid #f0d070; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 28px; font-size: 13px; color: #7a5c00;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .setup-banner strong { color: #5a3e00; }
+  .setup-banner code { background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .section-body { grid-template-columns: 1fr; }
+    .field-group.span-full { grid-column: auto; }
+    .page-wrap { padding: 24px 16px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-icon">VC</div>
+    <div>
+      <div class="brand-text">Village Capital &amp; Investment</div>
+      <div class="brand-sub">Lindon Branch · NMLS #2776190</div>
+    </div>
+  </div>
+  <a class="back-link" href="index.html">← Hub</a>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<div class="page-wrap">
+  <div class="page-title">Competing Offer Request</div>
+  <p class="page-subtitle">Submit a competing offer for review. The LE/CD PDF is uploaded to the <span>Competing Offer Drive folder</span> and the submission is logged in Branch Tracker.</p>
+
+  <div class="setup-banner">
+    <div style="font-size:20px;flex-shrink:0">⚙️</div>
+    <div>
+      <strong>One-time setup:</strong> Replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code> with your deployed Apps Script URL. The script (provided in the setup guide) handles both the Drive file upload and the sheet row in one call.
+    </div>
+  </div>
+
+  <form id="coForm" novalidate>
+
+    <!-- S1: LO & Borrower -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">Loan Officer &amp; Borrower</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Borrower Name <span class="req">*</span></label>
+          <input type="text" id="borrowerName" placeholder="First Last" required/>
+        </div>
+        <div class="field-group">
+          <label>Loan Officer <span class="req">*</span></label>
+          <select id="loanOfficer" required>
+            <option value="">— Select LO —</option>
+            <option>KC Smalley</option>
+            <option>Benji Frandsen</option>
+            <option>Drake Knowles</option>
+            <option>Robert Benavides</option>
+            <option>Cam Cooper</option>
+            <option>Aaron Jones</option>
+            <option>SE Morgan</option>
+          </select>
+        </div>
+        <div class="field-group span-full">
+          <label>Is this a Past VCI Customer? <span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-option" onclick="selectRadio(this,'pastVCI')">
+              <input type="radio" name="pastVCI" value="Yes" required/><span class="dot"></span> Yes
+            </label>
+            <label class="radio-option" onclick="selectRadio(this,'pastVCI')">
+              <input type="radio" name="pastVCI" value="No"/><span class="dot"></span> No
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2: Loan Info -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">Loan Information</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label>Loan Type <span class="req">*</span></label>
+          <select id="loanType" required>
+            <option value="">— Select —</option>
+            <option>VA</option>
+            <option>FHA</option>
+            <option>Conventional</option>
+            <option>USDA</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Loan Purpose <span class="req">*</span></label>
+          <select id="loanPurpose" required>
+            <option value="">— Select —</option>
+            <option>Purchase</option>
+            <option>Cash Out</option>
+            <option>R/T Refinance</option>
+            <option>IRRRL</option>
+            <option>FHA Streamline</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Rate You Are Offering <span class="req">*</span></label>
+          <input type="text" id="rateOffering" placeholder="e.g. 5.750% Fixed" required/>
+        </div>
+        <div class="field-group">
+          <label>PPE Pricing at That Rate <span class="req">*</span></label>
+          <input type="text" id="ppePricing" placeholder="e.g. 2.000 points" required/>
+          <span class="field-hint">Pricing shown in PPE at the rate you are offering</span>
+        </div>
+        <div class="field-group span-full">
+          <label>What Pricing is Needed from VCI? <span class="req">*</span></label>
+          <textarea id="pricingNeeded" rows="3" placeholder="Be specific — include the exact rate, pricing, and structure you need VCI to approve..." required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3: PDF Upload -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">LE / CD from Competing Lender</span>
+      </div>
+      <div class="section-body cols-1">
+        <div class="field-group">
+          <label>Upload PDF <span class="req">*</span></label>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="pdfUpload" accept=".pdf" onchange="handleFileSelect(this)"/>
+            <div class="uz-icon" id="uzIcon">📄</div>
+            <div class="uz-title" id="uzTitle">Click to upload or drag &amp; drop</div>
+            <div class="uz-sub">PDF only · Max 10MB</div>
+            <div class="uz-file" id="uzFile"></div>
+            <div class="uz-progress" id="uzProgress"><div class="uz-progress-fill" id="uzProgressFill"></div></div>
+          </div>
+          <span class="field-hint">Automatically uploaded to the Competing Offer Drive folder on submission.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="btn-submit" id="submitBtn">Submit Competing Offer →</button>
+      <p class="submit-note">Uploads the PDF to Drive and logs the row in Branch Tracker.</p>
+    </div>
+  </form>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Offer Submitted!</div>
+    <p class="success-msg" id="successMsg">Your competing offer has been logged and the PDF uploaded to Drive.</p>
+    <button class="btn-reset" onclick="resetForm()">Submit Another</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">⚠️</span>
+  <span id="toastMsg">Message</span>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  const FOLDER_ID = '1shCe-hOmtVkApakJYg23qH93foUFbZjH7myjXJI4igDRTT81_x8Z80lOgYSw7TqaYv--Y_MC';
+
+  let selectedFile = null;
+
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') { showToast('Only PDF files are accepted.', 'error'); input.value = ''; return; }
+    if (file.size > 10 * 1024 * 1024)   { showToast('File exceeds 10MB limit.', 'error'); input.value = ''; return; }
+    selectedFile = file;
+    document.getElementById('uploadZone').classList.add('has-file');
+    document.getElementById('uzIcon').textContent = '✅';
+    document.getElementById('uzTitle').textContent = file.name;
+    document.getElementById('uzFile').classList.add('visible');
+    updateProgress();
+  }
+
+  const uZone = document.getElementById('uploadZone');
+  uZone.addEventListener('dragover', e => { e.preventDefault(); uZone.classList.add('drag-over'); });
+  uZone.addEventListener('dragleave', () => uZone.classList.remove('drag-over'));
+  uZone.addEventListener('drop', e => {
+    e.preventDefault(); uZone.classList.remove('drag-over');
+    const dt = e.dataTransfer.files;
+    if (dt.length) { document.getElementById('pdfUpload').files = dt; handleFileSelect(document.getElementById('pdfUpload')); }
+  });
+
+  function selectRadio(label, name) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.radio-option').classList.remove('selected'));
+    label.classList.add('selected'); label.querySelector('input').checked = true; updateProgress();
+  }
+  function getRadio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+
+  function updateProgress() {
+    const ids = ['borrowerName','loanOfficer','loanType','loanPurpose','rateOffering','ppePricing','pricingNeeded'];
+    let filled = ids.filter(id => document.getElementById(id).value.trim()).length;
+    if (getRadio('pastVCI')) filled++;
+    if (selectedFile) filled++;
+    document.getElementById('progressBar').style.width = Math.round((filled / (ids.length + 2)) * 100) + '%';
+  }
+  document.getElementById('coForm').addEventListener('input', updateProgress);
+
+  function showToast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    t.className = `toast visible ${type}`;
+    document.getElementById('toastIcon').textContent = ({info:'ℹ️',success:'✅',error:'❌'})[type];
+    document.getElementById('toastMsg').textContent = msg;
+    setTimeout(() => t.classList.remove('visible'), 5000);
+  }
+
+  function fileToBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  function resetForm() {
+    document.getElementById('coForm').reset();
+    selectedFile = null;
+    document.querySelectorAll('.radio-option').forEach(el => el.classList.remove('selected'));
+    const uz = document.getElementById('uploadZone');
+    uz.classList.remove('has-file','drag-over');
+    document.getElementById('uzIcon').textContent = '📄';
+    document.getElementById('uzTitle').textContent = 'Click to upload or drag & drop';
+    document.getElementById('uzFile').classList.remove('visible');
+    document.getElementById('successOverlay').classList.remove('visible');
+    document.getElementById('progressBar').style.width = '0%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('coForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const borrowerName  = document.getElementById('borrowerName').value.trim();
+    const loanOfficer   = document.getElementById('loanOfficer').value;
+    const loanType      = document.getElementById('loanType').value;
+    const loanPurpose   = document.getElementById('loanPurpose').value;
+    const rateOffering  = document.getElementById('rateOffering').value.trim();
+    const ppePricing    = document.getElementById('ppePricing').value.trim();
+    const pricingNeeded = document.getElementById('pricingNeeded').value.trim();
+    const pastVCI       = getRadio('pastVCI');
+
+    if (!borrowerName)  { showToast('Borrower Name is required.', 'error'); return; }
+    if (!loanOfficer)   { showToast('Please select a Loan Officer.', 'error'); return; }
+    if (!loanType)      { showToast('Please select a Loan Type.', 'error'); return; }
+    if (!loanPurpose)   { showToast('Please select a Loan Purpose.', 'error'); return; }
+    if (!rateOffering)  { showToast('Rate you are offering is required.', 'error'); return; }
+    if (!ppePricing)    { showToast('PPE Pricing is required.', 'error'); return; }
+    if (!pricingNeeded) { showToast('Please specify what pricing is needed from VCI.', 'error'); return; }
+    if (!pastVCI)       { showToast('Please indicate if this is a past VCI customer.', 'error'); return; }
+    if (!selectedFile)  { showToast('Please upload the LE/CD PDF.', 'error'); return; }
+    if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') { showToast('Apps Script URL not configured yet.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Reading file…';
+    document.getElementById('uzProgress').classList.add('visible');
+    document.getElementById('uzProgressFill').style.width = '20%';
+
+    try {
+      const base64Data = await fileToBase64(selectedFile);
+      document.getElementById('uzProgressFill').style.width = '55%';
+      btn.textContent = 'Uploading & submitting…';
+
+      const ts = new Date().toLocaleString('en-US');
+      const filename = `${borrowerName.replace(/[^a-zA-Z0-9]/g,'_')}_CO_${Date.now()}.pdf`;
+
+      // Columns: Timestamp | Borrower Name | Loan Officer Name | Loan Type | Loan Purpose |
+      // PPE Pricing | Rate Offering | LE/CD link (filled by script) |
+      // Pricing needed from VCI | Past VCI? | Approved Terms | Column 1
+      const row = [ts, borrowerName, loanOfficer, loanType, loanPurpose, ppePricing, rateOffering,
+                   '{{DRIVE_LINK}}', pricingNeeded, pastVCI, '', ''];
+
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheet: 'Competing Offer Submissions',
+          row,
+          file: { name: filename, mimeType: 'application/pdf', data: base64Data, folderId: FOLDER_ID, linkRowIndex: 7 }
+        })
+      });
+
+      document.getElementById('uzProgressFill').style.width = '100%';
+      document.getElementById('successMsg').textContent =
+        `Competing offer for ${borrowerName} (${loanOfficer}) submitted. PDF uploaded to the Competing Offer folder and row logged in Branch Tracker.`;
+      document.getElementById('successOverlay').classList.add('visible');
+
+    } catch(err) {
+      showToast('Submission failed. Check your network or Apps Script URL.', 'error');
+      console.error(err);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Submit Competing Offer →';
+      setTimeout(() => { document.getElementById('uzProgress').classList.remove('visible'); document.getElementById('uzProgressFill').style.width = '0%'; }, 800);
+    }
+  });
+</script>
+</body>
+</html>
