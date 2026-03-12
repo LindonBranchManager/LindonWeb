@@ -1656,7 +1656,186 @@ function getDocData(n) {
   };
 }
 
+// ── Compliance document helpers ───────────────────────────
+function fmtNum(n, dec=2) {
+  if(n === null || n === undefined || isNaN(n)) return '—';
+  return Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+}
+function fmtRate(r) { return fmtNum(r, 3); }
+function getLoanTypeLabel(prog, type) {
+  const m = {
+    'IRRRL':'NoCash-Out Refinance','PURCHASE':'Purchase','CASHOUT':'Cash-Out Refinance',
+    'FHA_PURCHASE':'Purchase','FHA_REFI':'Refinance',
+    'CONV_PURCHASE':'Purchase','CONV_REFI':'Refinance'
+  };
+  return prog + ' ' + (m[type] || type);
+}
+function genAppId() {
+  const now = new Date();
+  return String(now.getMonth()+1) + String(now.getDate()).padStart(2,'0') +
+    String(now.getFullYear()).slice(2) + String(Math.floor(Math.random()*900000)+100000);
+}
+
 function buildPreQuote(d) {
+  const piSavingsMonthly = d.currentPI - d.pi;
+  const piSavingsYearly = piSavingsMonthly * 12;
+  const totalSavingsMonthly = d.currentPI + d.currentEscrow - d.totalPayment;
+  const paymentsSkipped = getVal('paymentsSkipped');
+  const missedPmts = paymentsSkipped * (d.currentPI + d.currentEscrow);
+  const currentAmortType = getStr('currentAmortType') === 'ARM' ? 'ARM' : 'Fixed';
+  const propAmortType = (d.amortType||'').toUpperCase().includes('ARM') ? 'ARM' : 'Fixed';
+  const loanTypeLabel = getLoanTypeLabel(d.prog, d.loanType);
+  const appId = genAppId();
+
+  // Row helper: label (left) | number (right-aligned)
+  const tr = (label, val, bold=false) => {
+    const s = bold ? 'font-weight:700;' : '';
+    return `<tr>
+      <td style="padding:3px 10px;font-size:9.5pt;${s}">${label}</td>
+      <td style="padding:3px 10px;text-align:right;font-size:9.5pt;white-space:nowrap;${s}">${val}</td>
+    </tr>`;
+  };
+
+  return `
+<div class="doc-page" id="docPreQuote_${d.n}" style="font-family:Arial,Helvetica,sans-serif;max-width:760px;margin:0 auto;padding:28px 32px;background:white;color:#111;">
+
+  <!-- Red disclaimer -->
+  <div style="color:#cc0000;font-size:9pt;margin-bottom:14px;line-height:1.6;">
+    Your actual rate, payment, and costs could be higher.<br>
+    Get an official Loan Estimate before choosing a loan.
+  </div>
+
+  <!-- Title + Logo row -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+    <div>
+      <div style="font-size:17pt;font-weight:bold;margin-bottom:5px;">Mortgage Refinance Estimate</div>
+      <div style="font-size:9pt;">(This is NOT an official &#8220;Loan Estimate&#8221; (LE))</div>
+    </div>
+    <div style="border:2px solid #cc2200;padding:10px 16px;text-align:center;min-width:148px;">
+      <div style="color:#cc2200;font-weight:bold;font-size:13pt;letter-spacing:1px;line-height:1.2;">VILLAGE CAPITAL</div>
+      <div style="color:#cc2200;font-size:8.5pt;border-top:1.5px solid #cc2200;padding-top:5px;margin-top:5px;">&#8212;&amp; INVESTMENT, LLC&#8212;</div>
+    </div>
+  </div>
+
+  <!-- Application info block -->
+  <table style="border-collapse:collapse;margin-bottom:18px;font-size:10pt;">
+    <tr>
+      <td style="font-weight:bold;padding:3px 0;width:165px;vertical-align:top;">Application ID:</td>
+      <td style="padding:3px 0;">${appId}</td>
+    </tr>
+    <tr>
+      <td style="font-weight:bold;padding:3px 0;">Date:</td>
+      <td style="padding:3px 0;">${d.date}</td>
+    </tr>
+    <tr>
+      <td style="font-weight:bold;padding:3px 0;">Customers:</td>
+      <td style="padding:3px 0;">${(d.borrower + (d.coBorrower ? ' / ' + d.coBorrower : '')).toUpperCase()}</td>
+    </tr>
+    <tr>
+      <td style="font-weight:bold;padding:3px 0;vertical-align:top;">Subject Property:</td>
+      <td style="padding:3px 0;">${d.address || '&nbsp;'}</td>
+    </tr>
+    <tr>
+      <td style="font-weight:bold;padding:3px 0;">Loan Type</td>
+      <td style="padding:3px 0;">${loanTypeLabel}</td>
+    </tr>
+  </table>
+
+  <!-- Existing Loan Info | Proposed Loan Info (side by side) -->
+  <div style="display:flex;gap:10px;margin-bottom:14px;">
+    <!-- Existing -->
+    <div style="flex:1;border:1px solid #999;">
+      <div style="padding:7px 10px;font-weight:bold;text-decoration:underline;font-size:10pt;border-bottom:1px solid #999;background:#fff;">Existing Loan Information</div>
+      <table style="width:100%;border-collapse:collapse;">
+        ${tr('Old Loan Amount', fmtNum(getVal('originalLoanAmt')))}
+        ${tr('Original Rate', fmtRate(getVal('currentRate')))}
+        ${tr('Amortization Type', currentAmortType)}
+        ${tr('Original Term', String(getVal('originalTerm') || 360))}
+        ${tr('Old P&amp;I', fmtNum(d.currentPI))}
+        ${tr('Escrow Payment', fmtNum(d.currentEscrow))}
+        ${tr('Total Payment', fmtNum(d.currentPI + d.currentEscrow), true)}
+      </table>
+    </div>
+    <!-- Proposed -->
+    <div style="flex:1;border:1px solid #999;">
+      <div style="padding:7px 10px;font-weight:bold;text-decoration:underline;font-size:10pt;border-bottom:1px solid #999;background:#fff;">Proposed Loan Information</div>
+      <table style="width:100%;border-collapse:collapse;">
+        ${tr('New Loan Amount', fmtNum(d.totalLoan))}
+        ${tr('Proposed Rate', fmtRate(d.rate * 100))}
+        ${tr('Amortization Type', propAmortType)}
+        ${tr('Term', String(d.term))}
+        ${tr('Proposed P&amp;I', fmtNum(d.pi))}
+        ${tr('Escrow Payment', fmtNum(d.escrow))}
+        ${tr('Total Payment', fmtNum(d.totalPayment), true)}
+      </table>
+    </div>
+  </div>
+
+  <!-- Details of Transaction -->
+  <div style="border:1px solid #999;margin-bottom:14px;">
+    <div style="padding:7px 10px;font-weight:bold;text-decoration:underline;font-size:10pt;border-bottom:1px solid #999;background:#fff;">Details of Transaction</div>
+    <div style="display:flex;">
+      <!-- Left column -->
+      <div style="flex:1;border-right:1px solid #ccc;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${tr('Origination Points (' + fmtRate(d.origFeePct) + ')', fmtNum(d.origFeeAmt))}
+          ${tr('Discount Points (' + fmtRate(d.discPtsPct) + ')', fmtNum(d.discPtsAmt))}
+          ${tr('Upfront MIP/Funding Fee', fmtNum(d.upfrontFeeAmt))}
+          ${tr('Underwriting Fee', fmtNum(0))}
+          ${tr('Appraisal Fee', fmtNum(d.appraisal))}
+          ${tr('Credit Report/Flood Cert', fmtNum(d.creditReport))}
+          ${tr('Title Fees', fmtNum(d.titleIns))}
+          ${tr('Gvnmnt/Recording Fees', fmtNum(d.recording))}
+        </table>
+      </div>
+      <!-- Right column -->
+      <div style="flex:1;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${tr('Property Value', fmtNum(d.appraised))}
+          ${tr('Payoff Amount', fmtNum(d.payoff))}
+          ${tr('Current Escrow Balance', fmtNum(d.escrowBalance))}
+          ${tr('New Escrow Balance', fmtNum(d.escrowBalance))}
+          ${tr('Lender Credit', fmtNum(0))}
+          <tr><td colspan="2" style="padding:3px 10px;font-size:9.5pt;">&nbsp;</td></tr>
+          ${tr('Cash From Borrower', fmtNum(d.totalFundsToClose))}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Discrepancy Table -->
+  <div style="border:1px solid #999;margin-bottom:20px;">
+    <div style="padding:7px 10px;font-weight:bold;text-decoration:underline;font-size:10pt;border-bottom:1px solid #999;background:#fff;">Payment Discrepancy Table</div>
+    <div style="display:flex;">
+      <!-- Left -->
+      <div style="flex:1;border-right:1px solid #ccc;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${tr('P&amp;I Payment Difference <span style="font-size:8.5pt;">(Monthly)</span>', fmtNum(piSavingsMonthly))}
+          ${tr('P&amp;I Payment Difference <span style="font-size:8.5pt;">(Yearly)</span>', fmtNum(piSavingsYearly))}
+        </table>
+      </div>
+      <!-- Right -->
+      <div style="flex:1;">
+        <table style="width:100%;border-collapse:collapse;">
+          ${tr('Total Payment Difference <span style="font-size:8.5pt;">(Monthly)</span>', fmtNum(totalSavingsMonthly))}
+          ${tr('Missed Mortgage Payments (' + paymentsSkipped + ')', fmtNum(missedPmts))}
+          ${tr('Escrow Refund:', fmtNum(d.escrowBalance))}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="font-size:8.5pt;color:#333;line-height:1.7;border-top:1px solid #ccc;padding-top:10px;">
+    Village Capital &amp; Investment LLC - NMLS # 3317 - 2863 St Rose Parkway, Henderson, NV 89052 - Toll Free (866) 933-4654<br>
+    Loan Officer - ${d.loName || '&mdash;'} - NMLS # ${d.loNmls || '&mdash;'} - Direct Phone ${d.loPhone || '&mdash;'}
+  </div>
+
+</div>`;
+}
+
+// ── Legacy helper retained for Fees Worksheet (not used in compliance doc) ──
+function buildPreQuote_LEGACY(d) {
   const amortLabel = d.amortType;
   const piSavingsMonthly = d.currentPI - d.pi;
   const piSavingsYearly = piSavingsMonthly * 12;
