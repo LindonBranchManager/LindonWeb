@@ -357,6 +357,8 @@ table.pipe-tbl tr:hover td{background:var(--cream)}
           </div>
         </div>
 
+        <div id="rw-debug" style="display:none;background:#fdecea;border:1px solid #c0392b;border-radius:6px;padding:10px 14px;font-size:12px;color:#c0392b;margin-top:12px;word-break:break-all;line-height:1.5"></div>
+
         <button class="run-btn" onclick="runSingle()">
           <span class="btn-icon">📡</span> Run Rate Watch Analysis
         </button>
@@ -555,13 +557,17 @@ function signOut() {
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user;
-    document.getElementById('auth-overlay').style.display = 'none';
+    const overlay = document.getElementById('auth-overlay');
+    overlay.style.display = 'none';
+    overlay.style.pointerEvents = 'none';
     document.getElementById('nav-user').textContent = user.displayName || user.email;
     document.getElementById('sign-out-btn').style.display = '';
     loadPipeline();
   } else {
     currentUser = null;
-    document.getElementById('auth-overlay').style.display = 'flex';
+    const overlay = document.getElementById('auth-overlay');
+    overlay.style.display = 'flex';
+    overlay.style.pointerEvents = 'auto';
     document.getElementById('nav-user').textContent = '';
     document.getElementById('sign-out-btn').style.display = 'none';
     pipeline = [];
@@ -645,6 +651,9 @@ function setMode(m, btn) {
 // SINGLE BORROWER
 // ═══════════════════════════════════════════════════
 function runSingle() {
+  const debugEl = document.getElementById('rw-debug');
+  debugEl.style.display = 'block';
+  debugEl.textContent = '⏳ runSingle() called...';
   try {
   const name       = document.getElementById('s-name').value||'Borrower';
   const loanType   = document.getElementById('s-loan-type').value;
@@ -657,8 +666,14 @@ function runSingle() {
   const ccInput    = parseFloat(document.getElementById('s-cc').value)||0;
   let currPmt      = parseFloat(document.getElementById('s-curr-pmt').value)||0;
 
-  if (!currRate || !balance) { alert('Please enter the current rate and balance.'); return; }
-  if (!todayRate) { alert("Please enter today's rate offer."); return; }
+  if (!currRate || !balance) { 
+    document.getElementById('rw-debug').textContent = '⚠️ Missing: current rate=' + currRate + ' balance=' + balance;
+    return; 
+  }
+  if (!todayRate) { 
+    document.getElementById('rw-debug').textContent = "⚠️ Missing: today's rate=" + todayRate;
+    return; 
+  }
 
   // Auto-calc current payment if blank
   if (!currPmt) currPmt = calcPI(balance, currRate/100, remTerm);
@@ -816,9 +831,10 @@ function runSingle() {
 
   // Show results
   document.getElementById('single-results').style.display = '';
+  document.getElementById('rw-debug').style.display = 'none';
   setTimeout(()=>document.getElementById('single-results').scrollIntoView({behavior:'smooth',block:'start'}),50);
   } catch(err) {
-    alert('Run error: ' + err.message);
+    document.getElementById('rw-debug').textContent = '❌ ERROR: ' + err.message + ' | stack: ' + err.stack;
     console.error(err);
   }
 }
