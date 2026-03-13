@@ -282,19 +282,19 @@
     <div class="arm-card">
       <div class="arm-card-title">🔒 How caps protect the borrower — know this cold</div>
       <div style="font-size:13px;color:#9CA3AF;line-height:1.7;margin-bottom:14px;">
-        Every ARM has a caps structure that limits how much the rate can move. The most common is <strong style="color:#E8E2D9;">2/2/5</strong> or <strong style="color:#E8E2D9;">5/2/5</strong>. You need to understand and be able to explain this without hesitation.
+        Every ARM has a caps structure that limits how much the rate can move. Our product uses a <strong style="color:#E8E2D9;">1/1/5</strong> cap structure. You need to understand and be able to explain this without hesitation.
       </div>
       <table class="arm-table">
-        <tr><th>Cap</th><th>What It Limits</th><th>Example (2/2/5 on a 6% start rate)</th></tr>
+        <tr><th>Cap</th><th>What It Limits</th><th>Example (1/1/5 on a 6% start rate)</th></tr>
         <tr>
           <td><span style="color:#4A90C4;font-family:monospace;">Initial Cap</span></td>
           <td>Max increase at first adjustment</td>
-          <td>Can only go to 8% at first adjustment</td>
+          <td>Can only go to 7% at first adjustment</td>
         </tr>
         <tr>
           <td><span style="color:#7B68EE;font-family:monospace;">Periodic Cap</span></td>
           <td>Max increase each year after that</td>
-          <td>Can only go up 2% per year from there</td>
+          <td>Can only go up 1% per year from there</td>
         </tr>
         <tr>
           <td><span style="color:#E07B54;font-family:monospace;">Lifetime Cap</span></td>
@@ -304,7 +304,7 @@
       </table>
       <div style="background:#1A1F2E;border-radius:8px;padding:14px 16px;font-size:13px;color:#D1C9BC;line-height:1.8;">
         <strong style="color:#C8973A;">Say it like this:</strong><br>
-        "Even in a worst-case scenario — rates spike and your loan adjusts as high as it possibly can — the most your rate could ever reach is [X]%. That's not a guess, it's written into your loan contract. And you'd have to be in this loan for 5 years past the fixed period for that to even happen."
+        "Even in a worst-case scenario — rates spike and your loan adjusts as high as it possibly can — the most your rate could ever reach is [start rate + 5]%. That's not a guess, it's written into your loan contract. And in the first adjustment it can only move 1%, then 1% per year after that. You'd have to be in this loan for years past the fixed period for it to even approach that ceiling."
       </div>
     </div>
 
@@ -592,10 +592,10 @@ const followUp = [
 
 const armObjections = [
   { obj:"I don't want an adjustable rate — I need stability.", note:"Most common. Acknowledge the instinct, then reframe with the caps and the fixed period.",
-    resp:`"That's the smartest instinct to have, and I'd say the same thing if I didn't know how these work. Here's what's different about a hybrid ARM — the rate is completely fixed for the first 5 years. It doesn't move at all. After that, it can adjust, but only within hard caps written into your loan contract. The most it can ever go up at once is [initial cap]%, and the most it can ever reach in total is [lifetime max]%. That's not a variable — it's a contract. Can I walk you through what those numbers actually look like for your situation?"`
+    resp:`"That's the smartest instinct to have, and I'd say the same thing if I didn't know how these work. Here's what's different about a hybrid ARM — the rate is completely fixed for the first 5 years. It doesn't move at all. After that, it can only adjust 1% at a time — and the most it can ever reach over the life of the loan is your start rate plus 5%. That's not a variable — it's written into your loan contract. Can I walk you through what those numbers actually look like for your situation?"`
   },
   { obj:"What happens when the rate adjusts? I'm worried about my payment going up.", note:"Specific and solvable. Show them the worst case — it's usually less scary than they imagine.",
-    resp:`"Great question and you should be asking it. At year 5, the rate can adjust up by a maximum of [initial cap]% at the first adjustment. After that it can only move [periodic cap]% per year. So in an absolute worst case scenario, your payment at year 6 would be [calculated worst case]. The more realistic scenario is that rates are similar or you've refinanced again by then. Most homeowners refinance every 5–7 years anyway. Does knowing the worst case change how you're thinking about it?"`
+    resp:`"Great question and you should be asking it. At year 5, the rate can only adjust up by a maximum of 1% at the first adjustment — that's the initial cap. After that it can only move 1% per year. So in an absolute worst case, over many years it could reach your start rate plus 5% total. The more realistic scenario is that rates are similar or you've refinanced again by then. Most homeowners refinance every 5–7 years anyway. Does knowing the worst case change how you're thinking about it?"`
   },
   { obj:"I've heard ARMs are risky — that's what caused the 2008 crisis.", note:"Fair historical concern. Address it directly and explain what's different now.",
     resp:`"You're right to reference that — and it's a fair thing to bring up. The ARMs in 2008 were a completely different product. They were often negative amortization, no-doc, teaser rate products that hid real costs. Today's hybrid ARMs are fully documented, fully underwritten, with hard statutory caps and a fixed period. They're a regulated product. The issue in 2008 wasn't adjustable rates — it was fraudulent underwriting. This is nothing like that. But I understand the hesitation, and if it still doesn't feel right after I walk you through it, that's a completely valid answer."`
@@ -604,7 +604,7 @@ const armObjections = [
     resp:`"I completely respect that. Can I just show you both options side by side before you decide? Sometimes when people see the actual payment difference and the savings over 5 years, it changes the picture — and sometimes it doesn't and the fixed rate is the right call. Either way you'll make the decision with the full information. Is that fair?"`
   },
   { obj:"What if rates go way up before I can refinance?", note:"Legitimate risk question. Answer it honestly with the caps and a realistic rate outlook.",
-    resp:`"That's the right risk to think about. Here's the protection built in — the lifetime cap means the rate can never exceed [max]% on this loan, no matter what happens in the market. Even in a rising rate environment, you know your worst case going in. And if rates do rise significantly, it probably means your home value has also risen, which gives you refinance options. It's not zero risk — but it's known, bounded risk. Is that a risk profile you could work with?"`
+    resp:`"That's the right risk to think about. Here's the protection built in — our ARM uses a 1/1/5 cap structure. That means at adjustment it can only move 1% at a time, and the lifetime cap means the rate can never exceed your start rate plus 5%, no matter what happens in the market. You know your worst case going in before you sign anything. And if rates do rise significantly, it probably means your home value has also risen, which gives you refinance options. It's not zero risk — but it's known, bounded risk. Is that a risk profile you could work with?"`
   }
 ];
 
