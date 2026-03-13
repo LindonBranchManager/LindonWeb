@@ -6,238 +6,134 @@
 <title>Village Capital · LO Playbook</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    min-height: 100vh;
-    background: #0D1117;
-    font-family: Georgia, serif;
-    color: #E8E2D9;
-  }
+  body { min-height: 100vh; background: #0D1117; font-family: Georgia, serif; color: #E8E2D9; }
+
   .header {
     background: linear-gradient(135deg, #1A1F2E 0%, #0D1117 100%);
     border-bottom: 1px solid #2A2F3E;
-    padding: 28px 32px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    padding: 22px 28px 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
   }
-  .header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .header-eyebrow { font-size: 10px; letter-spacing: 4px; color: #C8973A; text-transform: uppercase; font-family: monospace; margin-bottom: 5px; }
+  .header-title { font-size: 20px; font-weight: normal; color: #F0EAE0; }
+  .header-sub { font-size: 11px; color: #6B7280; margin-top: 3px; font-family: monospace; }
+
+  /* Product Switcher */
+  .product-switcher { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .prod-btn {
+    padding: 7px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    font-family: monospace; border: 1px solid #2A2F3E; background: transparent;
+    color: #6B7280; transition: all 0.2s; letter-spacing: 0.5px;
   }
-  .header-eyebrow {
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: #C8973A;
-    text-transform: uppercase;
-    font-family: monospace;
-    margin-bottom: 6px;
+  .prod-btn.active-cashout { background: #C8973A; color: #0D1117; border-color: #C8973A; font-weight: bold; }
+  .prod-btn.active-irrrl { background: #4A90C4; color: #fff; border-color: #4A90C4; font-weight: bold; }
+  .prod-label {
+    font-size: 10px; font-family: monospace; color: #6B7280;
+    align-self: center; padding-left: 4px;
   }
-  .header-title {
-    font-size: 22px;
-    font-weight: normal;
-    color: #F0EAE0;
-    letter-spacing: 0.5px;
-  }
-  .header-sub {
-    font-size: 12px;
-    color: #6B7280;
-    margin-top: 4px;
-    font-family: monospace;
-  }
-  .touch-badge {
-    background: #C8973A22;
-    border: 1px solid #C8973A44;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 12px;
-    color: #C8973A;
-    font-family: monospace;
-    text-align: center;
-  }
-  .touch-badge-num { font-size: 18px; font-weight: bold; }
-  .nav {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    padding-bottom: 16px;
-  }
+
+  /* Section Nav */
+  .nav { display: flex; gap: 4px; flex-wrap: wrap; padding-bottom: 14px; }
   .nav-btn {
-    background: transparent;
-    color: #9CA3AF;
-    border: 1px solid #2A2F3E;
-    border-radius: 6px;
-    padding: 8px 18px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: Georgia, serif;
-    transition: all 0.2s;
+    background: transparent; color: #9CA3AF; border: 1px solid #2A2F3E;
+    border-radius: 6px; padding: 7px 16px; font-size: 13px; cursor: pointer;
+    font-family: Georgia, serif; transition: all 0.2s;
   }
-  .nav-btn.active {
-    background: #C8973A;
-    color: #0D1117;
-    border: none;
-    font-weight: bold;
-  }
-  .content { max-width: 900px; margin: 0 auto; padding: 28px 24px 60px; }
+  .nav-btn.active { background: #C8973A; color: #0D1117; border: none; font-weight: bold; }
+
+  .content { max-width: 920px; margin: 0 auto; padding: 24px 20px 60px; }
   .section { display: none; }
   .section.active { display: block; }
-  .section-intro {
-    color: #9CA3AF;
-    font-size: 14px;
-    line-height: 1.7;
-    margin-bottom: 24px;
-  }
-  .card {
-    margin-bottom: 12px;
-    border: 1px solid #1E2433;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #0F1420;
-    transition: all 0.2s;
-  }
+  .section-intro { color: #9CA3AF; font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+
+  /* Cards */
+  .card { margin-bottom: 10px; border: 1px solid #1E2433; border-radius: 10px; overflow: hidden; background: #0F1420; transition: border-color 0.2s; }
   .card.open { background: #13182299; }
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .step-badge {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-family: monospace; font-weight: bold;
-    flex-shrink: 0;
-  }
-  .card-label { font-size: 15px; color: #E8E2D9; }
+  .card-header { display: flex; align-items: center; gap: 14px; padding: 15px 18px; cursor: pointer; user-select: none; }
+  .card-label { font-size: 14px; color: #E8E2D9; }
   .card-tag { font-size: 11px; color: #6B7280; margin-top: 2px; font-family: monospace; }
-  .card-chevron { color: #4B5563; font-size: 16px; margin-left: auto; }
-  .card-body { padding: 0 20px 20px; display: none; }
+  .card-chevron { color: #4B5563; font-size: 15px; margin-left: auto; flex-shrink: 0; }
+  .card-body { padding: 0 18px 18px; display: none; }
   .card.open .card-body { display: block; }
-  .script-box {
-    background: #0D1117;
-    border: 1px solid #1E2433;
-    border-radius: 8px;
-    padding: 16px 48px 16px 18px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: #D1C9BC;
-    margin-bottom: 12px;
-    position: relative;
-    white-space: pre-wrap;
-  }
-  .copy-btn {
-    position: absolute;
-    top: 12px; right: 12px;
-    background: #1E2433;
-    color: #9CA3AF;
-    border: none;
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: monospace;
-    transition: all 0.2s;
-  }
+
+  .step-badge { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: monospace; font-weight: bold; flex-shrink: 0; }
+  .script-box { background: #0D1117; border: 1px solid #1E2433; border-radius: 8px; padding: 14px 46px 14px 16px; font-size: 13px; line-height: 1.8; color: #D1C9BC; margin-bottom: 10px; position: relative; white-space: pre-wrap; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; background: #1E2433; color: #9CA3AF; border: none; border-radius: 5px; padding: 3px 9px; font-size: 11px; cursor: pointer; font-family: monospace; transition: all 0.2s; }
   .copy-btn.copied { background: #4CAF82; color: #fff; }
-  .tip-box {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    border-radius: 8px;
-    padding: 10px 14px;
-  }
+  .tip-box { display: flex; gap: 8px; align-items: flex-start; border-radius: 8px; padding: 10px 14px; }
   .tip-box span { font-size: 13px; color: #9CA3AF; line-height: 1.6; }
-  .disc-icon { font-size: 22px; flex-shrink: 0; }
-  .q-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-    background: #0D1117;
-    border: 1px solid #1E2433;
-    border-radius: 8px;
-  }
-  .q-num {
-    width: 22px; height: 22px;
-    border-radius: 4px;
-    background: #4A90C422;
-    border: 1px solid #4A90C455;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; color: #4A90C4; font-family: monospace;
-    flex-shrink: 0; margin-top: 2px;
-  }
-  .q-text { flex: 1; font-size: 14px; color: #D1C9BC; line-height: 1.7; }
-  .obj-tag {
-    background: #7B68EE22;
-    border: 1px solid #7B68EE44;
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 11px;
-    color: #7B68EE;
-    font-family: monospace;
-    flex-shrink: 0;
-  }
-  .action-box {
-    background: #4CAF8211;
-    border: 1px solid #4CAF8233;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: #9CA3AF;
-    line-height: 1.6;
-  }
-  .touch-badge-row {
-    width: 32px; height: 32px;
-    border-radius: 6px;
-    background: #4CAF8222;
-    border: 1px solid #4CAF8244;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: #4CAF82; font-family: monospace; font-weight: bold;
-    flex-shrink: 0;
-  }
-  .channel-chips {
-    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
-  }
-  .channel-chip {
-    background: #1E2433;
-    border: 1px solid #2A3040;
-    border-radius: 20px;
-    padding: 4px 14px;
-    font-size: 12px; color: #9CA3AF; font-family: monospace;
-  }
-  .channel-note { font-size: 12px; color: #6B7280; font-family: monospace; }
+
+  /* Discovery */
+  .disc-icon { font-size: 20px; flex-shrink: 0; }
+  .q-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; margin-bottom: 7px; background: #0D1117; border: 1px solid #1E2433; border-radius: 8px; }
+  .q-num { width: 20px; height: 20px; border-radius: 4px; background: #4A90C422; border: 1px solid #4A90C455; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #4A90C4; font-family: monospace; flex-shrink: 0; margin-top: 2px; }
+  .q-text { flex: 1; font-size: 13px; color: #D1C9BC; line-height: 1.7; }
+
+  /* Objections */
+  .obj-tag { background: #7B68EE22; border: 1px solid #7B68EE44; border-radius: 20px; padding: 2px 10px; font-size: 10px; color: #7B68EE; font-family: monospace; flex-shrink: 0; }
+
+  /* Follow-up */
+  .touch-badge-row { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: monospace; font-weight: bold; flex-shrink: 0; }
+  .action-box { background: #4CAF8211; border: 1px solid #4CAF8233; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; color: #9CA3AF; line-height: 1.6; }
+  .channel-chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .channel-chip { background: #1E2433; border: 1px solid #2A3040; border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #9CA3AF; font-family: monospace; }
+
+  /* Info banners */
+  .banner { border-radius: 10px; padding: 13px 16px; margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .banner-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .banner-body { font-size: 13px; color: #9CA3AF; line-height: 1.6; }
+
+  /* ARM Guide specific */
+  .arm-card { background: #0F1420; border: 1px solid #1E2433; border-radius: 10px; padding: 20px; margin-bottom: 12px; }
+  .arm-card-title { font-size: 15px; color: #E8E2D9; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .arm-badge { font-size: 11px; font-family: monospace; border-radius: 20px; padding: 3px 10px; }
+  .arm-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  .arm-table th { text-align: left; padding: 8px 12px; background: #1A1F2E; color: #9CA3AF; font-weight: normal; font-family: monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  .arm-table td { padding: 10px 12px; border-bottom: 1px solid #1E2433; color: #D1C9BC; vertical-align: top; line-height: 1.6; }
+  .arm-table tr:last-child td { border-bottom: none; }
+  .pivot-row { display: flex; gap: 0; margin-bottom: 10px; border: 1px solid #1E2433; border-radius: 8px; overflow: hidden; }
+  .pivot-cell { flex: 1; padding: 12px 14px; font-size: 13px; line-height: 1.6; }
+
+  /* Product mode indicator */
+  .mode-bar { display: none; }
+  .mode-bar.visible { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 14px; border-radius: 8px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div style="max-width:900px;margin:0 auto;">
+  <div style="max-width:920px;margin:0 auto;">
     <div class="header-top">
       <div>
         <div class="header-eyebrow">Village Capital · Branch Playbook</div>
-        <h1 class="header-title">Portfolio Retention Cash-Out</h1>
-        <div class="header-sub">Cold Call · Full Qualifying Branch · FHA / VA / Conventional</div>
+        <h1 class="header-title">Portfolio Retention — VA / FHA / Conventional</h1>
+        <div class="header-sub">Full Qualifying Branch · Cold Call · Public Leads</div>
       </div>
-      <div class="touch-badge">
-        <div class="touch-badge-num">7</div>
+      <div style="background:#C8973A22;border:1px solid #C8973A44;border-radius:8px;padding:8px 14px;font-size:11px;color:#C8973A;font-family:monospace;text-align:center;flex-shrink:0;">
+        <div style="font-size:18px;font-weight:bold;">7</div>
         <div>Call Attempts</div>
       </div>
     </div>
+
+    <!-- Product Switcher -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;font-family:monospace;color:#4B5563;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Active Product Mode</div>
+      <div class="product-switcher">
+        <button class="prod-btn active-cashout" id="btn-cashout" onclick="setProduct('cashout')">💰 VA / FHA / Conv Cash-Out</button>
+        <button class="prod-btn" id="btn-irrrl" onclick="setProduct('irrrl')">⚡ VA IRRRL (Streamline)</button>
+        <span class="prod-label">— switches Talk Track, Discovery &amp; Objections</span>
+      </div>
+    </div>
+
+    <!-- Section Nav -->
     <div class="nav">
       <button class="nav-btn active" onclick="showSection(0, this)">🎯 Talk Track</button>
       <button class="nav-btn" onclick="showSection(1, this)">🔍 Discovery</button>
       <button class="nav-btn" onclick="showSection(2, this)">🛡️ Objections</button>
       <button class="nav-btn" onclick="showSection(3, this)">📅 Follow-Up</button>
+      <button class="nav-btn" onclick="showSection(4, this)">📐 ARM Guide</button>
     </div>
   </div>
 </div>
@@ -246,339 +142,480 @@
 
   <!-- TALK TRACK -->
   <div class="section active" id="section-0">
-    <p class="section-intro">This is your cold call structure for portfolio retention equity leads. Work through each step in order. Click any step to expand the full script. Use the copy button to grab language mid-call.</p>
-
+    <div id="mode-bar-0" class="mode-bar"></div>
+    <p class="section-intro" id="track-intro"></p>
     <div id="track-cards"></div>
   </div>
 
   <!-- DISCOVERY -->
   <div class="section" id="section-1">
-    <p class="section-intro">You're calling cold — you don't know why they might want cash out. These questions open the door. Ask, then go quiet. The category order matters: start with motivation, not qualification.</p>
+    <div id="mode-bar-1" class="mode-bar"></div>
+
+    <!-- Product Pivot Guide — always visible -->
+    <div style="background:#0F1420;border:1px solid #C8973A33;border-radius:10px;overflow:hidden;margin-bottom:16px;">
+      <div style="background:#C8973A11;padding:12px 16px;border-bottom:1px solid #C8973A22;">
+        <div style="font-size:13px;color:#C8973A;font-weight:bold;">🔀 How to identify the right product — ask these first</div>
+        <div style="font-size:12px;color:#6B7280;margin-top:3px;">Use this before anything else. Two questions determine everything.</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div class="pivot-row">
+          <div class="pivot-cell" style="background:#4A90C411;border-right:1px solid #1E2433;">
+            <div style="font-size:11px;font-family:monospace;color:#4A90C4;margin-bottom:6px;">QUESTION 1</div>
+            <div style="font-size:13px;color:#E8E2D9;margin-bottom:6px;">"Do you currently have a VA loan on this property?"</div>
+            <div style="font-size:12px;color:#6B7280;">Determines VA eligibility for IRRRL</div>
+          </div>
+          <div class="pivot-cell" style="background:#7B68EE11;">
+            <div style="font-size:11px;font-family:monospace;color:#7B68EE;margin-bottom:6px;">QUESTION 2</div>
+            <div style="font-size:13px;color:#E8E2D9;margin-bottom:6px;">"Are you looking to pull some cash out, or mainly just improve your rate and payment?"</div>
+            <div style="font-size:12px;color:#6B7280;">Determines Cash-Out vs. IRRRL direction</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;border:1px solid #1E2433;border-radius:8px;overflow:hidden;font-size:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:#1A1F2E;">
+            <div style="padding:8px 12px;color:#9CA3AF;font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Scenario</div>
+            <div style="padding:8px 12px;color:#9CA3AF;font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Product</div>
+            <div style="padding:8px 12px;color:#9CA3AF;font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Switch Playbook To</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #1E2433;">
+            <div style="padding:9px 12px;color:#D1C9BC;border-right:1px solid #1E2433;">Has VA loan + wants lower rate/payment only</div>
+            <div style="padding:9px 12px;color:#4A90C4;border-right:1px solid #1E2433;">VA IRRRL</div>
+            <div style="padding:9px 12px;color:#E8E2D9;">Switch to ⚡ IRRRL mode</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #1E2433;">
+            <div style="padding:9px 12px;color:#D1C9BC;border-right:1px solid #1E2433;">Has VA loan + wants cash out</div>
+            <div style="padding:9px 12px;color:#C8973A;border-right:1px solid #1E2433;">VA Cash-Out</div>
+            <div style="padding:9px 12px;color:#E8E2D9;">Stay on 💰 Cash-Out mode</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #1E2433;">
+            <div style="padding:9px 12px;color:#D1C9BC;border-right:1px solid #1E2433;">Has conventional/FHA loan + wants cash or rate</div>
+            <div style="padding:9px 12px;color:#C8973A;border-right:1px solid #1E2433;">FHA/Conv Cash-Out</div>
+            <div style="padding:9px 12px;color:#E8E2D9;">Stay on 💰 Cash-Out mode</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #1E2433;">
+            <div style="padding:9px 12px;color:#D1C9BC;border-right:1px solid #1E2433;">Has conventional + is a veteran (wants VA)</div>
+            <div style="padding:9px 12px;color:#C8973A;border-right:1px solid #1E2433;">VA Cash-Out (converting)</div>
+            <div style="padding:9px 12px;color:#E8E2D9;">Stay on 💰 Cash-Out mode — highlight VA benefit</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #1E2433;">
+            <div style="padding:9px 12px;color:#D1C9BC;border-right:1px solid #1E2433;">Fixed refi doesn't pencil — payment increase too large</div>
+            <div style="padding:9px 12px;color:#4CAF82;border-right:1px solid #1E2433;">Hybrid ARM (3/1 or 5/1)</div>
+            <div style="padding:9px 12px;color:#E8E2D9;">Introduce ARM — see 📐 ARM Guide</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-intro" id="disc-intro"></p>
     <div id="disc-cards"></div>
   </div>
 
   <!-- OBJECTIONS -->
   <div class="section" id="section-2">
-    <p class="section-intro">Every objection is a question in disguise. The goal is never to argue — it's to disarm and redirect. Tap any objection to see the response and coaching note.</p>
+    <div id="mode-bar-2" class="mode-bar"></div>
+    <p class="section-intro" id="obj-intro"></p>
     <div id="obj-cards"></div>
   </div>
 
   <!-- FOLLOW-UP -->
   <div class="section" id="section-3">
-
-    <div style="background:#E07B5411;border:1px solid #E07B5444;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
+    <div class="banner" style="background:#E07B5411;border:1px solid #E07B5444;">
       <span style="font-size:20px;flex-shrink:0;">⚠️</span>
       <div>
-        <div style="font-size:13px;color:#E07B54;font-weight:bold;margin-bottom:4px;">These leads are public — first app wins</div>
-        <div style="font-size:13px;color:#9CA3AF;line-height:1.6;">Any LO at Village Capital can contact and work these leads. You do not own the lead until a loan application is committed to. Getting the app on first contact is the goal — the follow-up sequence below is for leads that didn't convert on first contact, not a substitute for urgency on the call.</div>
+        <div class="banner-title" style="color:#E07B54;">These leads are public — first app wins</div>
+        <div class="banner-body">Any LO at Village Capital can contact and work these leads. You do not own the lead until a loan application is committed to. Getting the app on first contact is the goal — the follow-up sequence is for leads that didn't convert on first contact, not a substitute for urgency.</div>
       </div>
     </div>
-
-    <div style="background:#4A90C411;border:1px solid #4A90C433;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
+    <div class="banner" style="background:#4A90C411;border:1px solid #4A90C433;">
       <span style="font-size:20px;flex-shrink:0;">📊</span>
       <div>
-        <div style="font-size:13px;color:#4A90C4;font-weight:bold;margin-bottom:4px;">Company data: peak contact at attempts 6–7</div>
-        <div style="font-size:13px;color:#9CA3AF;line-height:1.6;">Only <strong style="color:#E8E2D9;">phone calls</strong> count as contact attempts. Texts and emails are support tools, not counted attempts. Target average: <strong style="color:#E8E2D9;">2+ attempts per lead</strong>. LOs hitting this benchmark are showing measurably higher success rates. Don't stop at 1–2 dials.</div>
+        <div class="banner-title" style="color:#4A90C4;">Company data: peak contact at attempts 6–7</div>
+        <div class="banner-body">Only <strong style="color:#E8E2D9;">phone calls</strong> count as contact attempts. Texts and emails are support tools only. Target: <strong style="color:#E8E2D9;">2+ attempts per lead average</strong>. LOs hitting this benchmark show measurably higher success rates.</div>
       </div>
     </div>
-
-    <p class="section-intro" style="margin-bottom:16px;">The double-call blitz on first contact is your most important sequence. After that, push toward attempts 6–7 where contact probability peaks.</p>
-
     <div class="channel-chips">
-      <div class="channel-chip" style="border-color:#4CAF8244;color:#4CAF82;">📞 Calls = Count</div>
+      <div class="channel-chip" style="border-color:#4CAF8244;color:#4CAF82;">📞 Calls = Counted</div>
       <div class="channel-chip">💬 Text = Support</div>
       <div class="channel-chip">📧 Email = Support</div>
     </div>
     <div id="followup-cards"></div>
   </div>
 
-</div>
+  <!-- ARM GUIDE -->
+  <div class="section" id="section-4">
+    <p class="section-intro">The 3/1 and 5/1 Hybrid ARMs are one of your most powerful tools — especially when a fixed-rate refi doesn't pencil because the rate jump is too large. Master this product and you'll convert deals others walk away from.</p>
+
+    <!-- What is a Hybrid ARM -->
+    <div class="arm-card">
+      <div class="arm-card-title">
+        📐 What is a Hybrid ARM — explain it simply
+      </div>
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.7;margin-bottom:14px;">
+        A Hybrid ARM has two phases: a <strong style="color:#E8E2D9;">fixed period</strong> where the rate doesn't move, and an <strong style="color:#E8E2D9;">adjustable period</strong> where it can change annually. The number before the slash is the fixed years. The number after is how often it adjusts.
+      </div>
+      <table class="arm-table">
+        <tr>
+          <th>Product</th>
+          <th>Fixed Period</th>
+          <th>Then Adjusts</th>
+          <th>Best Use Case</th>
+        </tr>
+        <tr>
+          <td><span style="color:#C8973A;font-family:monospace;font-weight:bold;">3/1 ARM</span></td>
+          <td>Fixed for 3 years</td>
+          <td>Annually after year 3</td>
+          <td>Borrower plans to sell or refi within 3 yrs, or needs maximum payment savings now</td>
+        </tr>
+        <tr>
+          <td><span style="color:#4CAF82;font-family:monospace;font-weight:bold;">5/1 ARM</span></td>
+          <td>Fixed for 5 years</td>
+          <td>Annually after year 5</td>
+          <td>More stability, still lower than fixed. Sweet spot for most borrowers. Easiest sell.</td>
+        </tr>
+      </table>
+      <div style="background:#4CAF8211;border:1px solid #4CAF8233;border-radius:8px;padding:12px 14px;font-size:13px;color:#9CA3AF;line-height:1.6;">
+        <strong style="color:#4CAF82;">Key point for LOs:</strong> Most borrowers refinance again within 5–7 years anyway. The 5/1 ARM often covers their entire realistic holding period — and they get a lower rate the whole time.
+      </div>
+    </div>
+
+    <!-- Caps Structure -->
+    <div class="arm-card">
+      <div class="arm-card-title">🔒 How caps protect the borrower — know this cold</div>
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.7;margin-bottom:14px;">
+        Every ARM has a caps structure that limits how much the rate can move. The most common is <strong style="color:#E8E2D9;">2/2/5</strong> or <strong style="color:#E8E2D9;">5/2/5</strong>. You need to understand and be able to explain this without hesitation.
+      </div>
+      <table class="arm-table">
+        <tr><th>Cap</th><th>What It Limits</th><th>Example (2/2/5 on a 6% start rate)</th></tr>
+        <tr>
+          <td><span style="color:#4A90C4;font-family:monospace;">Initial Cap</span></td>
+          <td>Max increase at first adjustment</td>
+          <td>Can only go to 8% at first adjustment</td>
+        </tr>
+        <tr>
+          <td><span style="color:#7B68EE;font-family:monospace;">Periodic Cap</span></td>
+          <td>Max increase each year after that</td>
+          <td>Can only go up 2% per year from there</td>
+        </tr>
+        <tr>
+          <td><span style="color:#E07B54;font-family:monospace;">Lifetime Cap</span></td>
+          <td>Max rate over the life of the loan</td>
+          <td>Can never exceed 11% total (6 + 5)</td>
+        </tr>
+      </table>
+      <div style="background:#1A1F2E;border-radius:8px;padding:14px 16px;font-size:13px;color:#D1C9BC;line-height:1.8;">
+        <strong style="color:#C8973A;">Say it like this:</strong><br>
+        "Even in a worst-case scenario — rates spike and your loan adjusts as high as it possibly can — the most your rate could ever reach is [X]%. That's not a guess, it's written into your loan contract. And you'd have to be in this loan for 5 years past the fixed period for that to even happen."
+      </div>
+    </div>
+
+    <!-- When to Introduce the ARM -->
+    <div class="arm-card">
+      <div class="arm-card-title">⏱️ When to introduce the ARM on a call</div>
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.7;margin-bottom:14px;">
+        Don't lead with the ARM — introduce it as a solution when the fixed rate refi creates an objection. These are your trigger moments:
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#0D1117;border:1px solid #E07B5433;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-family:monospace;color:#E07B54;margin-bottom:4px;">TRIGGER: Payment objection</div>
+          <div style="font-size:13px;color:#D1C9BC;line-height:1.6;">Borrower says: "My payment would go up too much" or "The rate isn't low enough to make this worth it"</div>
+        </div>
+        <div style="background:#0D1117;border:1px solid #E07B5433;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-family:monospace;color:#E07B54;margin-bottom:4px;">TRIGGER: Rate comparison objection</div>
+          <div style="font-size:13px;color:#D1C9BC;line-height:1.6;">Borrower says: "I already have a good rate" or "I'm not going to go higher"</div>
+        </div>
+        <div style="background:#0D1117;border:1px solid #4CAF8233;border-radius:8px;padding:12px 14px;">
+          <div style="font-size:11px;font-family:monospace;color:#4CAF82;margin-bottom:4px;">YOUR PIVOT:</div>
+          <div style="font-size:13px;color:#D1C9BC;line-height:1.6;">"I hear you — and a fixed rate refi may not be the right move. But here's something that might change the picture: we also have a hybrid ARM option that gives you a fixed rate for 5 years at a lower rate than a 30-year fixed. It's not for everyone, but if you're planning to be in the home for 5 years or less, or if you want the lower payment to consolidate debt, it can actually work really well. Can I show you what those numbers look like alongside the fixed?"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARM Objection Handlers -->
+    <div class="arm-card">
+      <div class="arm-card-title">🛡️ ARM objection handlers</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;" id="arm-objections"></div>
+    </div>
+
+    <!-- Side by Side Talking Point -->
+    <div class="arm-card">
+      <div class="arm-card-title">💬 How to present ARM vs Fixed side-by-side</div>
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.7;margin-bottom:14px;">Walk the borrower through this comparison verbally. Fill in the real numbers from your scenario tool.</div>
+      <div style="background:#0D1117;border:1px solid #1E2433;border-radius:8px;padding:14px 16px;font-size:13px;color:#D1C9BC;line-height:1.9;position:relative;">
+"Let me show you two options side by side. On a 30-year fixed, your rate would be [X]% and your payment would be [Y]. On the 5/1 ARM, your rate for the first 5 years is [X-lower]% and your payment is [Y-lower]. That's [difference] a month in savings.
+
+Over 5 years, you'd save [5yr savings] in payments. Even if you refinanced at year 5, you'd still come out ahead compared to paying the higher fixed rate the whole time.
+
+Now if rates go way up and you need to refinance at year 5, that's a risk — but most people in your situation are going to refinance again before year 5 anyway. And the worst-case scenario on this ARM is a rate cap of [lifetime max]%.
+
+Does the lower payment change the picture for you?"
+        <button class="copy-btn" onclick="copyText(this, `Let me show you two options side by side. On a 30-year fixed, your rate would be [X]% and your payment would be [Y]. On the 5/1 ARM, your rate for the first 5 years is [X-lower]% and your payment is [Y-lower]. That's [difference] a month in savings.\n\nOver 5 years, you'd save [5yr savings] in payments. Even if you refinanced at year 5, you'd still come out ahead compared to paying the higher fixed rate the whole time.\n\nNow if rates go way up and you need to refinance at year 5, that's a risk — but most people in your situation are going to refinance again before year 5 anyway. And the worst-case scenario on this ARM is a rate cap of [lifetime max]%.\n\nDoes the lower payment change the picture for you?`)">Copy</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end content -->
 
 <script>
-const talkTrack = [
-  {
-    step: "01", label: "The Opening", tag: "First 10 seconds", color: "#C8973A",
-    content: `"Hi, may I speak with [First Name]? ... Hi [First Name], this is [Your Name] calling from Village Capital — we actually hold your mortgage. I'm not trying to sell you anything today, I'm reaching out because our team ran an equity analysis on your home and there may be a pretty meaningful opportunity here for you. Do you have just 2 minutes?"`,
-    tip: "Don't say 'loan officer' in the opener — it triggers resistance. Lead with the company relationship and the word 'opportunity.'"
-  },
-  {
-    step: "02", label: "The Bridge", tag: "If they say yes", color: "#4A90C4",
-    content: `"Great. So based on what we're seeing, you've built up some solid equity in your home — and depending on your situation, a cash-out refinance might let you access some of that equity at a rate and payment that still makes sense for you. A lot of homeowners are using this to consolidate debt, cover home improvements, or just have a financial cushion. Can I ask — is there anything going on financially where having access to extra cash would be helpful right now?"`,
-    tip: "This is your pivot to discovery. You're not pitching a rate — you're opening a conversation about their life."
-  },
-  {
-    step: "03", label: "Discovery", tag: "Listen more than you talk", color: "#7B68EE",
-    content: `Let them talk. Use the Discovery tab for your question guide. Your job here is to understand: What do they need the money for? What's their current rate? Are they aware of their equity? Do they have other debt? What would make this a yes for them?`,
-    tip: "The LO who talks least in discovery wins most often. Ask, then go quiet."
-  },
-  {
-    step: "04", label: "The Position", tag: "After discovery", color: "#4CAF82",
-    content: `"Based on what you've shared, here's what I'm thinking — [customize to their situation]. What makes our branch unique is we're a full-qualifying branch, which means we can do FHA, VA, and conventional cash-out. A lot of lenders can't offer all of those options, so we can actually shop the best structure for your specific situation rather than just one program. Let me pull some numbers together — do you have your current mortgage statement handy, or do you know roughly what your rate and balance are?"`,
-    tip: "This is where you differentiate Village Capital's full-qualifying advantage. Use it every time."
-  },
-  {
-    step: "05", label: "The Soft Close", tag: "Moving toward application", color: "#E07B54",
-    content: `"I can put together a real scenario for you in about 10 minutes — it'll show you exactly what your payment would look like, what you'd walk away with in cash, and whether it actually makes financial sense. There's no obligation, no credit pull yet. Would it be worth me running those numbers while I have you on the phone?"`,
-    tip: "Don't ask for the application yet. Ask for permission to show them something valuable. The app follows naturally after the numbers make sense."
-  },
-  {
-    step: "06", label: "The Ask", tag: "When they're engaged", color: "#C8973A",
-    content: `"This looks like a really solid opportunity for you. Here's what I'd recommend — let's go ahead and get the application done right now while I have you on the phone. It only takes about 10 minutes, I'll walk you through every step, and it locks in your spot so we can hold the best rate available for your situation. Are you somewhere you can do that right now?"`,
-    tip: "Don't soften this or offer to schedule it for later. These leads are public — another LO could reach this borrower tomorrow. Getting the app today is the whole game. If they hesitate, acknowledge it and ask what's in the way."
-  }
-];
+// ─── DATA ──────────────────────────────────────────────────────────────────
 
-const discoveryQuestions = [
-  {
-    category: "Financial Motivation", icon: "💡",
-    questions: [
-      "Is there anything going on right now where having access to extra cash would help you out?",
-      "Are you carrying any high-interest debt — credit cards, car loans, anything like that?",
-      "Have you had any home improvements you've been wanting to do but holding off on?",
-      "How are you feeling about your overall financial picture right now?"
+const data = {
+  cashout: {
+    label: "VA / FHA / Conv Cash-Out",
+    color: "#C8973A",
+    trackIntro: "Cold call structure for portfolio retention cash-out leads. Full qualifying — FHA, VA, or Conventional. Work each step in order. Switch to IRRRL mode if discovery reveals VA loan + rate/term only.",
+    discIntro: "You're calling cold — you don't know why they want cash out. Start with motivation, not qualification. Use the Product Pivot guide above first.",
+    objIntro: "Cash-out specific objections. Every objection is a question in disguise. Disarm and redirect — never argue.",
+    track: [
+      { step:"01", label:"The Opening", tag:"First 10 seconds", color:"#C8973A",
+        content:`"Hi, may I speak with [First Name]? ... Hi [First Name], this is [Your Name] calling from Village Capital — we actually hold your mortgage. I'm not trying to sell you anything today. Our team ran an equity analysis on your home and there may be a pretty meaningful opportunity here for you. Do you have just 2 minutes?"`,
+        tip:"Don't say 'loan officer' in the opener — it triggers resistance. Lead with the company relationship and the word 'opportunity.'"
+      },
+      { step:"02", label:"The Bridge", tag:"If they say yes", color:"#4A90C4",
+        content:`"Great. So based on what we're seeing, you've built up some solid equity in your home — and depending on your situation, a cash-out refinance might let you access some of that equity at a rate and payment that still makes sense for you. A lot of homeowners use this to consolidate debt, cover home improvements, or just have a financial cushion. Can I ask — is there anything going on financially where having access to extra cash would be helpful right now?"`,
+        tip:"This is your pivot to discovery. You're not pitching a rate — you're opening a conversation about their life."
+      },
+      { step:"03", label:"Product Discovery", tag:"Two questions first", color:"#7B68EE",
+        content:`Ask the two product pivot questions from the Discovery tab:\n\n1. "Do you currently have a VA loan on this property?"\n2. "Are you looking to pull some cash out, or mainly just improve your rate and payment?"\n\nIf VA loan + rate only → Switch to IRRRL mode now.\nIf cash out → Continue here.\nIf fixed refi won't pencil → See ARM Guide.`,
+        tip:"These two questions take 30 seconds and save you from pitching the wrong product. Always ask them early."
+      },
+      { step:"04", label:"The Position", tag:"After discovery", color:"#4CAF82",
+        content:`"Based on what you've shared, here's what I'm thinking — [customize]. What makes our branch unique is we're a full-qualifying branch, which means we can do FHA, VA, and conventional cash-out. Most lenders can only offer one program — we can actually shop the best structure for your specific situation. Let me pull some numbers. Do you have your current mortgage statement handy, or do you know your rate and balance?"`,
+        tip:"Lead with the full-qualifying advantage every time. It's your biggest differentiator at Village Capital."
+      },
+      { step:"05", label:"The Soft Close", tag:"Moving toward application", color:"#E07B54",
+        content:`"I can put together a real scenario in about 10 minutes — it'll show you exactly what your payment would look like, what you'd walk away with in cash, and whether it actually makes financial sense. No obligation, no credit pull yet. Would it be worth running those numbers while I have you on the phone?"`,
+        tip:"Don't ask for the application yet. Ask for permission to show them something valuable. The app follows naturally after the numbers make sense."
+      },
+      { step:"06", label:"The Ask", tag:"Get the app NOW", color:"#C8973A",
+        content:`"This looks like a really solid opportunity for you. Here's what I'd recommend — let's go ahead and get the application done right now while I have you on the phone. It only takes about 10 minutes, I'll walk you through every step, and it locks in your spot so we can hold the best rate available for your situation. Are you somewhere you can do that right now?"`,
+        tip:"Don't soften this or offer to schedule it later. These leads are public — another LO could reach this borrower tomorrow. Getting the app today is the whole game. If they hesitate, ask what's in the way."
+      }
+    ],
+    discovery: [
+      { category:"Financial Motivation", icon:"💡", questions:[
+        "Is there anything going on right now where having access to extra cash would help you out?",
+        "Are you carrying any high-interest debt — credit cards, car loans, anything like that?",
+        "Have you had any home improvements you've been wanting to do but holding off on?",
+        "How are you feeling about your overall financial picture right now?"
+      ]},
+      { category:"Current Loan Awareness", icon:"🏠", questions:[
+        "Do you currently have a VA loan on this property?",
+        "Do you know roughly what your current interest rate is?",
+        "Do you have a sense of what your remaining balance is?",
+        "About how long have you been in the home?"
+      ]},
+      { category:"Equity & Value", icon:"📈", questions:[
+        "Have you looked at what homes in your area have been selling for lately?",
+        "Do you have a sense of what your home might be worth today?",
+        "Have you had an appraisal or Zillow estimate recently?"
+      ]},
+      { category:"Decision Factors", icon:"⚖️", questions:[
+        "What would make this feel like a no-brainer for you?",
+        "Is there anyone else involved in this decision — a spouse or partner?",
+        "If the numbers made sense, is this something you'd want to move on soon or more down the road?",
+        "Have you spoken to anyone else about a refinance recently?"
+      ]},
+      { category:"Credit & Qualification", icon:"📋", questions:[
+        "Do you have a general sense of where your credit score is sitting?",
+        "Are you currently employed, or do you have steady income coming in?",
+        "Any big financial changes in the last couple years — job change, new debt, anything like that?"
+      ]}
+    ],
+    objections: [
+      { objection:"I'm not interested.", tag:"Deflection",
+        response:`"I completely understand — I'd feel the same way if someone called me out of the blue. I'm not trying to sell you anything today. I just want to share what we found on your account, and if it's not a fit, no harm done. Can I just take 60 seconds to show you what we're looking at?"`,
+        note:"Goal: Buy 60 more seconds. Don't defend. Disarm."
+      },
+      { objection:"I don't want to increase my rate.", tag:"Rate Concern",
+        response:`"That's a really fair concern and honestly the most common one I hear. Here's the thing — this isn't always about getting a lower rate. If you have high-interest debt at 20%+ or a project you'd finance at 8–12%, sometimes accessing equity at a mortgage rate actually saves you a lot of money overall. Can I show you a side-by-side comparison so you can see the full picture?"`,
+        note:"Reframe: It's about total financial cost, not just the rate. If the fixed rate still doesn't pencil, introduce the ARM option — see ARM Guide."
+      },
+      { objection:"I just refinanced / I just bought.", tag:"Recency",
+        response:`"That makes sense — and you may be right that the timing isn't perfect. But home values have moved a lot recently, so your equity position might be stronger than you'd expect. It only takes me a few minutes to run the numbers, and if it doesn't make sense, I'll tell you straight up. Would that be worth a quick look?"`,
+        note:"Don't argue timing. Offer a free analysis as low-commitment next step."
+      },
+      { objection:"I need to talk to my spouse / partner.", tag:"Third Party",
+        response:`"Of course — that's exactly the right call on a decision like this. Can we set up a time when you're both available? I'd love to walk through it together so you both have the full picture at the same time and I can answer questions from both of you."`,
+        note:"Never let this end without a scheduled follow-up with both decision-makers on the call."
+      },
+      { objection:"I'm already working with someone / another lender.", tag:"Competition",
+        response:`"Good — it's smart to shop around. One thing worth knowing is that we're a full-qualifying branch, which means we can offer FHA, VA, and conventional options. A lot of lenders can only do one program. Even if you go with someone else, it might be worth a quick comparison just to make sure you're getting the best structure. Would that be helpful?"`,
+        note:"Don't attack the competitor. Position your breadth of options as the differentiator."
+      },
+      { objection:"What's the rate?", tag:"Rate First",
+        response:`"I want to give you an accurate number, not a guess — and the rate depends on a few things like your credit score, loan amount, and what program fits you best. Let me ask you a couple quick questions so I can pull a real number rather than a ballpark. Is that okay?"`,
+        note:"Never quote cold. Always do discovery first. A premature rate quote kills deals."
+      },
+      { objection:"I'll call you back / Can you email me something?", tag:"Stall",
+        response:`"Absolutely, I can do that. I want to make sure what I send is actually relevant to you — can I grab a couple pieces of info so I can personalize the numbers? It'll make the email actually useful rather than just generic. Takes 2 minutes."`,
+        note:"Use the email request as a discovery bridge. Get information before you hang up."
+      },
+      { objection:"I don't want to extend my loan term.", tag:"Term Concern",
+        response:`"That's a smart thing to think about. We can look at shorter term options too, or structure it so the cash-out benefit outweighs the term difference. It really depends on the numbers. Can I run a couple scenarios so you can see what makes the most sense?"`,
+        note:"Offer multiple structures. Show flexibility. The answer is always 'let me show you options.'"
+      }
     ]
   },
-  {
-    category: "Current Loan Awareness", icon: "🏠",
-    questions: [
-      "Do you know roughly what your current interest rate is?",
-      "Do you have a sense of what your remaining balance is?",
-      "About how long have you been in the home?",
-      "Have you done anything to the home since you bought it — additions, renovations?"
-    ]
-  },
-  {
-    category: "Equity & Value", icon: "📈",
-    questions: [
-      "Have you looked at what homes in your area have been selling for lately?",
-      "Do you have a sense of what your home might be worth today?",
-      "Have you had an appraisal or Zillow estimate recently?"
-    ]
-  },
-  {
-    category: "Decision Factors", icon: "⚖️",
-    questions: [
-      "What would make this feel like a no-brainer for you?",
-      "Is there anyone else involved in this decision — a spouse or partner?",
-      "If the numbers made sense, is this something you'd want to move on soon or more down the road?",
-      "Have you spoken to anyone else about a refinance recently?"
-    ]
-  },
-  {
-    category: "Credit & Qualification", icon: "📋",
-    questions: [
-      "Do you have a general sense of where your credit score is sitting?",
-      "Are you currently employed, or do you have steady income coming in?",
-      "Any big financial changes in the last couple years — job change, new debt, anything like that?"
-    ]
-  }
-];
 
-const objections = [
-  {
-    objection: "I'm not interested.",
-    tag: "Deflection",
-    response: `"I completely understand — I'd feel the same way if someone called me out of the blue. I'm not trying to sell you anything today. I just want to share what we found on your account, and if it's not a fit, no harm done. Can I just take 60 seconds to show you what we're looking at?"`,
-    note: "Goal: Buy 60 more seconds. Don't defend. Disarm."
-  },
-  {
-    objection: "I don't want to increase my rate.",
-    tag: "Rate Concern",
-    response: `"That's a really fair concern and honestly the most common one I hear. Here's the thing — this isn't always about getting a lower rate. If you have high-interest debt at 20%+ or a project you'd finance at 8–12%, sometimes accessing equity at a mortgage rate actually saves you a lot of money overall. Can I show you a comparison so you can see the full picture?"`,
-    note: "Reframe: It's about total financial cost, not just the rate."
-  },
-  {
-    objection: "I just refinanced / I just bought.",
-    tag: "Recency",
-    response: `"That makes sense — and you may be right that the timing isn't perfect. But home values have moved a lot recently, so your equity position might be stronger than you'd expect. It only takes me a few minutes to run the numbers, and if it doesn't make sense, I'll tell you straight up. Would that be worth a quick look?"`,
-    note: "Don't argue timing. Offer a free analysis as low-commitment next step."
-  },
-  {
-    objection: "I need to talk to my spouse / partner.",
-    tag: "Third Party",
-    response: `"Of course — that's exactly the right call on a decision like this. Can we set up a time when you're both available? I'd love to walk through it together so you both have the full picture at the same time and I can answer any questions either of you have."`,
-    note: "Never let this end without a scheduled follow-up with both decision-makers."
-  },
-  {
-    objection: "I'm already working with someone / another lender.",
-    tag: "Competition",
-    response: `"Good — it's smart to shop around. One thing worth knowing is that we're a full-qualifying branch, which means we can offer FHA, VA, and conventional options. A lot of lenders can only do one program. Even if you go with someone else, it might be worth a quick comparison just so you know you're getting the best structure. Would that be helpful?"`,
-    note: "Don't attack the competitor. Position your breadth of options as the differentiator."
-  },
-  {
-    objection: "What's the rate?",
-    tag: "Rate First",
-    response: `"I want to give you an accurate number, not a guess — and the rate depends on a few things like your credit score, the loan amount, and what program fits you best. Let me ask you a couple quick questions so I can pull a real number for you rather than a ballpark. Is that okay?"`,
-    note: "Never quote cold. Always do discovery first. A premature rate quote kills deals."
-  },
-  {
-    objection: "I'll call you back / Can you email me something?",
-    tag: "Stall",
-    response: `"Absolutely, I can do that. I want to make sure what I send is actually relevant to you though — can I just grab a couple pieces of info so I can personalize the numbers? It'll make the email actually useful rather than just generic. Takes 2 minutes."`,
-    note: "Use the email as a discovery bridge, not a dead end. Get info before you hang up."
-  },
-  {
-    objection: "I don't want to extend my loan term.",
-    tag: "Term Concern",
-    response: `"That's a smart thing to think about. We can actually look at shorter term options too, or structure it so the cash-out benefit outweighs the term difference. It really depends on the numbers. Can I run a couple scenarios so you can see what makes the most sense for your situation?"`,
-    note: "Offer multiple structures. Show flexibility. The answer is always 'let me show you options.'"
+  irrrl: {
+    label: "VA IRRRL (Streamline)",
+    color: "#4A90C4",
+    trackIntro: "VA IRRRL (Interest Rate Reduction Refinance Loan) — streamline only, rate and term, no cash out. Fastest, simplest close at Village Capital. Must have existing VA loan. Lead with speed and simplicity.",
+    discIntro: "IRRRL discovery is lighter than cash-out — you're mainly confirming eligibility and benefit. Net tangible benefit (lower rate/payment) is required. If they want cash, switch to Cash-Out mode.",
+    objIntro: "IRRRL objections are usually about trust and timing, not product complexity. Keep it simple — the product sells itself when you explain it right.",
+    track: [
+      { step:"01", label:"The Opening", tag:"First 10 seconds", color:"#4A90C4",
+        content:`"Hi, may I speak with [First Name]? ... Hi [First Name], this is [Your Name] calling from Village Capital — we hold your VA mortgage. The reason I'm reaching out today is our team identified that you may qualify for the VA's streamline refinance program, which could lower your rate and payment with very little hassle. It takes less than a minute to find out if it makes sense for you — do you have just 2 minutes?"`,
+        tip:"Lead with 'VA streamline' — veterans often know what this is and it immediately builds credibility. Emphasize low effort and low friction."
+      },
+      { step:"02", label:"The IRRRL Pitch", tag:"If they say yes", color:"#4A90C4",
+        content:`"Great. So here's how the VA streamline works — because you already have a VA loan, you're eligible for what's called an IRRRL, which stands for Interest Rate Reduction Refinance Loan. The VA created it specifically to help veterans lower their rate and payment quickly. What makes it different is there's typically no appraisal required, minimal documentation, and it closes faster than a traditional refinance. The main question is just whether the rate difference saves you enough money to make it worth doing. Based on what we're seeing, it looks like it does — can I ask what rate you're currently at?"`,
+        tip:"Explain IRRRL clearly — many borrowers don't know what it means. Speed, simplicity, and VA-backing are the three selling points. Don't overcomplicate it."
+      },
+      { step:"03", label:"Eligibility Check", tag:"Confirm before you go further", color:"#7B68EE",
+        content:`Confirm IRRRL eligibility before building out a scenario:\n\n✓ Currently has a VA loan on this property\n✓ Occupies or has occupied the home (primary residence)\n✓ New rate will be lower than current rate\n✓ New payment will be lower (or shorter term with clear benefit)\n\nIf they want cash out → Switch to VA Cash-Out mode.\nIf no VA loan → Switch to Cash-Out/FHA/Conv mode.`,
+        tip:"IRRRL is a streamline — you don't need income docs or an appraisal in most cases. That's the pitch. But you must confirm the basic eligibility before promising a smooth process."
+      },
+      { step:"04", label:"The Position", tag:"After eligibility confirmed", color:"#4CAF82",
+        content:`"Based on your current rate of [X]%, we're looking at [new rate]% on the streamline. That's a payment drop of about [amount] per month. Here's what makes this easy — because it's a VA streamline, we don't need a full appraisal, we don't need to fully re-verify your income, and the process is significantly faster and simpler than what you went through when you originally closed. Most people are surprised at how straightforward it is."`,
+        tip:"Paint the picture of ease. The IRRRL is genuinely simple compared to a full refi — that's your advantage. Use the word 'streamline' often."
+      },
+      { step:"05", label:"The Soft Close", tag:"Moving toward application", color:"#E07B54",
+        content:`"The numbers look solid. The next step is just a quick application — it's shorter than a standard refi application because of how the streamline works. I can walk you through it right now in about 10 minutes. There's no cost to apply and no obligation. Want to go ahead and get that done while I have you on the phone?"`,
+        tip:"IRRRL applications are simpler and faster — use that as a reason to take the app now. Reduce friction at every step."
+      },
+      { step:"06", label:"The Ask", tag:"Get the app NOW", color:"#4A90C4",
+        content:`"Let's get the application done right now — it's quick because of the streamline process, and it locks you in so we can hold this rate for you. Most of my clients are surprised how fast it goes. Are you in a place where we can do that right now?"`,
+        tip:"Same urgency as cash-out — these leads are public. First app wins. Don't schedule it for later if you can take it now."
+      }
+    ],
+    discovery: [
+      { category:"IRRRL Eligibility", icon:"✅", questions:[
+        "Is this a VA loan currently on the property?",
+        "Is this your primary residence, or have you lived there at some point?",
+        "Do you know roughly what your current interest rate is?",
+        "Have you had any VA loans refinanced in the last 210 days? (waiting period applies)"
+      ]},
+      { category:"Rate & Payment", icon:"📉", questions:[
+        "What's your current monthly principal and interest payment?",
+        "Are you happy with your current rate, or have you been thinking about refinancing?",
+        "Do you know roughly what your remaining balance is?",
+        "How long have you been in the current loan?"
+      ]},
+      { category:"Motivation Check", icon:"💡", questions:[
+        "What would be most helpful for you right now — a lower payment, or are you thinking about anything else with the home?",
+        "Are you planning to stay in the home for the foreseeable future?",
+        "Is there anything about your current loan that's been frustrating or that you'd like to change?"
+      ]},
+      { category:"Cash-Out Pivot Check", icon:"🔀", questions:[
+        "Any chance you've been thinking about pulling some cash out of the home at all?",
+        "Do you have any high-interest debt you've been wanting to consolidate?",
+        "(If yes to either → Switch to VA Cash-Out mode)"
+      ]},
+      { category:"Decision Factors", icon:"⚖️", questions:[
+        "Is there anyone else involved in this decision — a spouse or partner?",
+        "If the numbers looked solid, is this something you'd want to move on quickly?",
+        "Have you looked into refinancing anywhere else recently?"
+      ]}
+    ],
+    objections: [
+      { objection:"I'm not interested in refinancing right now.", tag:"Deflection",
+        response:`"I completely understand — the last thing I want to do is push you into something that doesn't make sense. What I can tell you is that the VA streamline takes about 10 minutes to find out if it works for you, and if it doesn't save you meaningful money, I'll tell you straight up. Would it be worth a quick look just to know your options?"`,
+        note:"Lead with honesty — you'll tell them if it doesn't make sense. That builds trust fast."
+      },
+      { objection:"I already have a good rate.", tag:"Rate Concern",
+        response:`"That's great to hear. Can I ask what rate you're at? Sometimes the difference is smaller than expected, and the streamline may not make sense — but other times people are surprised. It only takes a second to check, and if your rate is already competitive, I'll let you know and we'll leave it at that."`,
+        note:"Ask the rate. Let the math do the talking. If it doesn't pencil, say so — that honesty earns referrals."
+      },
+      { objection:"I don't want to restart my loan term.", tag:"Term Concern",
+        response:`"That's a really common concern. A couple of things — first, we don't have to do a 30-year term. We can look at a shorter term that keeps your payoff timeline similar. Second, the payment savings each month might outweigh the term extension depending on how you look at the math. Can I show you both scenarios?"`,
+        note:"Offer the shorter-term option. Many borrowers don't know they can do a 20 or 25-year IRRRL."
+      },
+      { objection:"I've heard it extends my loan and costs more.", tag:"Skepticism",
+        response:`"That's fair to be cautious about, and it's true that some refinances can do that. The VA streamline is actually designed to avoid that — it has a net tangible benefit requirement built into it, meaning we legally have to show it's actually helping you before it can proceed. If it's not saving you money, it won't qualify. That's a VA rule, not just our policy."`,
+        note:"The NTB requirement is a trust builder. Use it. It proves the VA is protecting them."
+      },
+      { objection:"I don't want to pay closing costs again.", tag:"Cost Concern",
+        response:`"That's a legitimate thing to think about. A few options — we can roll the closing costs into the loan so there's no out-of-pocket, or we can look at a slightly higher rate with a lender credit that covers the costs. Either way, we can structure it so you start saving from day one. Want me to show you both ways?"`,
+        note:"Offer the no-cost structure. IRRRL closing costs are typically lower than a full refi — that's also worth mentioning."
+      },
+      { objection:"I need to talk to my spouse / partner.", tag:"Third Party",
+        response:`"Of course — absolutely the right move. Can we find a time when you're both available so I can walk through it together? I can answer both of your questions at once and we can decide together if it makes sense."`,
+        note:"Schedule the follow-up with both on the call before you hang up."
+      },
+      { objection:"What's the rate?", tag:"Rate First",
+        response:`"I want to give you an accurate number — what I can tell you is our rates on the VA streamline are very competitive because of the lower risk profile of the program. To give you an exact number I just need to confirm a couple quick things about your current loan. Do you have a minute?"`,
+        note:"For IRRRL you need their current rate to calculate the benefit. The rate question is actually your discovery opener here."
+      }
+    ]
   }
-];
+};
 
 const followUp = [
-  {
-    touch: 1, timing: "First Contact — Call #1", channel: "📞 Call #1", counted: true,
-    action: "Dial immediately when lead is assigned. If no answer, leave a voicemail. Then immediately execute the blitz sequence below before moving to the next lead.",
-    script: `"Hi [Name], this is [Your Name] from Village Capital — we actually hold your mortgage. I'm calling because our team ran an equity review on your account and there's a pretty meaningful opportunity I want to make sure you know about. Give me a call back at [number]. Talk soon."`
+  { touch:1, timing:"First Contact — Call #1", channel:"📞 Call #1", counted:true,
+    action:"Dial immediately when lead is assigned. If no answer, leave a voicemail. Then immediately execute the blitz below before moving to the next lead.",
+    script:`"Hi [Name], this is [Your Name] from Village Capital — we actually hold your mortgage. I'm calling because our team ran a review on your account and there's a meaningful opportunity I want to make sure you know about. Give me a call back at [number]. Talk soon."`
   },
-  {
-    touch: null, timing: "Within 2 Minutes — Text", channel: "💬 Text (not counted)", counted: false,
-    action: "Send immediately after voicemail. Do not wait for a callback first.",
-    script: `"Hi [Name], this is [Your Name] from Village Capital. Just left you a voicemail about an equity opportunity on your home loan. Happy to answer any questions here if easier. [Your Name] | [Number]"`
+  { touch:null, timing:"Within 2 Minutes — Text", channel:"💬 Text (not counted)", counted:false,
+    action:"Send immediately after voicemail. Do not wait for a callback first.",
+    script:`"Hi [Name], this is [Your Name] from Village Capital. Just left you a voicemail about an opportunity on your home loan. Happy to answer questions via text if easier. [Your Name] | [Number]"`
   },
-  {
-    touch: null, timing: "Within 3 Minutes — Email", channel: "📧 Email (not counted)", counted: false,
-    action: "Send while still on the same lead. Subject line should feel personal, not automated.",
-    script: `Subject: Quick question about your Village Capital loan\n\nHi [Name] — just tried to reach you. Based on current home values in your area, you may have more equity than you realize and I wanted to make sure you had a chance to hear about it.\n\nNo pressure — happy to chat whenever works for you.\n\n[Your Name] | [Phone] | Village Capital`
+  { touch:null, timing:"Within 3 Minutes — Email", channel:"📧 Email (not counted)", counted:false,
+    action:"Send while still on the same lead. Keep it short and personal.",
+    script:`Subject: Quick question about your Village Capital loan\n\nHi [Name] — just tried to reach you. Based on what our team found on your account there may be a solid opportunity worth a quick look.\n\nNo pressure — happy to chat whenever works.\n\n[Your Name] | [Phone] | Village Capital`
   },
-  {
-    touch: 2, timing: "Within 5 Minutes — Call #2", channel: "📞 Call #2", counted: true,
-    action: "Call again. No voicemail this time — they just got one. If they answer, lead naturally. If not, move on and come back later.",
-    script: null
+  { touch:2, timing:"Within 5 Minutes — Call #2", channel:"📞 Call #2", counted:true,
+    action:"Call again immediately — the double-call blitz. No voicemail this time. If no answer, move to the next lead and come back.",
+    script:null
   },
-  {
-    touch: 3, timing: "Same Day — Later", channel: "📞 Call #3", counted: true,
-    action: "Try a different time of day. Morning blitz leads should get an afternoon callback attempt. No voicemail.",
-    script: null
+  { touch:3, timing:"Same Day — Later", channel:"📞 Call #3", counted:true,
+    action:"Try a different time of day. Morning blitz leads get an afternoon follow. No voicemail.",
+    script:null
   },
-  {
-    touch: 4, timing: "Day 2", channel: "📞 Call #4", counted: true,
-    action: "Fourth call attempt. If they answer, open fresh — don't lead with 'I've been trying to reach you.' Try a different angle.",
-    script: `"Hi [Name], this is [Your Name] from Village Capital — we hold your mortgage. I wanted to reach out personally about something our team flagged on your account. Do you have just 2 minutes?"`
+  { touch:4, timing:"Day 2", channel:"📞 Call #4", counted:true,
+    action:"Fourth attempt. If they answer, open fresh — don't lead with 'I've been trying to reach you.'",
+    script:`"Hi [Name], this is [Your Name] from Village Capital — we hold your mortgage. I wanted to reach out about something our team flagged on your account. Do you have just 2 minutes?"`
   },
-  {
-    touch: 5, timing: "Day 3", channel: "📞 Call #5", counted: true,
-    action: "Fifth attempt. Company data shows contact rates climb significantly at attempts 6–7. Don't stop here.",
-    script: null
+  { touch:5, timing:"Day 3", channel:"📞 Call #5", counted:true,
+    action:"Fifth attempt. Company data shows contact rates climb significantly at attempts 6–7. Don't stop here.",
+    script:null
   },
-  {
-    touch: 6, timing: "Day 4–5", channel: "📞 Call #6", counted: true,
-    action: "Peak contact window per company data. This is your highest-probability call. Leave a voicemail if no answer.",
-    script: `"Hi [Name], [Your Name] from Village Capital again. I've been trying to connect — I genuinely don't want you to miss this. We've identified a pretty solid equity opportunity on your home and I want to make sure you have the information before anything changes. Call me at [number] when you have 5 minutes."`
+  { touch:6, timing:"Day 4–5", channel:"📞 Call #6", counted:true,
+    action:"Peak contact window per company data. This is your highest-probability call. Leave a voicemail if no answer.",
+    script:`"Hi [Name], [Your Name] from Village Capital again. I've been trying to connect — I genuinely don't want you to miss this. We've identified a real opportunity on your home and I want to make sure you have the information. Call me at [number] when you have 5 minutes."`
   },
-  {
-    touch: 7, timing: "Day 6–7", channel: "📞 Call #7", counted: true,
-    action: "Final high-frequency attempt. This is attempt 7 — statistically your best range. Give it everything.",
-    script: `"Hi [Name], this is [Your Name] from Village Capital. I know I've reached out a few times — I'll keep this short. We hold your mortgage and our team flagged a real opportunity based on your equity position. If now isn't the right time, just let me know and I'll leave you alone. Otherwise I'd love to connect — [number]. Thanks [Name]."`
+  { touch:7, timing:"Day 6–7", channel:"📞 Call #7", counted:true,
+    action:"Final high-frequency attempt. Statistically your best range — attempt 7. Give it everything.",
+    script:`"Hi [Name], this is [Your Name] from Village Capital. I know I've reached out a few times — I'll keep this short. We hold your mortgage and our team flagged a real opportunity based on your account. If the timing isn't right, just let me know and I'll leave you alone. Otherwise I'd love to connect — [number]. Thanks [Name]."`
   }
 ];
 
-// Render Talk Track
-const trackContainer = document.getElementById('track-cards');
-talkTrack.forEach((step, i) => {
-  trackContainer.innerHTML += `
-    <div class="card" id="track-${i}">
-      <div class="card-header" onclick="toggleCard('track-${i}')">
-        <div class="step-badge" style="background:${step.color}22;border:1px solid ${step.color}55;color:${step.color};">${step.step}</div>
-        <div style="flex:1">
-          <div class="card-label">${step.label}</div>
-          <div class="card-tag">${step.tag}</div>
-        </div>
-        <div class="card-chevron">▼</div>
-      </div>
-      <div class="card-body">
-        <div class="script-box">${step.content}<button class="copy-btn" onclick="copyText(this, \`${escapeForAttr(step.content)}\`)">Copy</button></div>
-        <div class="tip-box" style="background:${step.color}11;border:1px solid ${step.color}33;">
-          <span>💡</span><span>${step.tip}</span>
-        </div>
-      </div>
-    </div>`;
-});
+const armObjections = [
+  { obj:"I don't want an adjustable rate — I need stability.", note:"Most common. Acknowledge the instinct, then reframe with the caps and the fixed period.",
+    resp:`"That's the smartest instinct to have, and I'd say the same thing if I didn't know how these work. Here's what's different about a hybrid ARM — the rate is completely fixed for the first 5 years. It doesn't move at all. After that, it can adjust, but only within hard caps written into your loan contract. The most it can ever go up at once is [initial cap]%, and the most it can ever reach in total is [lifetime max]%. That's not a variable — it's a contract. Can I walk you through what those numbers actually look like for your situation?"`
+  },
+  { obj:"What happens when the rate adjusts? I'm worried about my payment going up.", note:"Specific and solvable. Show them the worst case — it's usually less scary than they imagine.",
+    resp:`"Great question and you should be asking it. At year 5, the rate can adjust up by a maximum of [initial cap]% at the first adjustment. After that it can only move [periodic cap]% per year. So in an absolute worst case scenario, your payment at year 6 would be [calculated worst case]. The more realistic scenario is that rates are similar or you've refinanced again by then. Most homeowners refinance every 5–7 years anyway. Does knowing the worst case change how you're thinking about it?"`
+  },
+  { obj:"I've heard ARMs are risky — that's what caused the 2008 crisis.", note:"Fair historical concern. Address it directly and explain what's different now.",
+    resp:`"You're right to reference that — and it's a fair thing to bring up. The ARMs in 2008 were a completely different product. They were often negative amortization, no-doc, teaser rate products that hid real costs. Today's hybrid ARMs are fully documented, fully underwritten, with hard statutory caps and a fixed period. They're a regulated product. The issue in 2008 wasn't adjustable rates — it was fraudulent underwriting. This is nothing like that. But I understand the hesitation, and if it still doesn't feel right after I walk you through it, that's a completely valid answer."`
+  },
+  { obj:"I just want a fixed rate.", note:"Respect it. Don't oversell. But make sure they've seen the numbers.",
+    resp:`"I completely respect that. Can I just show you both options side by side before you decide? Sometimes when people see the actual payment difference and the savings over 5 years, it changes the picture — and sometimes it doesn't and the fixed rate is the right call. Either way you'll make the decision with the full information. Is that fair?"`
+  },
+  { obj:"What if rates go way up before I can refinance?", note:"Legitimate risk question. Answer it honestly with the caps and a realistic rate outlook.",
+    resp:`"That's the right risk to think about. Here's the protection built in — the lifetime cap means the rate can never exceed [max]% on this loan, no matter what happens in the market. Even in a rising rate environment, you know your worst case going in. And if rates do rise significantly, it probably means your home value has also risen, which gives you refinance options. It's not zero risk — but it's known, bounded risk. Is that a risk profile you could work with?"`
+  }
+];
 
-// Render Discovery
-const discContainer = document.getElementById('disc-cards');
-discoveryQuestions.forEach((cat, i) => {
-  let qs = cat.questions.map((q, j) => `
-    <div class="q-row">
-      <div class="q-num">${j+1}</div>
-      <div class="q-text">"${q}"</div>
-      <button class="copy-btn" style="position:relative;top:auto;right:auto;flex-shrink:0;" onclick="copyText(this, \`"${escapeForAttr(q)}"\`)">Copy</button>
-    </div>`).join('');
-  discContainer.innerHTML += `
-    <div class="card" id="disc-${i}">
-      <div class="card-header" onclick="toggleCard('disc-${i}')">
-        <div class="disc-icon">${cat.icon}</div>
-        <div style="flex:1;font-size:15px;color:#E8E2D9;">${cat.category}</div>
-        <div class="card-chevron">▼</div>
-      </div>
-      <div class="card-body">${qs}</div>
-    </div>`;
-});
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let currentProduct = 'cashout';
+let openCards = {};
 
-// Render Objections
-const objContainer = document.getElementById('obj-cards');
-objections.forEach((obj, i) => {
-  objContainer.innerHTML += `
-    <div class="card" id="obj-${i}">
-      <div class="card-header" onclick="toggleCard('obj-${i}')">
-        <div style="flex:1;font-size:14px;color:#E8E2D9;">"${obj.objection}"</div>
-        <div class="obj-tag">${obj.tag}</div>
-        <div class="card-chevron" style="margin-left:8px;">▼</div>
-      </div>
-      <div class="card-body">
-        <div class="script-box">${obj.response}<button class="copy-btn" onclick="copyText(this, \`${escapeForAttr(obj.response)}\`)">Copy</button></div>
-        <div class="tip-box" style="background:#C8973A11;border:1px solid #C8973A33;">
-          <span>📌</span><span>${obj.note}</span>
-        </div>
-      </div>
-    </div>`;
-});
-
-// Render Follow-Up
-const fuContainer = document.getElementById('followup-cards');
-followUp.forEach((touch, i) => {
-  let scriptHtml = touch.script ? `
-    <div class="script-box" style="white-space:pre-wrap;">${touch.script}<button class="copy-btn" onclick="copyText(this, \`${escapeForAttr(touch.script)}\`)">Copy</button></div>` : '';
-  const badgeContent = touch.touch ? `#${touch.touch}` : '—';
-  const badgeStyle = touch.counted
-    ? `background:#4CAF8222;border:1px solid #4CAF8244;color:#4CAF82;`
-    : `background:#1E243388;border:1px solid #2A304088;color:#4B5563;`;
-  const countedLabel = touch.counted
-    ? `<span style="font-size:10px;background:#4CAF8222;border:1px solid #4CAF8244;color:#4CAF82;border-radius:20px;padding:2px 8px;font-family:monospace;margin-left:8px;">✓ Counts</span>`
-    : `<span style="font-size:10px;background:#1E243388;border:1px solid #2A304088;color:#4B5563;border-radius:20px;padding:2px 8px;font-family:monospace;margin-left:8px;">support only</span>`;
-  fuContainer.innerHTML += `
-    <div class="card" id="fu-${i}">
-      <div class="card-header" onclick="toggleCard('fu-${i}')">
-        <div class="touch-badge-row" style="${badgeStyle}">${badgeContent}</div>
-        <div style="flex:1">
-          <div class="card-label" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">${touch.timing}${countedLabel}</div>
-          <div class="card-tag">${touch.channel}</div>
-        </div>
-        <div class="card-chevron">▼</div>
-      </div>
-      <div class="card-body">
-        <div class="action-box"><strong style="color:#4CAF82;">Action: </strong>${touch.action}</div>
-        ${scriptHtml}
-      </div>
-    </div>`;
-});
+// ─── RENDER ────────────────────────────────────────────────────────────────
 
 function escapeForAttr(str) {
-  return str.replace(/`/g, '\\`').replace(/\$/g, '\\$');
-}
-
-function showSection(idx, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('section-' + idx).classList.add('active');
-  btn.classList.add('active');
-}
-
-function toggleCard(id) {
-  const card = document.getElementById(id);
-  const isOpen = card.classList.contains('open');
-  card.classList.toggle('open', !isOpen);
-  card.querySelector('.card-chevron').textContent = isOpen ? '▼' : '▲';
+  return str.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
 }
 
 function copyText(btn, text) {
@@ -588,6 +625,160 @@ function copyText(btn, text) {
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
+
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  card.querySelector('.card-chevron').textContent = isOpen ? '▼' : '▲';
+}
+
+function showSection(idx, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + idx).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setProduct(prod) {
+  currentProduct = prod;
+  document.getElementById('btn-cashout').className = 'prod-btn' + (prod === 'cashout' ? ' active-cashout' : '');
+  document.getElementById('btn-irrrl').className = 'prod-btn' + (prod === 'irrrl' ? ' active-irrrl' : '');
+  renderAll();
+}
+
+function modeBar(id, prod) {
+  const d = data[prod];
+  const bar = document.getElementById(id);
+  bar.className = 'mode-bar visible';
+  bar.style.cssText = `background:${d.color}11;border:1px solid ${d.color}33;border-radius:8px;padding:8px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;`;
+  bar.innerHTML = `<span style="font-size:14px;">${prod === 'cashout' ? '💰' : '⚡'}</span><span style="font-size:12px;font-family:monospace;color:${d.color};">Mode: ${d.label}</span>`;
+}
+
+function renderTrack() {
+  const prod = data[currentProduct];
+  document.getElementById('track-intro').textContent = prod.trackIntro;
+  modeBar('mode-bar-0', currentProduct);
+  const c = document.getElementById('track-cards');
+  c.innerHTML = '';
+  prod.track.forEach((step, i) => {
+    c.innerHTML += `
+      <div class="card" id="track-${i}">
+        <div class="card-header" onclick="toggleCard('track-${i}')">
+          <div class="step-badge" style="background:${step.color}22;border:1px solid ${step.color}55;color:${step.color};">${step.step}</div>
+          <div style="flex:1"><div class="card-label">${step.label}</div><div class="card-tag">${step.tag}</div></div>
+          <div class="card-chevron">▼</div>
+        </div>
+        <div class="card-body">
+          <div class="script-box">${step.content}<button class="copy-btn" onclick="copyText(this,\`${escapeForAttr(step.content)}\`)">Copy</button></div>
+          <div class="tip-box" style="background:${step.color}11;border:1px solid ${step.color}33;"><span>💡</span><span>${step.tip}</span></div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderDisc() {
+  const prod = data[currentProduct];
+  document.getElementById('disc-intro').textContent = prod.discIntro;
+  modeBar('mode-bar-1', currentProduct);
+  const c = document.getElementById('disc-cards');
+  c.innerHTML = '';
+  prod.discovery.forEach((cat, i) => {
+    let qs = cat.questions.map((q, j) => `
+      <div class="q-row">
+        <div class="q-num">${j+1}</div>
+        <div class="q-text">"${q}"</div>
+        <button class="copy-btn" style="position:relative;top:auto;right:auto;flex-shrink:0;" onclick="copyText(this,\`\\"${escapeForAttr(q)}\\"\`)">Copy</button>
+      </div>`).join('');
+    c.innerHTML += `
+      <div class="card" id="disc-${i}">
+        <div class="card-header" onclick="toggleCard('disc-${i}')">
+          <div class="disc-icon">${cat.icon}</div>
+          <div style="flex:1;font-size:14px;color:#E8E2D9;">${cat.category}</div>
+          <div class="card-chevron">▼</div>
+        </div>
+        <div class="card-body">${qs}</div>
+      </div>`;
+  });
+}
+
+function renderObj() {
+  const prod = data[currentProduct];
+  document.getElementById('obj-intro').textContent = prod.objIntro;
+  modeBar('mode-bar-2', currentProduct);
+  const c = document.getElementById('obj-cards');
+  c.innerHTML = '';
+  prod.objections.forEach((obj, i) => {
+    c.innerHTML += `
+      <div class="card" id="obj-${i}">
+        <div class="card-header" onclick="toggleCard('obj-${i}')">
+          <div style="flex:1;font-size:13px;color:#E8E2D9;">"${obj.objection}"</div>
+          <div class="obj-tag">${obj.tag}</div>
+          <div class="card-chevron" style="margin-left:8px;">▼</div>
+        </div>
+        <div class="card-body">
+          <div class="script-box">${obj.response}<button class="copy-btn" onclick="copyText(this,\`${escapeForAttr(obj.response)}\`)">Copy</button></div>
+          <div class="tip-box" style="background:#C8973A11;border:1px solid #C8973A33;"><span>📌</span><span>${obj.note}</span></div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderFollowUp() {
+  const c = document.getElementById('followup-cards');
+  c.innerHTML = '';
+  followUp.forEach((touch, i) => {
+    let scriptHtml = touch.script ? `<div class="script-box" style="white-space:pre-wrap;">${touch.script}<button class="copy-btn" onclick="copyText(this,\`${escapeForAttr(touch.script)}\`)">Copy</button></div>` : '';
+    const badgeStyle = touch.counted
+      ? `background:#4CAF8222;border:1px solid #4CAF8244;color:#4CAF82;`
+      : `background:#1E243388;border:1px solid #2A304088;color:#4B5563;`;
+    const badgeNum = touch.touch ? `#${touch.touch}` : '—';
+    const pill = touch.counted
+      ? `<span style="font-size:10px;background:#4CAF8222;border:1px solid #4CAF8244;color:#4CAF82;border-radius:20px;padding:2px 8px;font-family:monospace;margin-left:6px;">✓ Counts</span>`
+      : `<span style="font-size:10px;background:#1E243388;border:1px solid #2A304088;color:#4B5563;border-radius:20px;padding:2px 8px;font-family:monospace;margin-left:6px;">support</span>`;
+    c.innerHTML += `
+      <div class="card" id="fu-${i}">
+        <div class="card-header" onclick="toggleCard('fu-${i}')">
+          <div class="touch-badge-row" style="${badgeStyle}">${badgeNum}</div>
+          <div style="flex:1">
+            <div class="card-label" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">${touch.timing}${pill}</div>
+            <div class="card-tag">${touch.channel}</div>
+          </div>
+          <div class="card-chevron">▼</div>
+        </div>
+        <div class="card-body">
+          <div class="action-box"><strong style="color:#4CAF82;">Action: </strong>${touch.action}</div>
+          ${scriptHtml}
+        </div>
+      </div>`;
+  });
+}
+
+function renderArmObjections() {
+  const c = document.getElementById('arm-objections');
+  c.innerHTML = '';
+  armObjections.forEach((obj, i) => {
+    c.innerHTML += `
+      <div>
+        <div style="background:#0D1117;border:1px solid #7B68EE33;border-radius:8px;padding:12px 14px;margin-bottom:6px;">
+          <div style="font-size:11px;font-family:monospace;color:#7B68EE;margin-bottom:5px;">OBJECTION</div>
+          <div style="font-size:13px;color:#E8E2D9;">"${obj.obj}"</div>
+        </div>
+        <div class="script-box" style="margin-bottom:6px;">${obj.resp}<button class="copy-btn" onclick="copyText(this,\`${escapeForAttr(obj.resp)}\`)">Copy</button></div>
+        <div class="tip-box" style="background:#C8973A11;border:1px solid #C8973A33;margin-bottom:4px;"><span>📌</span><span>${obj.note}</span></div>
+      </div>`;
+  });
+}
+
+function renderAll() {
+  renderTrack();
+  renderDisc();
+  renderObj();
+  renderFollowUp();
+  renderArmObjections();
+}
+
+renderAll();
 </script>
 </body>
 </html>
