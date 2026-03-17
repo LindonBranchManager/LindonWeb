@@ -69,6 +69,19 @@
   .toast.error{border-left:3px solid var(--error);}
   .toast.success{border-left:3px solid var(--success);}
 </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyPlaceholderKeyReplaceMe",
+      authDomain: "lindonprocessingpipeline.firebaseapp.com",
+      projectId: "LindonProcessingPipeline"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
 
@@ -123,10 +136,8 @@
       <div class="section-body cols-3">
         <div class="field-group">
           <label for="loanOfficer">Loan Officer <span class="req">*</span></label>
-          <select id="loanOfficer" required>
+          <select id="loanOfficer" class="lo-select" required>
             <option value="">— Select LO —</option>
-            <option>KC</option><option>Benji</option><option>Drake</option>
-            <option>Robert</option><option>Cam</option><option>Aaron</option><option>SE Morgan</option>
           </select>
         </div>
         <div class="field-group">
@@ -423,6 +434,44 @@
 <div class="toast" id="toast"><span id="toastIcon">⚠️</span><span id="toastMsg">Message</span></div>
 
 <script>
+  
+  // ── Dynamic LO dropdown from Firestore ──────────────────
+  let loEmailMap = {};
+
+  async function loadLODropdowns() {
+    try {
+      const snapshot = await db.collection('payroll_staff').orderBy('name').get();
+      const selects = document.querySelectorAll('.lo-select');
+      selects.forEach(sel => {
+        // Keep the placeholder option, remove any hardcoded ones
+        sel.innerHTML = '<option value="">— Loading LOs… —</option>';
+      });
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const name  = data.name  || doc.id;
+        const email = data.email || '';
+        loEmailMap[name] = email;
+        selects.forEach(sel => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          sel.appendChild(opt);
+        });
+      });
+      selects.forEach(sel => {
+        sel.querySelector('option').textContent = '— Select LO —';
+      });
+    } catch(err) {
+      console.error('Firestore LO load failed:', err);
+      document.querySelectorAll('.lo-select').forEach(sel => {
+        sel.innerHTML = '<option value="">— Error loading LOs —</option>';
+      });
+    }
+  }
+
+  loadLODropdowns();
+  // ────────────────────────────────────────────────────────
+
   const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/jcjjkvionow5lv2brlpswoae3qhbd3k3'; // Make.com → Webhooks → Custom Webhook URL
 
   // Set today's date
