@@ -472,6 +472,11 @@ const DEFAULTS = {
     {doc:"Signed and dated loan application (1003)", why:"The 1003 is the foundation of your loan file — it captures your income, assets, debts, and the property details."},
   ]},
 
+  'identity-vcivci':{ label:'🪪 Identity & General (VCI to VCI)', group:'Universal', items:[
+    {doc:"Government-issued photo ID (driver's license or passport)", why:"We re-verify a current, unexpired ID on every new loan — even for existing VCI borrowers. IDs expire and must be current."},
+    {doc:"Signed and dated loan application (1003)", why:"A new 1003 is required for every loan transaction regardless of prior history. It captures current income, assets, debts, and the new loan details."},
+  ]},
+
   credit:{ label:'💳 Credit & Liabilities', group:'Universal', items:[
     {doc:"12 months canceled checks or bank statements showing on-time mortgage/rent payments", why:"Demonstrates a strong payment history on housing — one of the strongest compensating factors in underwriting."},
     {doc:"Written explanation for any credit inquiries within the past 120 days", why:"Underwriters need to know whether new accounts were opened (which could affect your DTI). A brief letter is all that's needed."},
@@ -487,7 +492,7 @@ const DEFAULTS = {
   'inc-w2':{ label:'📄 W-2 / Salaried Income', group:'Income Types', items:[
     {doc:"Most recent 30 days pay stubs (showing year-to-date earnings)", why:"Confirms current employment and income. YTD earnings allow us to verify against the prior year W-2."},
     {doc:"W-2s for the past 2 years (all employers)", why:"Two years of W-2 history establishes income stability. If you changed jobs, include W-2s from all employers in that period."},
-    {doc:"Most recent federal tax returns — 2 years (1040s, all schedules)", why:"Used to verify income, identify unreimbursed employee expenses, and catch any side income or deductions that affect qualifying income."},
+    {doc:"2 years federal tax returns (1040s, all schedules) — if required by AUS", why:"FHA and Conventional loans typically require tax returns. VA AUS generally waives this for straight W-2 borrowers unless there are unreimbursed employee expenses or AUS specifically conditions for them. Your LO will confirm."},
     {doc:"Written VOE (Verification of Employment) — if required by AUS", why:"Sometimes AUS requires a third-party employer verification in addition to pay stubs. Your LO will let you know if this is needed."},
   ]},
 
@@ -558,10 +563,8 @@ const DEFAULTS = {
 
   streamline:{ label:'⚡ IRRRL — Standard', group:'Transaction Type', items:[
     {doc:"Copy of Previous Note", why:"Required to verify the original loan terms, rate, and VA case number being refinanced."},
-    {doc:"Current Mortgage Statement", why:"Documents the current balance, payment amount, and account number of the loan being paid off."},
+    {doc:"Current Mortgage Statement", why:"Documents the current balance, payment amount, and confirms the loan being refinanced. The new payment must be lower than the current payment to meet net tangible benefit."},
     {doc:"Copy of Current Homeowners Insurance (HOI)", why:"Required to confirm active coverage on the property. Lender must verify insurance will remain in force through closing."},
-    {doc:"Current mortgage statement showing balance and payment", why:"Needed to document net tangible benefit — the new payment must be lower than the current payment."},
-    {doc:"VA IRRRL Worksheet (VA Form 26-8923) — VA only", why:"VA requires the IRRRL Worksheet to document net tangible benefit, recoupment of costs within 36 months, and funding fee calculation."},
   ]},
 
   'streamline-vcivci':{ label:'🔄 IRRRL — VCI to VCI (No Borrower Docs Required)', group:'Transaction Type', items:[
@@ -572,7 +575,7 @@ const DEFAULTS = {
     {doc:"Funding fee exemption documentation (if VA disability rated 10%+)", why:"Veterans with a 10%+ disability rating are exempt from the VA funding fee. Confirm current disability status — even on a VCI-to-VCI — before closing."},
     {doc:"12-month payment history — pull from VCI servicing system", why:"Since VCI services the loan, payment history is accessible internally from the servicing platform. No borrower-supplied bank statements needed."},
     {doc:"Borrower signed authorization to access and use existing VCI loan file", why:"Internal authorization confirming the borrower consents to VCI using their existing serviced loan file for the new refinance transaction."},
-  ]},,
+  ]},
 
   'cashout-vcivci':{ label:'🔄 VA Cash Out — VCI to VCI (Income Only)', group:'Transaction Type', items:[
     {doc:"Previous Note and Mortgage Statement obtained from VCI Servicing System", why:"VCI services this loan. Property documentation is pulled internally — borrower does not need to provide these items."},
@@ -734,7 +737,10 @@ function buildChecklist() {
   const flags    = flagKeys.filter(k => document.getElementById('flag-'+k).checked);
 
   const sections = [];
-  sections.push(ITEMS.identity, ITEMS.credit, ITEMS.assets);
+  // VCI-to-VCI: skip SS card — already on file from prior loan
+  sections.push(isVV ? ITEMS['identity-vcivci'] : ITEMS.identity, ITEMS.credit);
+  // Assets not required for IRRRL or Cash Out — no funds to close, UW will condition if needed
+  if (type !== 'streamline' && type !== 'cashout') sections.push(ITEMS.assets);
   incomes.forEach(k => { if (ITEMS['inc-'+k]) sections.push(ITEMS['inc-'+k]); });
 
   if (type === 'purchase')                       sections.push(ITEMS.purchase);
@@ -867,7 +873,7 @@ let adminAuth = false;
 let activeKey = null;
 
 const NAV_GROUPS = [
-  { group:'Universal',       keys:['identity','credit','assets'] },
+  { group:'Universal',       keys:['identity','identity-vcivci','credit','assets'] },
   { group:'Income Types',    keys:['inc-w2','inc-bonus','inc-se','inc-ssi','inc-joboffer','inc-rental','inc-vadis'] },
   { group:'Transaction',     keys:['purchase','refi','cashout','streamline','streamline-vcivci'] },
   { group:'Loan Program',    keys:['va','fha'] },
