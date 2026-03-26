@@ -105,7 +105,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
 .vob-text p{font-size:11.5px;color:var(--text-muted);line-height:1.5}
 
 /* LO VIEW items */
-.cl-item{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(13,35,64,.06)}
+.cl-item{display:grid;grid-template-columns:26px 1fr auto auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(13,35,64,.06)}
+.cl-item.excluded{opacity:.38;background:repeating-linear-gradient(135deg,transparent,transparent 4px,rgba(13,35,64,.025) 4px,rgba(13,35,64,.025) 8px)}
+.cl-item.excluded .cl-doc{text-decoration:line-through;color:var(--text-muted)}
+.cl-item.excluded .cl-why{text-decoration:line-through}
+.cl-exclude-btn{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;border:1.5px solid rgba(13,35,64,.15);background:transparent;cursor:pointer;font-size:12px;color:var(--text-muted);flex-shrink:0;transition:all .12s;margin-top:2px;title:"Exclude from borrower checklist"}
+.cl-exclude-btn:hover{border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.06);color:#c0392b}
+.cl-item.excluded .cl-exclude-btn{border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.08);color:#c0392b}
 .cl-item:last-child{border-bottom:none}
 .cl-cb{width:18px;height:18px;accent-color:var(--navy);cursor:pointer;margin-top:2px;flex-shrink:0}
 .cl-main{display:flex;flex-direction:column;gap:3px}
@@ -796,6 +802,7 @@ function buildChecklist() {
     </div><div class="card-body">`;
     sec.items.forEach(item => {
       const id = 'cb-' + Math.random().toString(36).slice(2);
+      const excId = 'exc-' + id;
       loHtml += `<div class="cl-item" id="item-${id}">
         <input type="checkbox" class="cl-cb" id="${id}" onchange="toggleItem('${id}')" />
         <div class="cl-main">
@@ -804,6 +811,7 @@ function buildChecklist() {
           <input type="text" class="cl-note-input" placeholder="Notes..." />
         </div>
         <span class="cl-received">✓ Received</span>
+        <button class="cl-exclude-btn" id="${excId}" onclick="toggleExclude('${id}')" title="Exclude from borrower checklist">✕</button>
       </div>`;
     });
     loHtml += '</div></div>';
@@ -813,9 +821,15 @@ function buildChecklist() {
   // BORROWER VIEW
   let bwrHtml = '';
   sections.forEach(sec => {
+    // Only include non-excluded items in borrower view
+    const visibleItems = sec.items.filter((_, i) => {
+      const sectionId = sec.label.replace(/[^a-z0-9]/gi,'').toLowerCase();
+      return !window._excluded || !window._excluded[sec.label + '::' + i];
+    });
+    if (!visibleItems.length) return;
     bwrHtml += `<div class="card bwr-section"><div class="card-body">
       <div class="bwr-section-title">${sec.label}</div>`;
-    sec.items.forEach(item => {
+    visibleItems.forEach(item => {
       bwrHtml += `<div class="bwr-item">
         <div class="bwr-check"></div>
         <div class="bwr-text"><div class="bwr-doc">${item.doc}</div><div class="bwr-why">${item.why}</div></div>
@@ -833,18 +847,72 @@ function buildChecklist() {
 }
 
 function toggleItem(id) {
-  const cb = document.getElementById(id);
+  const cb  = document.getElementById(id);
   const row = document.getElementById('item-'+id);
+  if (row && row.classList.contains('excluded')) return; // can't check excluded items
   row.classList.toggle('done', cb.checked);
   updateProgress();
 }
 
+function toggleExclude(id) {
+  const row    = document.getElementById('item-'+id);
+  const btn    = document.getElementById('exc-'+id);
+  const cb     = document.getElementById(id);
+  const isExcl = row.classList.toggle('excluded');
+  if (isExcl) {
+    cb.checked = false;
+    cb.disabled = true;
+    btn.title = 'Click to re-include this item';
+  } else {
+    cb.disabled = false;
+    btn.title = 'Exclude from borrower checklist';
+  }
+  // Store exclusion state for borrower view rebuild
+  if (!window._excludedIds) window._excludedIds = new Set();
+  if (isExcl) window._excludedIds.add(id);
+  else window._excludedIds.delete(id);
+  updateProgress();
+  // Rebuild borrower view live
+  rebuildBorrowerView();
+}
+
+function rebuildBorrowerView() {
+  // Re-render borrower view excluding any excluded items
+  const bwrContainer = document.getElementById('borrower-view');
+  if (!bwrContainer || bwrContainer.style.display === 'none') return;
+  const sections_out = bwrContainer.querySelectorAll('.bwr-section');
+  // Walk LO view cards in order, sync to borrower cards
+  const loCards   = document.getElementById('lo-view').querySelectorAll('.card');
+  const bwrCards  = bwrContainer.querySelectorAll('.card');
+  loCards.forEach((loCard, ci) => {
+    const bwrCard = bwrCards[ci];
+    if (!bwrCard) return;
+    const loItems  = loCard.querySelectorAll('.cl-item');
+    const bwrItems = bwrCard.querySelectorAll('.bwr-item');
+    let bwrIdx = 0;
+    loItems.forEach((loItem, li) => {
+      const bwrItem = bwrItems[bwrIdx];
+      if (!bwrItem) return;
+      const isExcl = loItem.classList.contains('excluded');
+      bwrItem.style.display = isExcl ? 'none' : '';
+      if (!isExcl) bwrIdx++;
+    });
+  });
+}
+
 function updateProgress() {
-  const all = document.querySelectorAll('.cl-cb');
-  const chk = document.querySelectorAll('.cl-cb:checked');
-  const pct = all.length ? (chk.length/all.length)*100 : 0;
+  // Exclude items that are marked as excluded
+  const allItems = [...document.querySelectorAll('.cl-item')];
+  const active   = allItems.filter(r => !r.classList.contains('excluded'));
+  const done     = active.filter(r => r.querySelector('.cl-cb:checked')).length;
+  const total    = active.length;
+  const pct      = total ? (done/total)*100 : 0;
   document.getElementById('prog-bar').style.width = pct+'%';
-  document.getElementById('prog-lbl').textContent = `${chk.length} of ${all.length} received`;
+  document.getElementById('prog-lbl').textContent = `${done} of ${total} received`;
+  // Show excluded count if any
+  const exclCount = allItems.length - active.length;
+  const lbl = document.getElementById('prog-lbl');
+  lbl.textContent = `${done} of ${total} received` + (exclCount > 0 ? ` · ${exclCount} excluded` : '');
 }
 
 function setView(v, btn) {
